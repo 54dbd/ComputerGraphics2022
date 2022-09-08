@@ -55,7 +55,7 @@ public:
 				err += dx;
 				y += sy;
 			}
-			cout << "(" << x << " , " << y << "),k= " << k << " ,b= " << b << " color= " << color << endl;
+			//cout << "(" << x << " , " << y << "),k= " << k << " ,b= " << b << " color= " << color << endl;
 
 		}
 	}
@@ -80,7 +80,64 @@ public:
 				}
 			}
 		}
+	}
+	void Midpointline()
+	{
+		int a, b, d1, d2, x, y,d;
+		a = y_s - y_e; 
+		b = x_e - x_s;  
+		d = a + a + b;  //计算a,b,d0
+		d1 = a + a;  
+		d2 = a + a + b + b;            //计算可能的增量
+		x = x_s; 
+		y = y_s;
+		putpixel(x, y, color);
+		while (x != x_e&&y!=y_e)
+		{
 
+			if (d < 0)
+			{
+				x++;
+				y++;
+				d += d2;
+			}  //如果d为负，取右上角点(y加1)
+			else {
+				x++;
+				d += d1;
+			}          //如果d为正，取右边点
+			
+			
+			putpixel(x, y, color);
+		}
 	}
 };
 
+void Lines() {
+	ExMessage m;		//获取鼠标操作对象
+	int X1, Y1;
+	while (true) {
+		m = getmessage(EM_MOUSE | EM_KEY);
+		switch (m.message)
+		{
+		case WM_LBUTTONDOWN:	//按下鼠标左键
+			// 记住起点
+			X1 = m.x;
+			Y1 = m.y;
+			cout << "start:(" << m.x << " , " << m.y << ")" << endl;
+			break;
+
+		case WM_LBUTTONUP:		//抬起鼠标左键
+			if ((m.x - X1) * (m.x - X1) + (m.y - Y1) * (m.y - Y1) < 10)
+			{
+				cout << "Too short!" << endl;
+				break;
+			}
+			cout << "end:(" << m.x << " , " << m.y << ")" << endl;
+			Line l(X1, Y1, m.x, m.y, 5, WHITE, 1);
+			l.Bresenham();
+			// 鼠标左键弹起,记住终点并画线
+			break;
+		}
+		if (m.vkcode == VK_NUMPAD0) return;
+	}
+}
