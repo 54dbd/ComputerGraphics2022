@@ -44,7 +44,10 @@ public:
 		int err = (dx < dy ? dx : -dy) / 2, e2;
 		while (true)
 		{
-			putpixel(x, y,color);
+			for (int i = -width / 2; i < width / 2; i++)
+			{
+				putpixel(x+i, y+i, color);
+			}
 			if (x == x_e) break;
 			e2 = err;
 			if (e2 > -dx) {
@@ -55,6 +58,7 @@ public:
 				err += dx;
 				y += sy;
 			}
+
 			//cout << "(" << x << " , " << y << "),k= " << k << " ,b= " << b << " color= " << color << endl;
 
 		}
@@ -133,7 +137,7 @@ void Lines() {
 				break;
 			}
 			cout << "end:(" << m.x << " , " << m.y << ")" << endl;
-			Line l(X1, Y1, m.x, m.y, 5, WHITE, 1);
+			Line l(X1, Y1, m.x, m.y, 10, WHITE, 1);
 			l.Bresenham();
 			// 鼠标左键弹起,记住终点并画线
 			break;
