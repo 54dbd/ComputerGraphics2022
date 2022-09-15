@@ -29,5 +29,8 @@
     <ClInclude Include="Circle.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Brush.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

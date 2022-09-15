@@ -1,42 +1,25 @@
 #pragma once
 #include <graphics.h>
 #include <iostream>
+#include "Brush.h"
 using namespace std;
-class Line
+class Line : public Brush
 {
+	
 private:
 	int x_s, y_s, x_e, y_e, x, y;
-	double k, b;
 	int width;
-	COLORREF color;
-	double step;
 
 public:
-	Line(double XS,double YS,double XE, double YE, double W, COLORREF C,int S) {
+	Line(int XS, int YS, int XE, int YE, int W, COLORREF C):Brush(W,C) {
 		x_s = XS;
 		x_e = XE;
 		y_s = YS;
 		y_e = YE;
 		width = W;
-		color = C;
-		step = S;
 		x = XS;
 		y = YS;
-		k = (y_e-y_s)*1.0 /( x_e - x_s)*1.0;
-		b = y_s - k * x_s;
-			
-	}
-	void DrawLine() {
-		while (x <= x_e && y <= y_e) {
-			//double temp_b = b;
-			for (double i = b - width / 2; i < b + width / 2; i += step) {
-				putpixel((int)x, y, color);
-				y = k * x + i;
 
-			}
-			cout << "(" << x << " , " << y << "),k= "<<k<<" ,b= "<<b<<" color= " << color << endl;
-			x += step;
-		}
 	}
 	void Bresenham() {
 		int dx = abs(x_e - x_s), sx = x_s < x_e ? 1 : -1;
@@ -44,10 +27,9 @@ public:
 		int err = (dx < dy ? dx : -dy) / 2, e2;
 		while (true)
 		{
-			for (int i = -width / 2; i < width / 2; i++)
-			{
-				putpixel(x+i, y+i, color);
-			}
+
+			drawPixle(x ,y);
+
 			if (x == x_e) break;
 			e2 = err;
 			if (e2 > -dx) {
@@ -64,26 +46,7 @@ public:
 		}
 	}
 	void MidPoint() {
-		if (k >= 1) {
-			for (y= y_s; y < y_e; y += 1) {
-				putpixel(x, y, color);
-				cout << "(" << x << " , " << y << "),k= " << k << " ,b= " << b << " color= " << color << endl;
-
-				if ((y + 1) - k * (x + 0.5) - b > 0) {
-					x += 1;
-				}
-			}
-		}
-		else if (k >= 0) {
-			for (x = x_s; x < x_e; x += 1) {
-				putpixel(x, y, color);
-				cout << "(" << x << " , " << y << "),k= " << k << " ,b= " << b << " color= " << color << endl;
-
-				if ((y + 0.5) - k * (x + 1) - b < 0) {
-					y += 1;
-				}
-			}
-		}
+		//TODO:帮我补上
 	}
 	void Midpointline()
 	{
@@ -95,7 +58,7 @@ public:
 		d2 = a + a + b + b;            //计算可能的增量
 		x = x_s; 
 		y = y_s;
-		putpixel(x, y, color);
+		drawPixle(x, y);
 		while (x != x_e&&y!=y_e)
 		{
 
@@ -111,9 +74,10 @@ public:
 			}          //如果d为正，取右边点
 			
 			
-			putpixel(x, y, color);
+			drawPixle(x, y);
 		}
 	}
+	
 };
 
 void Lines() {
@@ -137,7 +101,8 @@ void Lines() {
 				break;
 			}
 			cout << "end:(" << m.x << " , " << m.y << ")" << endl;
-			Line l(X1, Y1, m.x, m.y, 10, WHITE, 1);
+			Line l(X1, Y1, m.x, m.y, 9, WHITE);
+			//l.drawPixle(m.x, m.y);
 			l.Bresenham();
 			// 鼠标左键弹起,记住终点并画线
 			break;
