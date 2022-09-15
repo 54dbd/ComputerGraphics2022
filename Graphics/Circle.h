@@ -4,27 +4,27 @@
 #include <iostream>
 #include <math.h>
 using namespace std;
-class circle
+class circle : public Brush
 {
 private:
 	int cx, cy, r;
 	COLORREF color;
 
 	void CirclePoint(int x, int y) {
-		putpixel(x + cx, y + cy, color);
-		putpixel(y + cx, x + cy, color);
-		putpixel(-x + cx, y + cy, color);
-		putpixel(y + cx, -x + cy, color);
-		putpixel(x + cx, -y + cy, color);
-		putpixel(-y + cx, x + cy, color);
-		putpixel(-x + cx, -y + cy, color);
-		putpixel(-y + cx, -x + cy, color);
+		drawPixle(x + cx, y + cy);
+		drawPixle(y + cx, x + cy);
+		drawPixle(-x + cx, y + cy);
+		drawPixle(y + cx, -x + cy);
+		drawPixle(x + cx, -y + cy);
+		drawPixle(-y + cx, x + cy);
+		drawPixle(-x + cx, -y + cy);
+		drawPixle(-y + cx, -x + cy);
 
 
 	}
 
 public:
-	circle(int X = 0, int Y = 0, int R = 0) {
+	circle(int X = 0, int Y = 0, int R = 0,int W=3, COLORREF C = WHITE):Brush(W,C) {
 		cx = X;
 		cy = Y;
 		r = R;
@@ -67,7 +67,8 @@ public:
 void Circle() {
 	ExMessage m;		//获取鼠标操作对象
 	int X1, Y1, X2, Y2, R,flag = 0;
-    class circle c;
+	//设置圆的属性
+    class circle c(0,0,0,-7,YELLOW);
 	while (true) {
 		m = getmessage(EM_MOUSE | EM_KEY);
 		switch (m.message)

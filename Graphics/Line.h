@@ -116,7 +116,7 @@ void Lines() {
 				break;
 			}
 			cout << "end:(" << m.x << " , " << m.y << ")" << endl;
-			Line l(X1, Y1, m.x, m.y, 9, WHITE);
+			Line l(X1, Y1, m.x, m.y, -7, WHITE);
 			//l.drawPixle(m.x, m.y);
 			l.Bresenham();
 			// 鼠标左键弹起,记住终点并画线
