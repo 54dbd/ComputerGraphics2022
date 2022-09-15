@@ -46,38 +46,84 @@ public:
 		}
 	}
 	void MidPoint() {
-		//TODO:帮我补上
-	}
-	void Midpointline()
-	{
-		int a, b, d1, d2, x, y,d;
-		a = y_s - y_e; 
-		b = x_e - x_s;  
-		d = a + a + b;  //计算a,b,d0
-		d1 = a + a;  
-		d2 = a + a + b + b;            //计算可能的增量
-		x = x_s; 
-		y = y_s;
-		drawPixle(x, y);
-		while (x != x_e&&y!=y_e)
-		{
+		drawPixle(x_s, y_s); // 绘制初始点
 
-			if (d < 0)
-			{
-				x++;
-				y++;
+		bool vertical = false, horizontal = false, diagonal = false;
+		Translate(vertical, horizontal, diagonal);
+		int a = y_s - y_e, b = x_e - x_s;
+		int d = a + a + b; // d:初始增量
+		int d1 = a + a, d2 = a + a + b + b; // d1:东方增量 d2:东北方增量
+		int x = x_s, y = y_s; // 当前绘制点
+		for (x = x + 1; x <= x_e; ++x) {
+			if (d < 0) {
 				d += d2;
-			}  //如果d为负，取右上角点(y加1)
+				y++;
+			}
 			else {
-				x++;
 				d += d1;
-			}          //如果d为正，取右边点
-			
-			
-			drawPixle(x, y);
+			}
+
+			int temp_x = x, temp_y = y;
+			Restore(vertical, horizontal, diagonal, temp_x, temp_y);
+			drawPixle(temp_x, temp_y);
 		}
 	}
-	
+
+	void Translate(bool& vertical, bool& horizontal, bool& diagonal) {
+		if (y_e - y_s < 0) {
+			y_s = -y_s;
+			y_e = -y_e;
+			vertical = true;
+		}
+		if (x_e - x_s < 0) {
+			x_s = -x_s;
+			x_e = -x_e;
+			horizontal = true;
+		}
+		if (y_e - y_s > x_e - x_s) {
+			int temp = y_s; y_s = x_s; x_s = temp;
+			temp = y_e; y_e = x_e; x_e = temp;
+			diagonal = true;
+		}
+	}
+
+	void Restore(bool& vertical, bool& horizontal, bool& diagonal, int& x, int& y) {
+		int temp;
+		if (diagonal) { temp = y; y = x; x = temp; }
+		if (horizontal) x = -x;
+		if (vertical) y = -y;
+	}
+
+//	void Midpointline()
+//	{
+//		int a, b, d1, d2, x, y,d;
+//		a = y_s - y_e; 
+//		b = x_e - x_s;  
+//		d = a + a + b;  //计算a,b,d0
+//		d1 = a + a;  
+//		d2 = a + a + b + b;            //计算可能的增量
+//		x = x_s; 
+//		y = y_s;
+//		drawPixle(x, y);
+//		while (x != x_e&&y!=y_e)
+//		{
+//
+//			if (d < 0)
+//			{
+//				x++;
+//				y++;
+//				d += d2;
+//			}  //如果d为负，取右上角点(y加1)
+//			else {
+//				x++;
+//				d += d1;
+//			}          //如果d为正，取右边点
+//			
+//			
+//			drawPixle(x, y);
+//		}
+//	}
+//	
 };
 
 void Lines() {
