@@ -57,6 +57,7 @@ public:
 			break;
 		case 9:
 			brush = &brush_9;
+			break;
 		default:
 			brush = &brush_3;
 			break;
