@@ -93,37 +93,6 @@ public:
 		if (horizontal) x = -x;
 		if (vertical) y = -y;
 	}
-
-//	void Midpointline()
-//	{
-//		int a, b, d1, d2, x, y,d;
-//		a = y_s - y_e; 
-//		b = x_e - x_s;  
-//		d = a + a + b;  //计算a,b,d0
-//		d1 = a + a;  
-//		d2 = a + a + b + b;            //计算可能的增量
-//		x = x_s; 
-//		y = y_s;
-//		drawPixle(x, y);
-//		while (x != x_e&&y!=y_e)
-//		{
-//
-//			if (d < 0)
-//			{
-//				x++;
-//				y++;
-//				d += d2;
-//			}  //如果d为负，取右上角点(y加1)
-//			else {
-//				x++;
-//				d += d1;
-//			}          //如果d为正，取右边点
-//			
-//			
-//			drawPixle(x, y);
-//		}
-//	}
-//	
 };
 
 void Lines() {
