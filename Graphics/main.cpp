@@ -1,5 +1,6 @@
 #include "Line.h"
 #include "Starts.h"
+#include "Circle.h"
 #include <iostream>
 void showMenu() {
 	cout << "|***************************************************|"
@@ -9,7 +10,8 @@ void showMenu() {
 		<< "\n|                                                   |"
 		<< "\n|***************************************************|"
 		<< "\n|                                                   |"
-		<< "\n|       A.直线                                |"
+		<< "\n|       A.直线                                      |"
+		<< "\n|       B.圆弧                                      |"
 		<< "\n|       Z.星轨                                      |"
 		<< "\n|       0.退出                                      |"
 		<< "\n|                                                   |"
@@ -29,6 +31,16 @@ int main() {
 		case 'a':
 			initgraph(640, 480);		//初始化窗口大小
 			Lines();
+			closegraph();
+			system("cls");
+
+			showMenu();
+			break;
+		case 'B':
+		case 'b':
+			initgraph(640, 640);		//初始化窗口大小
+			Circle();
+
 			closegraph();
 			system("cls");
 
