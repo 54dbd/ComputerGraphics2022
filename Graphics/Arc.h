@@ -8,21 +8,13 @@
 
 
 
-#define PUTPIXELX(x,y,boder1,boder2,colour)
-{
-	if(x>=boder1&&x<=boder2)
-		putpixel(x,y,colour);
-}               
+#define PUTPIXELX(x,y,boder1,boder2,colour)               if(x>=boder1&&x<=boder2)  \
+                                                              putpixel(x,y,colour);
 
 
 
-#define PUTPIXELY(x,y,boder1,boder2,colour)                 
-{
-	if(y>=boder1&&y<=boder2)
-		putpixel(x, y, colour);
-}
-
-                                                              
+#define PUTPIXELY(x,y,boder1,boder2,colour)                 if(y>=boder1&&y<=boder2)  \
+                                                              putpixel(x, y, colour);
 
 
 class Arc
