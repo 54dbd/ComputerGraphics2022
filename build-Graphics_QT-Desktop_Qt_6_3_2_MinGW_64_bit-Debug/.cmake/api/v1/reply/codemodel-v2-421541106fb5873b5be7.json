@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-b870aca710ee047c5439.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Graphics_QT",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Graphics_QT::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Graphics_QT-Debug-1c464c95a9aa6fb351c4.json",
+					"name" : "Graphics_QT",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Graphics_QT_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Graphics_QT_autogen-Debug-f348b1e05ad986f78563.json",
+					"name" : "Graphics_QT_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Graphics_QT_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Graphics_QT_autogen_timestamp_deps-Debug-5022ff2a872a65337635.json",
+					"name" : "Graphics_QT_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Administrator/source/repos/Graphics/build-Graphics_QT-Desktop_Qt_6_3_2_MinGW_64_bit-Debug",
+		"source" : "C:/Users/Administrator/source/repos/Graphics/Graphics_QT"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

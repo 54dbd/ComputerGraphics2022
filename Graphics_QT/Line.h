@@ -1,5 +1,4 @@
 #pragma once
-#include <graphics.h>
 #include <iostream>
 #include "Brush.h"
 using namespace std;
@@ -25,20 +24,14 @@ public:
 		int dx = abs(x_e - x_s), sx = x_s < x_e ? 1 : -1;
 		int dy = abs(y_e - y_s), sy = y_s < y_e ? 1 : -1;
 		int err = (dx < dy ? dx : -dy) / 2, e2;
-		if (dx <2 )sx = 0;
-		if (dy <2 )sy = 0;
 		while (true)
 		{
 
 			drawPixle(x ,y);
-			if (sx == 0)
-			{
-				if(y == y_e)
-					break;
-			}
-			else if (x == x_e) break;
+
+			if (x == x_e) break;
 			e2 = err;
-			if (e2 > -dx) { 
+			if (e2 > -dx) {
 				err -= dy;
 				x += sx;
 			}

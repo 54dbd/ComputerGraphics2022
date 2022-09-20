@@ -1,0 +1,8 @@
+# ninja log v5
+4	636	6850006852110127	build.ninja	bf6569a5cf006495
+1	955	6850006859927340	Graphics_QT_autogen/timestamp	24ac78b5d2cdafcc
+1	955	6850006859927340	Graphics_QT_autogen/mocs_compilation.cpp	24ac78b5d2cdafcc
+1	955	6850006859927340	C:/Users/Administrator/source/repos/Graphics/build-Graphics_QT-Desktop_Qt_6_3_2_MinGW_64_bit-Debug/Graphics_QT_autogen/timestamp	24ac78b5d2cdafcc
+1	955	6850006859927340	C:/Users/Administrator/source/repos/Graphics/build-Graphics_QT-Desktop_Qt_6_3_2_MinGW_64_bit-Debug/Graphics_QT_autogen/mocs_compilation.cpp	24ac78b5d2cdafcc
+956	2789	6850006880435190	CMakeFiles/Graphics_QT.dir/Graphics_QT_autogen/mocs_compilation.cpp.obj	ed35ad19a764cafb
+966	2859	6850006881125243	CMakeFiles/Graphics_QT.dir/mainwindow.cpp.obj	eef544941b57ca17
