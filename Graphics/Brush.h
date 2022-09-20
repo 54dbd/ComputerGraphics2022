@@ -55,6 +55,10 @@ public:
 		{0,1,0},
 		{1,0,1}
 	};
+	//1ˢ
+	const vector<vector<int>> brush_1 = {
+		{1,},
+	};
 	Brush(int W, COLORREF C) {
 
 		color = C;
@@ -71,6 +75,9 @@ public:
 	int setBrushType(int W) {
 		switch (W)
 		{
+		case 1:
+			brush = &brush_1;
+			break;
 		case 3:
 			brush = &brush_3;
 			break;
@@ -92,7 +99,7 @@ public:
 		}
 		return 1;
 	};
-	void drawPixle(int x, int y) {
+	void drawPixel(int x, int y) {
 		for (int i = 0; i < (*brush).size(); i++) {
 			for (int j = 0; j < (*brush).size(); j++) {
 				if ((*brush)[i][j]) putpixel(x + i, y + j, color);

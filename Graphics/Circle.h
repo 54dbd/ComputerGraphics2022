@@ -14,14 +14,14 @@ private:
 	COLORREF color;
 
 	void CirclePoint(int x, int y) {
-		drawPixle(x + cx, y + cy);
-		drawPixle(y + cx, x + cy);
-		drawPixle(-x + cx, y + cy);
-		drawPixle(y + cx, -x + cy);
-		drawPixle(x + cx, -y + cy);
-		drawPixle(-y + cx, x + cy);
-		drawPixle(-x + cx, -y + cy);
-		drawPixle(-y + cx, -x + cy);
+		drawPixel(x + cx, y + cy);
+		drawPixel(y + cx, x + cy);
+		drawPixel(-x + cx, y + cy);
+		drawPixel(y + cx, -x + cy);
+		drawPixel(x + cx, -y + cy);
+		drawPixel(-y + cx, x + cy);
+		drawPixel(-x + cx, -y + cy);
+		drawPixel(-y + cx, -x + cy);
 
 
 	}
