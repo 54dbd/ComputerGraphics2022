@@ -25,20 +25,20 @@ public:
 		int dx = abs(x_e - x_s), sx = x_s < x_e ? 1 : -1;
 		int dy = abs(y_e - y_s), sy = y_s < y_e ? 1 : -1;
 		int err = (dx < dy ? dx : -dy) / 2, e2;
-		if (dx <2 )sx = 0;
-		if (dy <2 )sy = 0;
+		if (dx < 2)sx = 0;
+		if (dy < 2)sy = 0;
 		while (true)
 		{
 
-			drawPixle(x ,y);
+			drawPixel(x, y);
 			if (sx == 0)
 			{
-				if(y == y_e)
+				if (y == y_e)
 					break;
 			}
 			else if (x == x_e) break;
 			e2 = err;
-			if (e2 > -dx) { 
+			if (e2 > -dx) {
 				err -= dy;
 				x += sx;
 			}
@@ -46,13 +46,41 @@ public:
 				err += dx;
 				y += sy;
 			}
-
 			//cout << "(" << x << " , " << y << "),k= " << k << " ,b= " << b << " color= " << color << endl;
 
 		}
 	}
+	void Bresenham_textbook() {
+		drawPixel(x_s, y_s);
+		bool vertical = false, horizontal = false, diagonal = false;
+		Translate(vertical, horizontal, diagonal);
+
+		int dx = x_e - x_s;
+		int dy = y_e - y_s;
+		int increase_E = 2 * dy;
+		int increase_NE = 2 * (dy - dx);
+		int x = x_s;
+		int y = y_s;
+		int d = 2 * dy - dx;
+
+		for (x = x_s + 1; x <= x_e; ++x) {
+			if (d < 0) {
+				d += increase_E;
+			}
+			else {
+				d += increase_NE;
+				y++;
+			}
+
+			int temp_x = x, temp_y = y;
+			Restore(vertical, horizontal, diagonal, temp_x, temp_y);
+			drawPixel(temp_x, temp_y);
+		}
+	}
+
+
 	void MidPoint() {
-		drawPixle(x_s, y_s); // 绘制初始点
+		drawPixel(x_s, y_s); // 绘制初始点
 
 		bool vertical = false, horizontal = false, diagonal = false;
 		Translate(vertical, horizontal, diagonal);
@@ -68,10 +96,9 @@ public:
 			else {
 				d += d1;
 			}
-
 			int temp_x = x, temp_y = y;
 			Restore(vertical, horizontal, diagonal, temp_x, temp_y);
-			drawPixle(temp_x, temp_y);
+			drawPixel(temp_x, temp_y);
 		}
 	}
 
@@ -123,7 +150,7 @@ void Lines() {
 			}
 			cout << "end:(" << m.x << " , " << m.y << ")" << endl;
 			Line l(X1, Y1, m.x, m.y, -7, WHITE);
-			//l.drawPixle(m.x, m.y);
+			//l.drawPixel(m.x, m.y);
 			l.Bresenham();
 			// 鼠标左键弹起,记住终点并画线
 			break;
