@@ -21,7 +21,6 @@ class Arc: public Brush
 {
 private:
 	int cx, cy, r;
-	COLORREF color;
 
 	void ArcPointX(int x, int y, int Borderup, int Borderup2, int Borderdown, int Borderdown2) {
 
@@ -218,12 +217,12 @@ public:
 
 
 
-void Anyarc() {
+void Anyarc(int brushType, COLORREF colorType) {
 	ExMessage m;		//获取鼠标操作对象
 	int X1 = 0, Y1 = 0, X2 = 0, Y2 = 0, R = 0, flag = 0;
 	int tempx, tempy;
 	Circle c(0, 0, 0, 1, YELLOW);
-	class Arc a(0,0,0,-7,WHITE);
+	class Arc a(0,0,0, brushType, colorType);
 	while (true) {
 		m = getmessage(EM_MOUSE | EM_KEY);
 		switch (m.message)
@@ -267,7 +266,7 @@ void Anyarc() {
 					}
 					c.Clear();
 					putpixel(tempx, tempy, BLACK);
-					putpixel(X2, Y2, getcolor());
+					putpixel(X2, Y2, colorType);
 
 					//while(true)
 					break;

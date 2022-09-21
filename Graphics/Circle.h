@@ -110,11 +110,11 @@ public:
 
 };
 
-void Circles() {
+void Circles(int brushType, COLORREF colorType) {
 	ExMessage m;		//获取鼠标操作对象
 	int X1, Y1, X2, Y2, R,flag = 0;
 	//设置圆的属性
-     Circle c(0,0,0,-7,YELLOW);
+     Circle c(0,0,0, brushType, colorType);
 	while (true) {
 		m = getmessage(EM_MOUSE | EM_KEY);
 		switch (m.message)

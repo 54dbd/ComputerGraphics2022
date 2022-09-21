@@ -128,7 +128,7 @@ public:
 	}
 };
 
-void Lines() {
+void Lines(int brushType,COLORREF colorType) {
 	ExMessage m;		//获取鼠标操作对象
 	int X1, Y1;
 	while (true) {
@@ -149,7 +149,7 @@ void Lines() {
 				break;
 			}
 			cout << "end:(" << m.x << " , " << m.y << ")" << endl;
-			Line l(X1, Y1, m.x, m.y, -7, WHITE);
+			Line l(X1, Y1, m.x, m.y, brushType, colorType);
 			//l.drawPixel(m.x, m.y);
 			l.Bresenham();
 			// 鼠标左键弹起,记住终点并画线
