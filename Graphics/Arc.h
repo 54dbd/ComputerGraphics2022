@@ -5,64 +5,63 @@
 #include <math.h>
 #include <windows.h>
 #include <socketapi.h>
+#include "Brush.h"
+
+
+#define PUTPIXELX(x,y,boder1,boder2)               if(x>=boder1&&x<=boder2)  \
+                                                              drawPixel(x,y);
 
 
 
-#define PUTPIXELX(x,y,boder1,boder2,colour)               if(x>=boder1&&x<=boder2)  \
-                                                              putpixel(x,y,colour);
+#define PUTPIXELY(x,y,boder1,boder2)                 if(y>=boder1&&y<=boder2)  \
+                                                              drawPixel(x, y);
 
 
-
-#define PUTPIXELY(x,y,boder1,boder2,colour)                 if(y>=boder1&&y<=boder2)  \
-                                                              putpixel(x, y, colour);
-
-
-class Arc
+class Arc: public Brush
 {
 private:
 	int cx, cy, r;
 	COLORREF color;
 
-
 	void ArcPointX(int x, int y, int Borderup, int Borderup2, int Borderdown, int Borderdown2) {
 
-		PUTPIXELX(x + cx, y + cy, Borderup, Borderup2, color);
-		PUTPIXELX(y + cx, x + cy, Borderup, Borderup2, color);
-		PUTPIXELX(-x + cx, y + cy, Borderup, Borderup2, color);
-		PUTPIXELX(y + cx, -x + cy, Borderdown, Borderdown2, color);
-		PUTPIXELX(x + cx, -y + cy, Borderdown, Borderdown2, color);
-		PUTPIXELX(-y + cx, x + cy, Borderup, Borderup2, color);
-		PUTPIXELX(-x + cx, -y + cy, Borderdown, Borderdown2, color);
-		PUTPIXELX(-y + cx, -x + cy, Borderdown, Borderdown2, color);
+		PUTPIXELX(x + cx, y + cy, Borderup, Borderup2);
+		PUTPIXELX(y + cx, x + cy, Borderup, Borderup2);
+		PUTPIXELX(-x + cx, y + cy, Borderup, Borderup2);
+		PUTPIXELX(y + cx, -x + cy, Borderdown, Borderdown2);
+		PUTPIXELX(x + cx, -y + cy, Borderdown, Borderdown2);
+		PUTPIXELX(-y + cx, x + cy, Borderup, Borderup2);
+		PUTPIXELX(-x + cx, -y + cy, Borderdown, Borderdown2);
+		PUTPIXELX(-y + cx, -x + cy, Borderdown, Borderdown2);
 
 
 	}
 
 	void ArcPointY(int x, int y, int Borderup, int Borderup2, int Borderdown, int Borderdown2) {
 
-		PUTPIXELY(x + cx, y + cy, Borderup, Borderup2, color);
-		PUTPIXELY(y + cx, x + cy, Borderup, Borderup2, color);
-		PUTPIXELY(-x + cx, y + cy, Borderdown, Borderdown2, color);
-		PUTPIXELY(y + cx, -x + cy, Borderup, Borderup2, color);
-		PUTPIXELY(x + cx, -y + cy, Borderup, Borderup2, color);
-		PUTPIXELY(-y + cx, x + cy, Borderdown, Borderdown2, color);
-		PUTPIXELY(-x + cx, -y + cy, Borderdown, Borderdown2, color);
-		PUTPIXELY(-y + cx, -x + cy, Borderdown, Borderdown2, color);
+		PUTPIXELY(x + cx, y + cy, Borderup, Borderup2);
+		PUTPIXELY(y + cx, x + cy, Borderup, Borderup2);
+		PUTPIXELY(-x + cx, y + cy, Borderdown, Borderdown2);
+		PUTPIXELY(y + cx, -x + cy, Borderup, Borderup2);
+		PUTPIXELY(x + cx, -y + cy, Borderup, Borderup2);
+		PUTPIXELY(-y + cx, x + cy, Borderdown, Borderdown2);
+		PUTPIXELY(-x + cx, -y + cy, Borderdown, Borderdown2);
+		PUTPIXELY(-y + cx, -x + cy, Borderdown, Borderdown);
 
 
 	}
 	void ArcPointN(int x, int y, int Borderup, int Borderup2, int Borderdown, int Borderdown2) {
 		if ((Borderdown - cx) < 0) {
-			PUTPIXELY(-x + cx, y + cy, Borderup, Borderup2, color);
-			PUTPIXELY(-y + cx, x + cy, Borderup, Borderup2, color);
-			PUTPIXELY(-x + cx, -y + cy, Borderup, Borderup2, color);
-			PUTPIXELY(-y + cx, -x + cy, Borderup, Borderup2, color);
+			PUTPIXELY(-x + cx, y + cy, Borderup, Borderup2);
+			PUTPIXELY(-y + cx, x + cy, Borderup, Borderup2);
+			PUTPIXELY(-x + cx, -y + cy, Borderup, Borderup2);
+			PUTPIXELY(-y + cx, -x + cy, Borderup, Borderup2);
 		}
 		else {
-			PUTPIXELY(x + cx, y + cy, Borderup, Borderup2, color);
-			PUTPIXELY(y + cx, x + cy, Borderup, Borderup2, color);
-			PUTPIXELY(y + cx, -x + cy, Borderup, Borderup2, color);
-			PUTPIXELY(x + cx, -y + cy, Borderup, Borderup2, color);
+			PUTPIXELY(x + cx, y + cy, Borderup, Borderup2);
+			PUTPIXELY(y + cx, x + cy, Borderup, Borderup2);
+			PUTPIXELY(y + cx, -x + cy, Borderup, Borderup2);
+			PUTPIXELY(x + cx, -y + cy, Borderup, Borderup2);
 		}
 
 	}
@@ -150,7 +149,7 @@ private:
 	}
 
 public:
-	Arc(int X = 0, int Y = 0, int R = 0) {
+	Arc(int X = 0, int Y = 0, int R = 0, int W=3,COLORREF C=WHITE) :Brush(W, C) {
 		cx = X;
 		cy = Y;
 		r = R;
@@ -222,23 +221,34 @@ public:
 void Anyarc() {
 	ExMessage m;		//获取鼠标操作对象
 	int X1 = 0, Y1 = 0, X2 = 0, Y2 = 0, R = 0, flag = 0;
-	class Arc a;
+	int tempx, tempy;
+	Circle c(0, 0, 0, 1, YELLOW);
+	class Arc a(0,0,0,-7,WHITE);
 	while (true) {
 		m = getmessage(EM_MOUSE | EM_KEY);
 		switch (m.message)
 		{
 		case WM_LBUTTONDOWN:	//按下鼠标左键
 			X1 = m.x;        //记录圆心
-			Y1 = m.y;        //
+			Y1 = m.y;        
+			tempx = X1;
+			tempy = Y1;
+			c.SetCenter(X1, Y1);
 			a.SetCenter(X1, Y1);
 			while (true) {
 				m = getmessage(EM_MOUSE | EM_KEY);
 				if (m.message == WM_LBUTTONDOWN) {
 					X2 = m.x;                   //记录圆弧第一个点
 					Y2 = m.y;
+					putpixel(X2, Y2, RED);
+					
 					R = sqrt((X1 - X2) * (X1 - X2) + (Y1 - Y2) * (Y1 - Y2));
 					a.SetR(R);
-					//c.DrawCircle();
+
+					//辅助判断圆的半径少一点，以防妨碍画圆
+					c.SetR(R-10);
+					c.DrawDashLIneCircle();
+					putpixel(X1, Y1, RED);
 					while (true) {
 						m = getmessage(EM_MOUSE | EM_KEY);
 						if (m.message == WM_LBUTTONDOWN) {
@@ -254,8 +264,11 @@ void Anyarc() {
 							a.DrawArc(X2, Y2, X1, Y1);
 							break;
 						}
-
 					}
+					c.Clear();
+					putpixel(tempx, tempy, BLACK);
+					putpixel(X2, Y2, getcolor());
+
 					//while(true)
 					break;
 				}

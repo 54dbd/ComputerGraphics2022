@@ -72,6 +72,10 @@ public:
 		color = C;
 		return 0;
 	};
+
+	COLORREF getColor() {
+		return color;
+	} 
 	int setBrushType(int W) {
 		switch (W)
 		{
