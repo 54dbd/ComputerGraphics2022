@@ -155,6 +155,6 @@ void Lines(int brushType,COLORREF colorType) {
 			// 鼠标左键弹起,记住终点并画线
 			break;
 		}
-		if (m.vkcode == VK_NUMPAD0) return;
+		if (m.vkcode == VK_ESCAPE) break;
 	}
 }

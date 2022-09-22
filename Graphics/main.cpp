@@ -22,12 +22,13 @@ void showMenu() {
 		<< endl;
 }
 int main() {
-	showMenu();
+	//showMenu();
 	char choice,brushChoice,colorChoice;
 	int brushType=1;
 	COLORREF colorType = WHITE;
 	while (true)
 	{
+		showMenu();
 		cin >> choice;
 		switch (choice)
 		{
@@ -38,7 +39,7 @@ int main() {
 			closegraph();
 			system("cls");
 
-			showMenu();
+			/*showMenu();*/
 			break;
 		case 'B':
 		case 'b':
@@ -48,7 +49,7 @@ int main() {
 			closegraph();
 			system("cls");
 
-			showMenu();
+			//showMenu();
 			break;
 		case 'C':
 		case 'c':
@@ -58,7 +59,7 @@ int main() {
 			closegraph();
 			system("cls");
 
-			showMenu();
+			//showMenu();
 			break;
 		case'Z':
 		case'z':
@@ -66,7 +67,7 @@ int main() {
 			Stars();
 			closegraph();
 			system("cls");
-			showMenu();
+			//showMenu();
 			break;
 		case'0':
 			return 0;
@@ -183,7 +184,7 @@ int main() {
 			}
 			system("cls");
 
-			showMenu();
+			//showMenu();
 			break;
 		default:
 			break;
