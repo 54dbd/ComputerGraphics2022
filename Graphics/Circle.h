@@ -139,7 +139,7 @@ void Circles(int brushType, COLORREF colorType) {
 		
 		}
 
-		if (m.vkcode == VK_NUMPAD0) return;
+		if (m.vkcode == VK_ESCAPE) break;
 	}
 }
 
