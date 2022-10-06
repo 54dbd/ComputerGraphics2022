@@ -38,8 +38,6 @@ int main() {
 			Lines(brushType,colorType);
 			closegraph();
 			system("cls");
-
-			/*showMenu();*/
 			break;
 		case 'B':
 		case 'b':
