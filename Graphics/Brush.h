@@ -7,7 +7,7 @@ private:
 	vector<vector<int>>const* brush;
 	COLORREF color;
 public:
-	//����ˢ_9
+	//方块刷_9
 	const vector<vector<int>> brush_9 = {
 		{1,1,1,1,1,1,1,1,1},
 		{1,1,1,1,1,1,1,1,1},
@@ -19,7 +19,7 @@ public:
 		{1,1,1,1,1,1,1,1,1},
 		{1,1,1,1,1,1,1,1,1},
 	};
-	//Բˢ_7
+	//圆刷_7
 	const vector<vector<int>> brush_7_r = {
 		{0,0,1,1,1,0,0},
 		{0,1,1,1,1,1,0},
@@ -30,7 +30,7 @@ public:
 		{0,0,1,1,1,0,0},
 
 	};
-	//Xˢ_7
+	//X刷_7
 	const vector<vector<int>> brush_7 = {
 		{1,1,0,0,0,0,1},
 		{0,1,1,0,0,1,1},
@@ -41,7 +41,7 @@ public:
 		{1,1,0,0,0,0,1},
 
 	};
-	//Xˢ_5
+	//X刷_5
 	const vector<vector<int>> brush_5 = {
 		{1,1,0,0,1},
 		{0,1,1,1,1},
@@ -49,13 +49,13 @@ public:
 		{0,1,1,1,1},
 		{1,1,0,0,1}
 	};
-	//Xˢ_3
+	//X刷_3
 	const vector<vector<int>> brush_3 = {
 		{1,0,1},
 		{0,1,0},
 		{1,0,1}
 	};
-	//1ˢ
+	//1刷
 	const vector<vector<int>> brush_1 = {
 		{1,},
 	};

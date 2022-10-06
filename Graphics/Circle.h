@@ -1,4 +1,4 @@
-#ifndef __CIRCLE_H__
+ï»¿#ifndef __CIRCLE_H__
 #define __CIRCLE_H__
 #include <graphics.h>
 #include <iostream>
@@ -45,9 +45,9 @@ public:
 
 	void Clear() {
 		int x, y, d, e;
-		//»º´æµ±Ç°ÑÕÉ«
+		//ç¼“å­˜å½“å‰é¢œè‰²
 		COLORREF temp = getColor();
-		//Ê¹ÓÃºÚÉ«Çå³ı¹ì¼£
+		//ä½¿ç”¨é»‘è‰²æ¸…é™¤è½¨è¿¹
 		setColor(BLACK);
 		x = 0;
 		y = r;
@@ -63,7 +63,7 @@ public:
 			x++;
 			CirclePoint(x, y);
 		}
-		//»Ö¸´ÑÕÉ«
+		//æ¢å¤é¢œè‰²
 		setColor(temp);
 	}
 	void DrawCircle() {
@@ -99,7 +99,7 @@ public:
 				y--;
 			}
 			x++;
-			//ĞéÏß´¦Àí
+			//è™šçº¿å¤„ç†
 			if (ct % 31 > 15) {
 				CirclePoint(x, y);
 			}
@@ -111,16 +111,16 @@ public:
 };
 
 void Circles(int brushType, COLORREF colorType) {
-	ExMessage m;		//»ñÈ¡Êó±ê²Ù×÷¶ÔÏó
+	ExMessage m;		//è·å–é¼ æ ‡æ“ä½œå¯¹è±¡
 	int X1, Y1, X2, Y2, R,flag = 0;
-	//ÉèÖÃÔ²µÄÊôĞÔ
+	//è®¾ç½®åœ†çš„å±æ€§
      Circle c(0,0,0, brushType, colorType);
 	while (true) {
 		m = getmessage(EM_MOUSE | EM_KEY);
 		switch (m.message)
 		{
-		case WM_LBUTTONDOWN:	//°´ÏÂÊó±ê×ó¼ü
-			// ¼Ç×¡Æğµã
+		case WM_LBUTTONDOWN:	//æŒ‰ä¸‹é¼ æ ‡å·¦é”®
+			// è®°ä½èµ·ç‚¹
 			flag = 1;
 			X1 = m.x;
 			Y1 = m.y;
@@ -128,13 +128,13 @@ void Circles(int brushType, COLORREF colorType) {
 			cout << "start:(" << m.x << " , " << m.y << ")" << endl;
 			break;
 
-		case WM_LBUTTONUP:		//Ì§ÆğÊó±ê×ó¼ü
+		case WM_LBUTTONUP:		//æŠ¬èµ·é¼ æ ‡å·¦é”®
 			X2 = m.x;
 			Y2 = m.y;
 			R = sqrt((X1 - X2) * (X1 - X2) + (Y1 - Y2) * (Y1 - Y2));
 			c.SetR(R);
 			c.DrawCircle();
-			// Êó±ê×ó¼üµ¯Æğ,¼Ç×¡ÖÕµã²¢»­Ïß
+			// é¼ æ ‡å·¦é”®å¼¹èµ·,è®°ä½ç»ˆç‚¹å¹¶ç”»çº¿
 			break;
 		
 		}

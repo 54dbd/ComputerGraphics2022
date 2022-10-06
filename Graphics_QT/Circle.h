@@ -1,100 +1,147 @@
 #ifndef __CIRCLE_H__
 #define __CIRCLE_H__
 #include <iostream>
+#include <QPainter>
 #include <math.h>
-#include "Brush.h"
+
 using namespace std;
-class circle : public Brush
+
+
+
+class Circle : public Brush
 {
 private:
-	int cx, cy, r;
-	COLORREF color;
+    int cx, cy, r;
+    COLORREF color;
 
-	void CirclePoint(int x, int y) {
-		drawPixle(x + cx, y + cy);
-		drawPixle(y + cx, x + cy);
-		drawPixle(-x + cx, y + cy);
-		drawPixle(y + cx, -x + cy);
-		drawPixle(x + cx, -y + cy);
-		drawPixle(-y + cx, x + cy);
-		drawPixle(-x + cx, -y + cy);
-		drawPixle(-y + cx, -x + cy);
+    void CirclePoint(int x, int y) {
+        drawPixel(x + cx, y + cy);
+        drawPixel(y + cx, x + cy);
+        drawPixel(-x + cx, y + cy);
+        drawPixel(y + cx, -x + cy);
+        drawPixel(x + cx, -y + cy);
+        drawPixel(-y + cx, x + cy);
+        drawPixel(-x + cx, -y + cy);
+        drawPixel(-y + cx, -x + cy);
 
 
-	}
+    }
 
 public:
-	circle(int X = 0, int Y = 0, int R = 0,int W=3, COLORREF C = WHITE):Brush(W,C) {
-		cx = X;
-		cy = Y;
-		r = R;
-	}
+    Circle(int X, int Y, int R ,int W, QPainter &p):Brush(W,p) {
+        cx = X;
+        cy = Y;
+        r = R;
+    }
 
-	void SetCenter(int X, int Y) {
-		cx = X;
-		cy = Y;
+    void SetCenter(int X, int Y) {
+        cx = X;
+        cy = Y;
 
-	}
+    }
 
-	void SetR(int R) {
-		r = R;
-	}
+    void SetR(int R) {
+        r = R;
+    }
 
+    void Clear() {
+//        int x, y, d, e;
+//        //ÁºìÂ≠òÂΩìÂâçÈ¢úËâ≤
+//        COLORREF temp = getColor();
+//        //‰ΩøÁî®ÈªëËâ≤Ê∏ÖÈô§ËΩ®Ëøπ
+//        setColor(BLACK);
+//        x = 0;
+//        y = r;
+//        e = 1 - r;
+//        CirclePoint(x, y);
+//        while (x <= y) {
+//            if (e < 0)
+//                e += 2 * x + 3;
+//            else {
+//                e += 2 * (x - y) + 5;
+//                y--;
+//            }
+//            x++;
+//            CirclePoint(x, y);
+//        }
+//        //ÊÅ¢Â§çÈ¢úËâ≤
+//        setColor(temp);
+    }
+    void DrawCircle() {
+        int x, y, d, e;
+        x = 0;
+        y = r;
+        e = 1 - r;
+        CirclePoint(x, y);
+        while (x <= y) {
+            if (e < 0)
+                e += 2 * x + 3;
+            else {
+                e += 2 * (x - y) + 5;
+                y--;
+            }
+            x++;
+            CirclePoint(x,y);
+        }
 
-	void DrawCircle() {
-		int x, y, d, e;
-		x = 0;
-		y = r;
-		e = 1 - r;
-		CirclePoint(x, y);
-		while (x <= y) {
-			if (e < 0)
-				e += 2 * x + 3;
-			else {
-				e += 2 * (x - y) + 5;
-				y--;
-			}
-			x++;
-			CirclePoint(x,y);
-		}
+    }
 
-	}
+    void DrawDashLIneCircle() {
+        int x, y, d, e,ct=0;
+        x = 0;
+        y = r;
+        e = 1 - r;
+        CirclePoint(x, y);
+        while (x <= y) {
+            if (e < 0)
+                e += 2 * x + 3;
+            else {
+                e += 2 * (x - y) + 5;
+                y--;
+            }
+            x++;
+            //ËôöÁ∫øÂ§ÑÁêÜ
+            if (ct % 31 > 15) {
+                CirclePoint(x, y);
+            }
+            ct++;
+        }
 
-
+    }
 
 };
 
-void Circle() {
-	ExMessage m;		//ªÒ»° Û±Í≤Ÿ◊˜∂‘œÛ
-	int X1, Y1, X2, Y2, R,flag = 0;
-	//…Ë÷√‘≤µƒ Ù–‘
-    class circle c(0,0,0,-7,YELLOW);
-	while (true) {
-		m = getmessage(EM_MOUSE | EM_KEY);
-		switch (m.message)
-		{
-		case WM_LBUTTONDOWN:	//∞¥œ¬ Û±Í◊Ûº¸
-			// º«◊°∆µ„
-			flag = 1;
-			X1 = m.x;
-			Y1 = m.y;
-			c.SetCenter(X1, Y1);
-			cout << "start:(" << m.x << " , " << m.y << ")" << endl;
-			break;
+//void Circles(int brushType, COLORREF colorType) {
+//    ExMessage m;		//Ëé∑ÂèñÈº†Ê†áÊìç‰ΩúÂØπË±°
+//    int X1, Y1, X2, Y2, R,flag = 0;
+//    //ËÆæÁΩÆÂúÜÁöÑÂ±ûÊÄß
+//     Circle c(0,0,0, brushType, colorType);
+//    while (true) {
+//        m = getmessage(EM_MOUSE | EM_KEY);
+//        switch (m.message)
+//        {
+//        case WM_LBUTTONDOWN:	//Êåâ‰∏ãÈº†Ê†áÂ∑¶ÈîÆ
+//            // ËÆ∞‰ΩèËµ∑ÁÇπ
+//            flag = 1;
+//            X1 = m.x;
+//            Y1 = m.y;
+//            c.SetCenter(X1, Y1);
+//            cout << "start:(" << m.x << " , " << m.y << ")" << endl;
+//            break;
 
-		case WM_LBUTTONUP:		//Ãß∆ Û±Í◊Ûº¸
-			X2 = m.x;
-			Y2 = m.y;
-			R = sqrt((X1 - X2) * (X1 - X2) + (Y1 - Y2) * (Y1 - Y2));
-			c.SetR(R);
-			c.DrawCircle();
-			//  Û±Í◊Ûº¸µØ∆,º«◊°÷’µ„≤¢ª≠œﬂ
-			break;
-		
-		}
+//        case WM_LBUTTONUP:		//Êä¨Ëµ∑Èº†Ê†áÂ∑¶ÈîÆ
+//            X2 = m.x;
+//            Y2 = m.y;
+//            R = sqrt((X1 - X2) * (X1 - X2) + (Y1 - Y2) * (Y1 - Y2));
+//            c.SetR(R);
+//            c.DrawCircle();
+//            // Èº†Ê†áÂ∑¶ÈîÆÂºπËµ∑,ËÆ∞‰ΩèÁªàÁÇπÂπ∂ÁîªÁ∫ø
+//            break;
 
-		if (m.vkcode == VK_NUMPAD0) return;
-	}
-}
+//        }
+
+//        if (m.vkcode == VK_NUMPAD0) return;
+//    }
+//}
 
 #endif

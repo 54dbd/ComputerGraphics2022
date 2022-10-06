@@ -1,12 +1,10 @@
-#ifndef __Arc_H__
+ï»¿#ifndef __Arc_H__
 #define __Arc_H__
 #include <graphics.h>
 #include <iostream>
 #include <math.h>
-#include <windows.h>
-#include <socketapi.h>
 #include "Brush.h"
-
+#include <math.h>
 
 #define PUTPIXELX(x,y,boder1,boder2)               if(x>=boder1&&x<=boder2)  \
                                                               drawPixel(x,y);
@@ -65,12 +63,12 @@ private:
 
 	}
 
-	//¶ÔÔ²»¡¿çÔ½xÖáµÄÇé¿ö×ö³õÊ¼»¯ÓëÔ¤´¦Àí
+	//å¯¹åœ†å¼§è·¨è¶Šxè½´çš„æƒ…å†µåšåˆå§‹åŒ–ä¸é¢„å¤„ç†
 	void ConfigX(int x1, int y1, int x2, int y2, int& Borderup, int& Borderup2, int& Borderdown, int& Borderdown2) {
-		if (x2 < (2 * cx - x1)) {    //ËµÃ÷Ô­µãÔÚÏÒÓÒ²à£¬Ôò¶ÔÓ¦ÁÓ»¡µÄ×î×ó½çÏŞÎª -r
+		if (x2 < (2 * cx - x1)) {    //è¯´æ˜åŸç‚¹åœ¨å¼¦å³ä¾§ï¼Œåˆ™å¯¹åº”åŠ£å¼§çš„æœ€å·¦ç•Œé™ä¸º -r
 			Borderup = cx - r;
 			Borderdown = cx - r;
-			if ((y2 - cy) > 0) {        //´ËÊ±y1Óëy2±ØÓĞÒ»¸öÎ»ÓÚxÖáÉÏ·½£¬Èç¹ûÊÇy2ÔÚÉÏ·½£¬Ôò¶ÔÓÚÔ²»¡ÔÚxÖáÉÏ·½µÄ²¿·Ö£¬ÆäÓÒ½çÎªx2,ÏÂ·½µÄ²¿·ÖÓÒ½çÎªx1
+			if ((y2 - cy) > 0) {        //æ­¤æ—¶y1ä¸y2å¿…æœ‰ä¸€ä¸ªä½äºxè½´ä¸Šæ–¹ï¼Œå¦‚æœæ˜¯y2åœ¨ä¸Šæ–¹ï¼Œåˆ™å¯¹äºåœ†å¼§åœ¨xè½´ä¸Šæ–¹çš„éƒ¨åˆ†ï¼Œå…¶å³ç•Œä¸ºx2,ä¸‹æ–¹çš„éƒ¨åˆ†å³ç•Œä¸ºx1
 				Borderup2 = x2;
 				Borderdown2 = x1;
 			}
@@ -79,7 +77,7 @@ private:
 				Borderdown2 = x2;
 			}
 		}
-		else {                         //ÓëÉÏÊöÇé¿öÏà·´
+		else {                         //ä¸ä¸Šè¿°æƒ…å†µç›¸å
 			Borderup2 = cx + r;
 			Borderdown2 = cx + r;
 			if ((y2 - cy) > 0) {
@@ -92,7 +90,7 @@ private:
 			}
 		}
 	}
-	//¶ÔÔ²»¡¿çÔ½yÖáµÄÇé¿ö×ö³õÊ¼»¯ÓëÔ¤´¦Àí£¬¾ßÌåÂß¼­ÓëConfigXÒ»ÖÂ
+	//å¯¹åœ†å¼§è·¨è¶Šyè½´çš„æƒ…å†µåšåˆå§‹åŒ–ä¸é¢„å¤„ç†ï¼Œå…·ä½“é€»è¾‘ä¸ConfigXä¸€è‡´
 	void ConfigY(int x1, int y1, int x2, int y2, int& Borderup, int& Borderup2, int& Borderdown, int& Borderdown2) {
 		if (y2 < (2 * cy - y1)) {
 			Borderup = cy - r;
@@ -121,22 +119,22 @@ private:
 	}
 
 
-	//×ÜÅäÖÃÓëÔ¤´¦Àíº¯Êı
+	//æ€»é…ç½®ä¸é¢„å¤„ç†å‡½æ•°
 	void ArcConfig(int x1, int y1, int x2, int y2, int& Borderup, int& Borderup2, int& Borderdown, int& Borderdown2, int& flag) {
-		if ((cy - y1) * (cy - y2) < 0) {      //´Ë´¦ÅĞ¶ÏÊÇ·ñ¿çÔ½xÖá
+		if ((cy - y1) * (cy - y2) < 0) {      //æ­¤å¤„åˆ¤æ–­æ˜¯å¦è·¨è¶Šxè½´
 			flag = 1;
-			ConfigX(x1, y1, x2, y2, Borderup, Borderup2, Borderdown, Borderdown2); //¶Ô¿çÔ½xÖáµÄÇé¿ö½øĞĞÔ¤´¦Àí
+			ConfigX(x1, y1, x2, y2, Borderup, Borderup2, Borderdown, Borderdown2); //å¯¹è·¨è¶Šxè½´çš„æƒ…å†µè¿›è¡Œé¢„å¤„ç†
 		}
-		else if ((cx - x1) * (cx - x2) < 0) {  //ÊÇ·ñ¿çÔ½yÖá
+		else if ((cx - x1) * (cx - x2) < 0) {  //æ˜¯å¦è·¨è¶Šyè½´
 			flag = 2;
-			ConfigY(x1, y1, x2, y2, Borderup, Borderup2, Borderdown, Borderdown2); //¶Ô¿çÔ½yÖáµÄÇé¿ö½øĞĞÔ¤´¦Àí
+			ConfigY(x1, y1, x2, y2, Borderup, Borderup2, Borderdown, Borderdown2); //å¯¹è·¨è¶Šyè½´çš„æƒ…å†µè¿›è¡Œé¢„å¤„ç†
 		}
-		else {                       //Ô²»¡Ö»ÔÚÒ»¸öÏóÏŞ
+		else {                       //åœ†å¼§åªåœ¨ä¸€ä¸ªè±¡é™
 			flag = 0;
 			if (y1 < y2) {
 				Borderdown = x1;
 				Borderup = y1;
-				Borderup2 = y2;          //Ñ¡Ôñy×ö±ß½ç
+				Borderup2 = y2;          //é€‰æ‹©yåšè¾¹ç•Œ
 			}
 			else {
 				Borderdown = x1;
@@ -165,9 +163,9 @@ public:
 	}
 
 
-	void DrawArc(int x1, int y1, int x2, int y2) {       //»æÖÆÈÎÒâÔ²»¡£¬ÆäÊµÏÖµÄ¹ı³Ì¸ÅÀ¨¶øÑÔ£¬ÊÇµ±»æÖÆÒ»¸öµãÊ±£¬¸ù¾İÔ¤´¦ÀíµÃµ½µÄÒ»¶ÎÔ²»¡µÄÆğµãÓëÖÕµãÀ´ÅĞ¶Ï¸Ãµã£¬ÒÔ¼°¸ÃµãÔÚÆäËû7¸ö1/2ÏóÏŞµÄÓ³ÉäÊÇ·ñ´¦ÓÚÔ²»¡ÄÚ
-		int x, y, d, e, Borderup, Borderup2, Borderdown1, Borderdown2, flag;         //½øÒ»²½·ÖÎªÈıÖÖÇé¿ö£¬Ô²»¡¿çÔ½yÖá£¬Ô²»¡¿çÔ½xÖá£¬»ò²»¿çÔ½ÈÎºÎ×ø±êÖá¡£Ç°Á½ÖÖÇé¿öÓĞÖØµşµÄ²¿·Ö£¬µ«²¢²»Ó°Ïì
-		ArcConfig(x1, y1, x2, y2, Borderup, Borderup2, Borderdown1, Borderdown2, flag);   //³õÊ¼ÅäÖÃº¯Êı£¬Çø·ÖÈıÖÖÇé¿ö²¢ÅäÖÃĞèÒªµÄ½çÏŞ                                    
+	void DrawArc(int x1, int y1, int x2, int y2) {       //ç»˜åˆ¶ä»»æ„åœ†å¼§ï¼Œå…¶å®ç°çš„è¿‡ç¨‹æ¦‚æ‹¬è€Œè¨€ï¼Œæ˜¯å½“ç»˜åˆ¶ä¸€ä¸ªç‚¹æ—¶ï¼Œæ ¹æ®é¢„å¤„ç†å¾—åˆ°çš„ä¸€æ®µåœ†å¼§çš„èµ·ç‚¹ä¸ç»ˆç‚¹æ¥åˆ¤æ–­è¯¥ç‚¹ï¼Œä»¥åŠè¯¥ç‚¹åœ¨å…¶ä»–7ä¸ª1/2è±¡é™çš„æ˜ å°„æ˜¯å¦å¤„äºåœ†å¼§å†…
+		int x, y, d, e, Borderup, Borderup2, Borderdown1, Borderdown2, flag;         //è¿›ä¸€æ­¥åˆ†ä¸ºä¸‰ç§æƒ…å†µï¼Œåœ†å¼§è·¨è¶Šyè½´ï¼Œåœ†å¼§è·¨è¶Šxè½´ï¼Œæˆ–ä¸è·¨è¶Šä»»ä½•åæ ‡è½´ã€‚å‰ä¸¤ç§æƒ…å†µæœ‰é‡å çš„éƒ¨åˆ†ï¼Œä½†å¹¶ä¸å½±å“
+		ArcConfig(x1, y1, x2, y2, Borderup, Borderup2, Borderdown1, Borderdown2, flag);   //åˆå§‹é…ç½®å‡½æ•°ï¼ŒåŒºåˆ†ä¸‰ç§æƒ…å†µå¹¶é…ç½®éœ€è¦çš„ç•Œé™                                    
 		x = 0;
 		y = r;
 		e = 1 - r;
@@ -218,17 +216,19 @@ public:
 
 
 void Anyarc(int brushType, COLORREF colorType) {
-	ExMessage m;		//»ñÈ¡Êó±ê²Ù×÷¶ÔÏó
-	int X1 = 0, Y1 = 0, X2 = 0, Y2 = 0, R = 0, flag = 0;
+	ExMessage m;		//è·å–é¼ æ ‡æ“ä½œå¯¹è±¡
+	int X1 = 0, Y1 = 0, X2 = 0, Y2 = 0, R = 0, flag = 0,R2=0;
 	int tempx, tempy;
+	double val = 180.0 / 3.14159265;
+
 	Circle c(0, 0, 0, 1, YELLOW);
 	class Arc a(0,0,0, brushType, colorType);
 	while (true) {
 		m = getmessage(EM_MOUSE | EM_KEY);
 		switch (m.message)
 		{
-		case WM_LBUTTONDOWN:	//°´ÏÂÊó±ê×ó¼ü
-			X1 = m.x;        //¼ÇÂ¼Ô²ĞÄ
+		case WM_LBUTTONDOWN:	//æŒ‰ä¸‹é¼ æ ‡å·¦é”®
+			X1 = m.x;        //è®°å½•åœ†å¿ƒ
 			Y1 = m.y;        
 			tempx = X1;
 			tempy = Y1;
@@ -237,14 +237,14 @@ void Anyarc(int brushType, COLORREF colorType) {
 			while (true) {
 				m = getmessage(EM_MOUSE | EM_KEY);
 				if (m.message == WM_LBUTTONDOWN) {
-					X2 = m.x;                   //¼ÇÂ¼Ô²»¡µÚÒ»¸öµã
+					X2 = m.x;                   //è®°å½•åœ†å¼§ç¬¬ä¸€ä¸ªç‚¹
 					Y2 = m.y;
 					putpixel(X2, Y2, RED);
 					
 					R = sqrt((X1 - X2) * (X1 - X2) + (Y1 - Y2) * (Y1 - Y2));
 					a.SetR(R);
 
-					//¸¨ÖúÅĞ¶ÏÔ²µÄ°ë¾¶ÉÙÒ»µã£¬ÒÔ·À·Á°­»­Ô²
+					//è¾…åŠ©åˆ¤æ–­åœ†çš„åŠå¾„å°‘ä¸€ç‚¹ï¼Œä»¥é˜²å¦¨ç¢ç”»åœ†
 					c.SetR(R-10);
 					c.DrawDashLIneCircle();
 					putpixel(X1, Y1, RED);
@@ -252,14 +252,14 @@ void Anyarc(int brushType, COLORREF colorType) {
 						m = getmessage(EM_MOUSE | EM_KEY);
 						if (m.message == WM_LBUTTONDOWN) {
 							int cx = X1, cy = Y1, x, y;
-							X1 = m.x;                   //¼ÇÂ¼Ô²»¡µÚ¶ş¸öµã£¬µÚÒ»¸öµãÒ»¶¨ÔÚÔ²ÉÏ£¬µ«µÚ¶ş¸öµãÔò²»Ò»¶¨£¬Òò´ËĞèÒª½øĞĞĞŞÕı
+							X1 = m.x;                   //è®°å½•åœ†å¼§ç¬¬äºŒä¸ªç‚¹ï¼Œç¬¬ä¸€ä¸ªç‚¹ä¸€å®šåœ¨åœ†ä¸Šï¼Œä½†ç¬¬äºŒä¸ªç‚¹åˆ™ä¸ä¸€å®šï¼Œå› æ­¤éœ€è¦è¿›è¡Œä¿®æ­£
 							Y1 = m.y;
 							x = X1 - cx;
 							y = Y1 - cy;
 							if (abs(cx - X1) > R) {
-								X1 = cx + R * x / abs(x);      //¶Ô³¬³öºá×ø±ê·¶Î§µÄXÈ¡×î´óÖµ
+								X1 = cx + R * x / abs(x);      //å¯¹è¶…å‡ºæ¨ªåæ ‡èŒƒå›´çš„Xå–æœ€å¤§å€¼
 							}
-							Y1 = cy + sqrt((R * R - (X1 - cx) * (X1 - cx))) * y / abs(y);      //ĞŞÕıYÖµ£¬¼ÆËã³öÔÚÔ²ÉÏµÄÖµ
+							Y1 = cy + sqrt((R * R - (X1 - cx) * (X1 - cx))) * y / abs(y);      //ä¿®æ­£Yå€¼ï¼Œè®¡ç®—å‡ºåœ¨åœ†ä¸Šçš„å€¼
 							a.DrawArc(X2, Y2, X1, Y1);
 							break;
 						}

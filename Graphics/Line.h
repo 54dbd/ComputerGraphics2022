@@ -80,14 +80,14 @@ public:
 
 
 	void MidPoint() {
-		drawPixel(x_s, y_s); // »æÖÆ³õÊ¼µã
+		drawPixel(x_s, y_s); // ç»˜åˆ¶åˆå§‹ç‚¹
 
 		bool vertical = false, horizontal = false, diagonal = false;
 		Translate(vertical, horizontal, diagonal);
 		int a = y_s - y_e, b = x_e - x_s;
-		int d = a + a + b; // d:³õÊ¼ÔöÁ¿
-		int d1 = a + a, d2 = a + a + b + b; // d1:¶«·½ÔöÁ¿ d2:¶«±±·½ÔöÁ¿
-		int x = x_s, y = y_s; // µ±Ç°»æÖÆµã
+		int d = a + a + b; // d:åˆå§‹å¢é‡
+		int d1 = a + a, d2 = a + a + b + b; // d1:ä¸œæ–¹å¢é‡ d2:ä¸œåŒ—æ–¹å¢é‡
+		int x = x_s, y = y_s; // å½“å‰ç»˜åˆ¶ç‚¹
 		for (x = x + 1; x <= x_e; ++x) {
 			if (d < 0) {
 				d += d2;
@@ -129,20 +129,20 @@ public:
 };
 
 void Lines(int brushType,COLORREF colorType) {
-	ExMessage m;		//»ñÈ¡Êó±ê²Ù×÷¶ÔÏó
+	ExMessage m;		//è·å–é¼ æ ‡æ“ä½œå¯¹è±¡
 	int X1, Y1;
 	while (true) {
 		m = getmessage(EM_MOUSE | EM_KEY);
 		switch (m.message)
 		{
-		case WM_LBUTTONDOWN:	//°´ÏÂÊó±ê×ó¼ü
-			// ¼Ç×¡Æğµã
+		case WM_LBUTTONDOWN:	//æŒ‰ä¸‹é¼ æ ‡å·¦é”®
+			// è®°ä½èµ·ç‚¹
 			X1 = m.x;
 			Y1 = m.y;
 			cout << "start:(" << m.x << " , " << m.y << ")" << endl;
 			break;
 
-		case WM_LBUTTONUP:		//Ì§ÆğÊó±ê×ó¼ü
+		case WM_LBUTTONUP:		//æŠ¬èµ·é¼ æ ‡å·¦é”®
 			if ((m.x - X1) * (m.x - X1) + (m.y - Y1) * (m.y - Y1) < 10)
 			{
 				cout << "Too short!" << endl;
@@ -152,7 +152,7 @@ void Lines(int brushType,COLORREF colorType) {
 			Line l(X1, Y1, m.x, m.y, brushType, colorType);
 			//l.drawPixel(m.x, m.y);
 			l.Bresenham();
-			// Êó±ê×ó¼üµ¯Æğ,¼Ç×¡ÖÕµã²¢»­Ïß
+			// é¼ æ ‡å·¦é”®å¼¹èµ·,è®°ä½ç»ˆç‚¹å¹¶ç”»çº¿
 			break;
 		}
 		if (m.vkcode == VK_NUMPAD0) return;
