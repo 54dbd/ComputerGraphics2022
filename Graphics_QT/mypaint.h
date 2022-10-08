@@ -53,6 +53,7 @@ public:
     QVector<arcCenter> _arcCenter;
     //QVector<QRect> _secondaryCircle;//椭圆集合
     QVector<int>  _shape;//图形类型集合，用于撤回功能
+    QVector<QPen> _brush;//笔刷集合
     QPoint _begin;//鼠标按下坐标、用于最后一个图形移动
 signals:
     void sendPen(QPen*);

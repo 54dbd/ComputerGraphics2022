@@ -118,6 +118,9 @@ void MyPaint::paintEvent(QPaintEvent *)
 
     for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
     {
+        // 获取对应的笔刷颜色，并设置
+        QPen pen = _brush.at(c);
+        p.setPen(pen);
         if(_shape.at(c) == 1)//线条
         {
               const QVector<QPoint>& line = _lines.at(i1++);//取出一条线条
@@ -233,6 +236,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)//当鼠标左键按下
     {
+        _brush.append(_pen);//将当前笔刷颜色加入到笔刷颜色列表中
         if(_drawType == 1)//线条(铅笔)
         {
             _lpress = true;//左键按下标志
