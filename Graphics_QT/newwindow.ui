@@ -176,6 +176,32 @@ background:black;
     </item>
    </layout>
   </widget>
+  <widget class="QCheckBox" name="dashLine">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>130</y>
+     <width>16</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>130</y>
+     <width>31</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>虚线</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

@@ -15,12 +15,6 @@ newWindow::~newWindow()
 
 void newWindow::on_pushButton_clicked()
 {
-    _color = Qt::black;
-    _style = Qt::DashDotLine;
-    _capStyle = Qt::RoundCap;
-    _width = 5;
-    //emit sendPen(pen);
-    //p.setPen(QPen(Qt::black,5,Qt::DashDotLine,Qt::RoundCap))
     close();
 }
 void newWindow::getPen(QPen* p){
@@ -35,7 +29,6 @@ void newWindow::on_horizontalSlider_sliderMoved(int position)//position: 1~20
     QString output = QString::number(position)+"px";
     ui->width->setText(output);
     (*pen).setWidth(_width);
-
 }
 
 
@@ -92,5 +85,20 @@ void newWindow::on_horizontalSlider_valueChanged(int value)
     QString output = QString::number(value)+"px";
     ui->width->setText(output);
     (*pen).setWidth(_width);
+
+}
+
+
+void newWindow::on_dashLine_stateChanged(int arg1)
+{
+    qDebug()<<arg1<<(*pen).style();
+    if(arg1){
+        _style = Qt::DashLine;
+
+    }else{
+        _style = Qt::SolidLine;
+    }
+    (*pen).setStyle(_style);
+
 }
 
