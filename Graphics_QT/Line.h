@@ -102,7 +102,31 @@ public:
             drawPixel(temp_x, temp_y);
         }
     }
+    void DashLine() {
+        drawPixel(x_s, y_s); // 绘制初始点
 
+        bool vertical = false, horizontal = false, diagonal = false;
+        Translate(vertical, horizontal, diagonal);
+        int a = y_s - y_e, b = x_e - x_s;
+        int d = a + a + b; // d:初始增量
+        int d1 = a + a, d2 = a + a + b + b; // d1:东方增量 d2:东北方增量
+        int x = x_s, y = y_s; // 当前绘制点
+        for (x = x + 1; x <= x_e; ++x) {
+            if (d < 0) {
+                d += d2;
+                y++;
+            }
+            else {
+                d += d1;
+            }
+            int temp_x = x, temp_y = y;
+            Restore(vertical, horizontal, diagonal, temp_x, temp_y);
+            if(abs(x)%10>=5){
+                drawPixel(temp_x, temp_y);
+            }
+
+        }
+    }
     void Translate(bool& vertical, bool& horizontal, bool& diagonal) {
         if (y_e - y_s < 0) {
             y_s = -y_s;

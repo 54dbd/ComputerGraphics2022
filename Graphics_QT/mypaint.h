@@ -14,6 +14,7 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QTextEdit>
+#include "newwindow.h"
 struct arcCenter{
     int x,y;
     int R;
@@ -38,6 +39,9 @@ private:
     QMenu *_Rmenu;//右键菜单
     int _openflag;//打开图片
     QPixmap _pixmap;//画布图片
+    QPen _pen;
+
+    newWindow *setBrushWindow = new newWindow();//设置窗口
 
 
 public:
@@ -51,7 +55,7 @@ public:
     QVector<int>  _shape;//图形类型集合，用于撤回功能
     QPoint _begin;//鼠标按下坐标、用于最后一个图形移动
 signals:
-
+    void sendPen(QPen*);
 public slots:
     void Lines();//铅笔画线
     void SavePic();//保存图片
@@ -62,6 +66,9 @@ public slots:
     void ArcCenter();
     //void SecondaryCircle();
     void OpenPic();//打开图片
+    void createBrushWindow();
+
+
 
 
 };

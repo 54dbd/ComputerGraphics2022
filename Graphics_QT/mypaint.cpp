@@ -4,6 +4,7 @@
 #include "Arc.h"
 #include <QDebug>
 #include <iostream>
+#include "newwindow.h"
 using namespace std;
 MyPaint::MyPaint(QWidget *parent) :
     QMainWindow(parent)
@@ -33,6 +34,10 @@ MyPaint::MyPaint(QWidget *parent) :
     _Rmenu->addAction(tr("保存  \tCtrl+S"), this, SLOT(SavePic()));//添加菜单动作
     _Rmenu->addAction(tr("退出  \tALT+F4"), this, SLOT(close()));//添加菜单动作
     _Rmenu->setStyleSheet("background-color:white");//设置背景色
+
+    //笔刷颜色
+    QAction *setBrush = new QAction(tr("&笔刷"), this);
+    tbar->addAction(setBrush);
 
     QAction *openAction = new QAction(tr("&打开"), this);//打开动作
     openAction->setIcon(QIcon(":/png/images/open.png"));//图标
@@ -79,6 +84,10 @@ MyPaint::MyPaint(QWidget *parent) :
     arcCenterAction->setShortcut(QKeySequence(tr("Ctrl+O")));//热键
     tbar->addAction(arcCenterAction);
 
+
+
+
+
     //连接信号与槽函数
     connect(linesAction, SIGNAL(triggered()), this, SLOT(Lines()));
     connect(rectAction, SIGNAL(triggered()), this, SLOT(Rects()));
@@ -89,7 +98,9 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(arcAction, SIGNAL(triggered()), this, SLOT(Arc()));
     connect(arcCenterAction, SIGNAL(triggered()), this, SLOT(ArcCenter()));
 
-
+    connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
+    //设置界面传参
+    connect(this,SIGNAL(sendPen(QPen*)),setBrushWindow,SLOT(getPen(QPen*)));
 }
 
 void MyPaint::paintEvent(QPaintEvent *)
@@ -101,6 +112,8 @@ void MyPaint::paintEvent(QPaintEvent *)
     }
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
+    //QPainter p=_pen;//将_pixmap作为画布
+    p.setPen(_pen);
     int i1=0,i2=0,i3=0,i4=0,i5=0,i6=0;//各种图形的索引
 
     for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
@@ -184,9 +197,20 @@ void MyPaint::paintEvent(QPaintEvent *)
             center = _arcCenter.at(i5);
             center.R = sqrt((x_s-center.x)*(x_s-center.x)+(y_s-center.y)*(y_s-center.y));
             //圆弧圆心
+
+            //使圆心不受笔刷大小影响
+            QPen temp = _pen;
+            _pen.setWidth(1);
+            p.setPen(_pen);
+
             Brush b(3,p);
             if(i5==_arcCenter.length()-1)//只保留最后一个
                 b.drawPixel(center.x,center.y);
+
+            //恢复笔刷大小
+            _pen = temp;
+            p.setPen(_pen);
+
             class Arc a(center.x,center.y,center.R, 1, p);
             a.DrawArc(start.x(),start.y(),end.x(),end.y());
 
@@ -433,6 +457,13 @@ void MyPaint::OpenPic()
     }
 }
 
+void MyPaint::createBrushWindow(){
+    emit sendPen(&_pen);
+    setBrushWindow->show();
+}
+
+
+
 void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
 {
     _Rmenu->exec(cursor().pos());//在光标位置弹出菜单
@@ -454,6 +485,10 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
                  case 3: _ellipse.pop_back();
                          break;
                  case 4: _line.pop_back();
+                         break;
+                 case 5: _arc.pop_back();
+                         break;
+                 case 6: _arcCenter.pop_back();
                          break;
              }
              _shape.pop_back();
