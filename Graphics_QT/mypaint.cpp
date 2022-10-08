@@ -113,7 +113,6 @@ void MyPaint::paintEvent(QPaintEvent *)
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
-    p.setPen(_pen);
     int i1=0,i2=0,i3=0,i4=0,i5=0,i6=0;//各种图形的索引
 
     for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
@@ -202,17 +201,17 @@ void MyPaint::paintEvent(QPaintEvent *)
             //圆弧圆心
 
             //使圆心不受笔刷大小影响
-            QPen temp = _pen;
-            _pen.setWidth(1);
-            p.setPen(_pen);
+            QPen temp = pen;
+            pen.setWidth(1);
+            p.setPen(pen);
 
             Brush b(3,p);
             if(i5==_arcCenter.length()-1)//只保留最后一个
                 b.drawPixel(center.x,center.y);
 
             //恢复笔刷大小
-            _pen = temp;
-            p.setPen(_pen);
+            pen = temp;
+            p.setPen(pen);
 
             class Arc a(center.x,center.y,center.R, 1, p);
             a.DrawArc(start.x(),start.y(),end.x(),end.y());
