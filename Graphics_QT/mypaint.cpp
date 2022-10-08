@@ -236,7 +236,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)//当鼠标左键按下
     {
-        if (_drawType >= 1 && _drawType <=6)
+        if (_drawType >= 1 && _drawType <=5)
             _brush.append(_pen);//将当前笔刷颜色加入到笔刷颜色列表中
         if(_drawType == 1)//线条(铅笔)
         {
