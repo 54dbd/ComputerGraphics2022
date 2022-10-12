@@ -12,7 +12,8 @@ HEADERS += \
     Circle.h \
     Line.h \
     mypaint.h \
-    newwindow.h
+    newwindow.h \
+    Polygon.h
 
 RESOURCES += \
     images.qrc

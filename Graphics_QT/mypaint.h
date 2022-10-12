@@ -19,6 +19,9 @@ struct arcCenter{
     int x,y;
     int R;
 };
+struct point {
+    int x,y;
+};
 class MyPaint : public QMainWindow
 {
     Q_OBJECT
@@ -52,6 +55,7 @@ public:
     QVector<QRect>  _arc;//圆弧集合
     QVector<arcCenter> _arcCenter;
     //QVector<QRect> _secondaryCircle;//椭圆集合
+    QVector<QVector<point>> _polygon;//多边形集合
     QVector<int>  _shape;//图形类型集合，用于撤回功能
     QVector<QPen> _brush;//笔刷集合
     QPoint _begin;//鼠标按下坐标、用于最后一个图形移动
@@ -65,6 +69,7 @@ public slots:
     void Line();//画直线
     void Arc();//画圆弧
     void ArcCenter();
+    void Polygon();//画多边形
     //void SecondaryCircle();
     void OpenPic();//打开图片
     void createBrushWindow();

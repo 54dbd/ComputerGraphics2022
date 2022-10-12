@@ -2,6 +2,7 @@
 #include "Line.h"
 #include "Circle.h"
 #include "Arc.h"
+#include "Polygon.h"
 #include <QDebug>
 #include <iostream>
 #include "newwindow.h"
@@ -84,6 +85,10 @@ MyPaint::MyPaint(QWidget *parent) :
     arcCenterAction->setShortcut(QKeySequence(tr("Ctrl+O")));//热键
     tbar->addAction(arcCenterAction);
 
+    QAction *polygonAction = new QAction(tr("&多边形"), this);//多边形动作
+    polygonAction->setShortcut(QKeySequence(tr("Ctrl+P")));//热键
+    tbar->addAction(polygonAction);
+
 
 
 
@@ -97,6 +102,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(openAction, SIGNAL(triggered()), this, SLOT(OpenPic()));
     connect(arcAction, SIGNAL(triggered()), this, SLOT(Arc()));
     connect(arcCenterAction, SIGNAL(triggered()), this, SLOT(ArcCenter()));
+    connect(polygonAction, SIGNAL(triggered()), this, SLOT(Polygon()));
 
     connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
     //设置界面传参
@@ -113,7 +119,7 @@ void MyPaint::paintEvent(QPaintEvent *)
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
-    int i1=0,i2=0,i3=0,i4=0,i5=0,i6=0;//各种图形的索引
+    int i1=0,i2=0,i3=0,i4=0,i5=0,i6=0, i7 = 0;//各种图形的索引
 
     for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
     {
@@ -224,6 +230,21 @@ void MyPaint::paintEvent(QPaintEvent *)
         else if(_shape.at(c) == 6){
 
         }
+        else if (_shape.at(c) == 7) { // 绘制多边形
+            const QVector<point>& polygon = _polygon.at(i7++);//取出一个多边形
+            class Polygon poly(1, p);
+            for(int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
+            {
+                int temp = (j + 1) % polygon.size();
+                int x_s = polygon.at(j).x;
+                int x_e = polygon.at(temp).x;
+                int y_s = polygon.at(j).y;
+                int y_e = polygon.at(temp).y;
+                Edge *e = new Edge(x_s, y_s, x_e, y_e);
+                poly.addEdgeToET(e);
+            }
+            poly.drawPolygon();
+        }
 
     }
     p.end();
@@ -235,7 +256,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)//当鼠标左键按下
     {
-        if (_drawType >= 1 && _drawType <=5)
+        if (_drawType >= 1 && _drawType <=5 || _drawType == 7)
             _brush.append(_pen);//将当前笔刷颜色加入到笔刷颜色列表中
         if(_drawType == 1)//线条(铅笔)
         {
@@ -302,6 +323,21 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             center.y=e->pos().y();
             _arcCenter.append(center);
             qDebug()<<"center at"<<center.x<<","<<center.y;
+        }
+        else if (_drawType == 7) { // 绘制多边形
+            _lpress = true;//左键按下标志
+            // 拿到最后一个多边形的数组
+            QVector<point>& lastPolygon = _polygon.last();
+            // 创建点
+            struct point a{};
+            a.x=e->pos().x();
+            a.y=e->pos().y();
+            qDebug() << "x:" << a.x << "y:" << a.y;
+            // 将新的点添加到多边形集合
+            lastPolygon.append(a);
+            if (lastPolygon.length() == 3) {
+                _shape.append(7);
+            }
         }
     }
 }
@@ -397,6 +433,10 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             _arcCenter.pop_back();
             _lpress = false;
         }
+        else if (_drawType == 7) {
+            _lpress = false;//标志左键释放
+            update();
+        }
     }
 }
 
@@ -431,6 +471,14 @@ void MyPaint::ArcCenter()
 {
     _drawType = 6;//圆弧圆心
 }
+
+void MyPaint::Polygon() {
+    // 添加新的一个数组，用于存储多边形的点
+    QVector<point> polygon;
+    _polygon.append(polygon);
+    _drawType = 7;
+}
+
 void MyPaint::SavePic()
 {
     //弹出文件保存对话框
