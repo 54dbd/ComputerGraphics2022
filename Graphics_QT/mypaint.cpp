@@ -552,4 +552,13 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
      {
         SavePic();//Ctrl+S保存
      }
+    else if (e->key() == Qt::Key_Escape) {
+        if (_drawType == 7){
+            update();
+            QVector<point> polygon;
+            _polygon.append(polygon);
+            _drawType = 7;
+        }
+    }
+
 }
