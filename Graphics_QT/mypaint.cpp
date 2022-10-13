@@ -11,6 +11,7 @@ MyPaint::MyPaint(QWidget *parent) :
     QMainWindow(parent)
 {
      _lpress = false;//初始鼠标左键未按下
+     _newPolygon = true;//代表多边形可以新建
      _drawType = 0;//初始为什么都不画
      _begin = pos();//拖拽的参考坐标，方便计算位移
      _openflag = 0;//初始不打开图片
@@ -256,7 +257,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)//当鼠标左键按下
     {
-        if (_drawType >= 1 && _drawType <=5 || _drawType == 7)
+        if (_drawType >= 1 && _drawType <=5)
             _brush.append(_pen);//将当前笔刷颜色加入到笔刷颜色列表中
         if(_drawType == 1)//线条(铅笔)
         {
@@ -326,6 +327,14 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
         }
         else if (_drawType == 7) { // 绘制多边形
             _lpress = true;//左键按下标志
+            if (_newPolygon == true) {
+                // 创建一个新的多边形
+                QVector<point> polygon;
+                _brush.append(_pen);
+                _polygon.append(polygon);
+                _shape.append(7);
+                _newPolygon = false;
+            }
             // 拿到最后一个多边形的数组
             QVector<point>& lastPolygon = _polygon.last();
             // 创建点
@@ -335,9 +344,6 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             qDebug() << "x:" << a.x << "y:" << a.y;
             // 将新的点添加到多边形集合
             lastPolygon.append(a);
-            if (lastPolygon.length() == 3) {
-                _shape.append(7);
-            }
         }
     }
 }
@@ -473,9 +479,6 @@ void MyPaint::ArcCenter()
 }
 
 void MyPaint::Polygon() {
-    // 添加新的一个数组，用于存储多边形的点
-    QVector<point> polygon;
-    _polygon.append(polygon);
     _drawType = 7;
 }
 
@@ -555,11 +558,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
     else if (e->key() == Qt::Key_Escape) {
         if (_drawType == 7){
             update();
-            // 创建一个新的多边形
-            QVector<point> polygon;
-            _brush.append(_pen);
-            _polygon.append(polygon);
-            _drawType = 7;
+            _newPolygon = true;
         }
     }
 

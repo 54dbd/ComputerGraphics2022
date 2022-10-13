@@ -38,6 +38,7 @@ public:
 private:
     int _lpress;//左键按下标志
     int _secCircle;//辅助圆标志
+    int _newPolygon;//新建多边形标志
     int _drawType;//描绘类型
     QMenu *_Rmenu;//右键菜单
     int _openflag;//打开图片
