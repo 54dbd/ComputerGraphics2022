@@ -555,7 +555,9 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
     else if (e->key() == Qt::Key_Escape) {
         if (_drawType == 7){
             update();
+            // 创建一个新的多边形
             QVector<point> polygon;
+            _brush.append(_pen);
             _polygon.append(polygon);
             _drawType = 7;
         }
