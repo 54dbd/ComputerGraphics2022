@@ -10,6 +10,7 @@ HEADERS += \
     Arc.h \
     Brush.h \
     Circle.h \
+    Fill.h \
     Line.h \
     mypaint.h \
     newwindow.h \

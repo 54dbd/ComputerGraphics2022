@@ -1,6 +1,5 @@
 #ifndef GRAPHICS_QT_POLYGON_H
 #define GRAPHICS_QT_POLYGON_H
-#define YMAX 400
 
 #include <iostream>
 #include <QPainter>
@@ -33,14 +32,22 @@ public:
 
 class Polygon : public Brush {
 private:
-    Edge *edgeTable[YMAX], *activeEdgeList;
-    COLORREF color;
+    Edge **edgeTable, *activeEdgeList;
+    int ymax;
+    //未使用
+    //COLORREF color;
 
 public:
-    Polygon(int W, QPainter &p) : Brush(W, p) {
-        for (int i = 0; i < YMAX; ++i) {
+    Polygon(int W, QPainter &p, int height) : Brush(W, p) {
+        ymax = height;
+        edgeTable = new Edge *[height];
+        for (int i = 0; i < height; ++i) {
             edgeTable[i] = nullptr;
         }
+    }
+
+    ~Polygon() {
+        delete[] edgeTable;
     }
 
     // 将边插入到ET中
@@ -154,7 +161,7 @@ public:
         // 初始化活动边表
         activeEdgeList = nullptr;
         // 从扫描线的最低点开始扫描
-        for (int y = 0; y < YMAX; y++) {
+        for (int y = 0; y < ymax; y++) {
             // 将ET表中的边插入到AEL中
             if (edgeTable[y] != nullptr) {
                 Edge *p = edgeTable[y];

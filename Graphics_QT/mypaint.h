@@ -27,7 +27,7 @@ class MyPaint : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit MyPaint(QWidget *parent = nullptr);
+    explicit MyPaint(QWidget *parent = 0);
 protected:
     void paintEvent(QPaintEvent *);//重写窗体重绘事件
     void mousePressEvent(QMouseEvent *);//重写鼠标按下事件
@@ -58,6 +58,9 @@ public:
     QVector<arcCenter> _arcCenter;
     //QVector<QRect> _secondaryCircle;//椭圆集合
     QVector<QVector<point>> _polygon;//多边形集合
+    QVector<QRect> _fill;
+
+
     vector<vector<point2d>> _bezierCurve; // 若干条曲线
     vector<point2d> _currentBezierCurve; // 当前控制点容器
     QVector<int>  _shape;//图形类型集合，用于撤回功能
@@ -72,13 +75,15 @@ public slots:
     void Ellipses();//画椭圆
     void Line();//画直线
     void Arc();//画圆弧
-    void ArcCenter();
+    void ArcCenter();//画圆弧圆心
     void Polygon();//画多边形
+    void Fill();//填充图形
     void Bezier(); // 画贝塞尔曲线
     //void SecondaryCircle();
     void OpenPic();//打开图片
 
     void createBrushWindow();
+
 
 
 
