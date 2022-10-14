@@ -3,9 +3,11 @@
 #include "Circle.h"
 #include "Arc.h"
 #include "Polygon.h"
+#include "Bezier.h"
 #include <QDebug>
 #include <iostream>
 #include "newwindow.h"
+
 using namespace std;
 MyPaint::MyPaint(QWidget *parent) :
     QMainWindow(parent)
@@ -90,6 +92,9 @@ MyPaint::MyPaint(QWidget *parent) :
     polygonAction->setShortcut(QKeySequence(tr("Ctrl+P")));//热键
     tbar->addAction(polygonAction);
 
+    QAction *bezierAction = new QAction(tr("&贝塞尔"), this);//贝塞尔
+    tbar->addAction(bezierAction);
+
 
 
 
@@ -104,6 +109,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(arcAction, SIGNAL(triggered()), this, SLOT(Arc()));
     connect(arcCenterAction, SIGNAL(triggered()), this, SLOT(ArcCenter()));
     connect(polygonAction, SIGNAL(triggered()), this, SLOT(Polygon()));
+    connect(bezierAction, SIGNAL(triggered()), this, SLOT(Bezier()));
 
     connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
     //设置界面传参
@@ -120,7 +126,7 @@ void MyPaint::paintEvent(QPaintEvent *)
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
-    int i1=0,i2=0,i3=0,i4=0,i5=0,i6=0, i7 = 0;//各种图形的索引
+    int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0;//各种图形的索引
 
     for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
     {
@@ -225,8 +231,6 @@ void MyPaint::paintEvent(QPaintEvent *)
 
             i5++;
 
-
-
         }
         else if(_shape.at(c) == 6){
 
@@ -246,6 +250,17 @@ void MyPaint::paintEvent(QPaintEvent *)
             }
             poly.drawPolygon();
         }
+        else if (_shape.at(c) == 8){ // bezier
+            const vector<point2d>& bezierCurve = _bezierCurve.at(i8++);
+
+            // 画控制点
+            for (auto i : bezierCurve) {
+                Circle C(i.x,i.y,4,1,p);
+                C.DrawCircle();
+            }
+            class Bezier b(1, p, bezierCurve);
+            b.drawBezier();
+        }
 
     }
     p.end();
@@ -257,7 +272,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)//当鼠标左键按下
     {
-        if (_drawType >= 1 && _drawType <=5)
+        if (_drawType >= 1 && _drawType <=5 || _drawType >= 7 && _drawType <=8)
             _brush.append(_pen);//将当前笔刷颜色加入到笔刷颜色列表中
         if(_drawType == 1)//线条(铅笔)
         {
@@ -345,6 +360,13 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             // 将新的点添加到多边形集合
             lastPolygon.append(a);
         }
+        else if (_drawType == 8){// beizer
+            _lpress = true;
+            point2d p(e->pos().x(), e->pos().y());
+            _currentBezierCurve.push_back(p);
+            qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
+        }
+
     }
 }
 
@@ -443,6 +465,9 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             _lpress = false;//标志左键释放
             update();
         }
+        else if (_drawType == 8){
+            _lpress = false;
+        }
     }
 }
 
@@ -481,6 +506,11 @@ void MyPaint::ArcCenter()
 void MyPaint::Polygon() {
     _drawType = 7;
 }
+
+void MyPaint::Bezier() {
+    _drawType = 8;
+}
+
 
 void MyPaint::SavePic()
 {
@@ -560,6 +590,13 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
             update();
             _newPolygon = true;
         }
+         if (_drawType == 8){ // bezier控制点绘制结束
+             _brush.append(_pen);
+             _shape.append(8);
+             _bezierCurve.push_back(_currentBezierCurve);
+             vector <point2d>().swap(_currentBezierCurve);
+             update();
+         }
     }
 
 }
