@@ -233,7 +233,7 @@ void MyPaint::paintEvent(QPaintEvent *)
         }
         else if (_shape.at(c) == 7) { // 绘制多边形
             const QVector<point>& polygon = _polygon.at(i7++);//取出一个多边形
-            class Polygon poly(1, p);
+            class Polygon poly(1, p, this->screen()->size().height());
             for(int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
             {
                 int temp = (j + 1) % polygon.size();
