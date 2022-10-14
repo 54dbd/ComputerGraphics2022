@@ -142,6 +142,9 @@ public:
             for (int i = int(e->x); i < int(n->x); i++) {
                 drawPixel(i, y);
             }
+            //描边
+//            drawPixel(int(e->x), y);
+//            drawPixel(int(n->x),y);
             // 更新x的值
             e->x += e->deltax;
             n->x += n->deltax;
