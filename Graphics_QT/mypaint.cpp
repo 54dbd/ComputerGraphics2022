@@ -88,7 +88,6 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(arcCenterAction);
 
     QAction *polygonAction = new QAction(tr("&多边形"), this);//多边形动作
-    polygonAction->setIcon(QIcon(":/png/images/polygon.png"));
     polygonAction->setShortcut(QKeySequence(tr("Ctrl+P")));//热键
     tbar->addAction(polygonAction);
 
