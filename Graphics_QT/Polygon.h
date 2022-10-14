@@ -34,7 +34,8 @@ class Polygon : public Brush {
 private:
     Edge **edgeTable, *activeEdgeList;
     int ymax;
-    COLORREF color;
+    //未使用
+    //COLORREF color;
 
 public:
     Polygon(int W, QPainter &p, int height) : Brush(W, p) {

@@ -87,7 +87,7 @@ public:
     }
 
     void DrawDashLIneCircle() {
-        int x, y, d, e,ct=0;
+        int x, y, e,ct=0;
         x = 0;
         y = r;
         e = 1 - r;
