@@ -246,15 +246,15 @@ void MyPaint::paintEvent(QPaintEvent *)
 
         }
         else if (_shape.at(c) == 7) { // 绘制多边形
-            const QVector<point>& polygon = _polygon.at(i7++);//取出一个多边形
+            const QVector<QPoint>& polygon = _polygon.at(i7++);//取出一个多边形
             class Polygon poly(1, p, this->screen()->size().height());
             for(int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
             {
                 int temp = (j + 1) % polygon.size();
-                int x_s = polygon.at(j).x;
-                int x_e = polygon.at(temp).x;
-                int y_s = polygon.at(j).y;
-                int y_e = polygon.at(temp).y;
+                int x_s = polygon.at(j).x();
+                int x_e = polygon.at(temp).x();
+                int y_s = polygon.at(j).y();
+                int y_e = polygon.at(temp).y();
                 Edge *e = new Edge(x_s, y_s, x_e, y_e);
                 poly.addEdgeToET(e);
             }
@@ -294,16 +294,16 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 
 
         }
-        if (_drawType == 7||_drawType == 10)//多边形
+        if (_drawType == 7)//多边形处理笔刷
         {
             qDebug()<<"drawing polygon";
-            qDebug()<<"shape size:"<<_shape.length();
-            qDebug()<<"brush size:"<<_brush.length();
-
             tempPen.setWidth(1);
-        } else if(_drawType == 9) { // Bezier
-            qDebug()<<"drawing bezier";
-        }else{
+        }
+        //迷
+//        else if(_drawType == 9) { // Bezier
+//            qDebug()<<"drawing bezier";
+//        }
+        else{
             _brush.append(tempPen);//将当前笔刷颜色加入到笔刷颜色列表中
 
         }
@@ -317,7 +317,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             lastLine.append(e->pos());//记录鼠标的坐标(新线条的开始坐标)
             _shape.append(1);
         }
-        else if(_drawType == 2||_drawType == 10)//矩形
+        else if(_drawType == 2||(_drawType == 10&& isInRect))//矩形
         {
             _lpress = true;//左键按下标志
             if(!_drag){
@@ -329,7 +329,6 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
                  _shape.append(2);
             }else{
                 //寻找当前是哪个图形
-
                 if(isInRect){
                     _begin = e->pos();
                     qDebug()<<"found the rect";
@@ -340,7 +339,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 
 
         }
-        else if(_drawType == 3||_drawType == 10)//椭圆
+        else if(_drawType == 3||(_drawType == 10&& isInEllipse))//椭圆
         {
             _lpress = true;//左键按下标志
             if(!_drag){
@@ -351,13 +350,13 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
                 lastEllipse.setTopLeft(e->pos());//记录鼠标的坐标(新椭圆的左上角坐标)
                  _shape.append(3);
             }else{
+                qDebug()<<"isInEllipse"<<isInEllipse;
                 if(isInEllipse){
                     _begin = e->pos();
+                    qDebug()<<"found the ellipse";
+
                 }
             }
-
-
-
         }
         else if(_drawType == 4)//直线
         {
@@ -397,26 +396,34 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
         }
         else if (_drawType == 7) { // 绘制多边形
             _lpress = true;//左键按下标志
-            if (_newPolygon == true) {
-                // 创建一个新的多边形
-                QVector<point> polygon;
-//                QPen tempPen(_pen);
-                //强制改变多边形画笔粗细
-                tempPen.setWidth(1);
-                _brush.append(tempPen);
-                _polygon.append(polygon);
-                _shape.append(7);
-                _newPolygon = false;
+            if(!_drag){
+                if (_newPolygon == true) {
+                    // 创建一个新的多边形
+                    QVector<QPoint> polygon;
+    //                QPen tempPen(_pen);
+                    //强制改变多边形画笔粗细
+                    tempPen.setWidth(1);
+                    _brush.append(tempPen);
+                    _polygon.append(polygon);
+                    _shape.append(7);
+                    _newPolygon = false;
+                }
+                // 拿到最后一个多边形的数组
+                QVector<QPoint>& lastPolygon = _polygon.last();
+                // 创建点
+                QPoint a;
+                a.setX(e->pos().x());
+                a.setY(e->pos().y());
+                qDebug() << "x:" << a.x() << "y:" << a.y();
+                // 将新的点添加到多边形集合
+                lastPolygon.append(a);
+            }else{
+                qDebug()<<"isInPolygon"<<isInPolygon;
+                if(isInPolygon){
+                    _begin = e->pos();
+                    qDebug()<<"found the polygon";
+                }
             }
-            // 拿到最后一个多边形的数组
-            QVector<point>& lastPolygon = _polygon.last();
-            // 创建点
-            struct point a{};
-            a.x=e->pos().x();
-            a.y=e->pos().y();
-            qDebug() << "x:" << a.x << "y:" << a.y;
-            // 将新的点添加到多边形集合
-            lastPolygon.append(a);
         }
         else if(_drawType == 8){
 
@@ -438,8 +445,10 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 void MyPaint::mouseMoveEvent(QMouseEvent *e)
 {
 
-    isInRect=0;
-    isInEllipse=0;
+    isInRect = 0;
+    isInEllipse = 0;
+    isInPolygon = 0;
+    int isArrow = 1;
     //定位鼠标指到的图形
     if(_rects.length()>0 ){
         for(int i=0;i<_rects.length();i++ ){
@@ -447,31 +456,51 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             {
                 nowRect = &_rects[i];
                 isInRect = 1;
-                qDebug()<<"now in rect["<<i<<"]";
+                isArrow = 0;
+//                qDebug()<<"now in rect["<<i<<"]";
             }
         }
-    }else if(_ellipse.length()>0){
+    }
+    if(_ellipse.length()>0){
         for(int i=0;i<_ellipse.length();i++ ){
             if(_ellipse.at(i).contains(e->pos()))
             {
                 nowEllipse =&_ellipse[i];
                 isInEllipse = 1;
-                qDebug()<<"now in ellipse["<<i<<"]";
-
+                isArrow = 0;
+//                qDebug()<<"now in ellipse["<<i<<"]";
             }
-
         }
     }
-    if(_drag && (isInRect||isInEllipse))
+    if(_polygon.length()>0){
+        for(int i=0;i<_polygon.length();i++ ){
+            if(polyContains(_polygon[i],e->pos()))
+            {
+                nowPolygon =&_polygon[i];
+                isInPolygon = 1;
+                isArrow = 0;
+//                qDebug()<<"now in polygon["<<i<<"]";
+            }
+        }
+    }
+
+    if(!isArrow && _drag)
     {
         setCursor(Qt::SizeAllCursor);//拖拽模式下，并且在拖拽图形中，将光标形状改为十字
     }else{
+        isInEllipse = 0;
+        isInPolygon = 0;
+        isInRect = 0;
         setCursor(Qt::ArrowCursor);//恢复原始光标形状
         //_drag = 0;
     }
 //    qDebug()<<"pressed:"<<_lpress;
     if(_lpress)
     {
+        qDebug()<<"isInEllipse"<<isInEllipse;
+        qDebug()<<"isInPolygon"<<isInPolygon;
+        qDebug()<<"isInRect"<<isInRect;
+
         if(_drawType == 1)//铅笔画线
         {
             if(_lines.size()<=0) return;//线条集合为空，不画线
@@ -479,46 +508,38 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             lastLine.append(e->pos());//记录鼠标的坐标(线条的轨迹)
             update();//触发窗体重绘
         }
-        else if(_drawType == 2||(_drawType==10&&_rects.length()>0))
+        else if(_drawType == 2||(_drawType==10&&isInRect))
         {
 //            qDebug()<<"drag:"<<_drag;
             if(_drag==0)
             {
                 QRect& lastRect = _rects.last();//拿到新矩形
                 lastRect.setBottomRight(e->pos());
-            }else{
-                //qDebug()<<"moving rect";
-                QRect& lastRect = _rects.last();//拿到新矩形
-                if(isInRect)
-                {
+            }else if(isInRect){
+                int dx = e->pos().x()-_begin.x();//横向移动x
+                int dy = e->pos().y()-_begin.y();//纵向移动y
+                qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
+                *nowRect = (*nowRect).adjusted(dx,dy,dx,dy);
+                _begin = e->pos();//刷新拖拽点起始坐标
 
-                    int dx = e->pos().x()-_begin.x();//横向移动x
-                    int dy = e->pos().y()-_begin.y();//纵向移动y
-                    qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
-                    *nowRect = (*nowRect).adjusted(dx,dy,dx,dy);
-                    _begin = e->pos();//刷新拖拽点起始坐标
-                }
             }
             update();//触发窗体重绘
 
         }
-        else if(_drawType == 3|| (_drawType==10&&_ellipse.length()>0))
+        else if(_drawType == 3|| (_drawType==10&&isInEllipse))
         {
             if(_drag == 0)//非拖拽
             {
                 QRect& lastEllipse = _ellipse.last();//拿到新椭圆
                 lastEllipse.setBottomRight(e->pos());//更新椭圆的右下角坐标)
 
-            }else{
-                if(isInEllipse)
-                {
-                    int dx = e->pos().x()-_begin.x();//横向移动x
-                    int dy = e->pos().y()-_begin.y();//纵向移动y
-                    qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
+            }else if(isInEllipse){
+                int dx = e->pos().x()-_begin.x();//横向移动x
+                int dy = e->pos().y()-_begin.y();//纵向移动y
+                qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
+                *nowEllipse = (*nowEllipse).adjusted(dx,dy,dx,dy);
+                _begin = e->pos();//刷新拖拽点起始坐标
 
-                    *nowEllipse = (*nowEllipse).adjusted(dx,dy,dx,dy);
-                    _begin = e->pos();//刷新拖拽点起始坐标
-                }
             }
             update();//触发窗体重绘
         }
@@ -537,6 +558,21 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         }
         else if(_drawType == 6)
         {
+            update();//触发窗体重绘
+        }
+        else if(_drawType == 7||(_drawType==10&&isInPolygon)){
+            if(isInPolygon){
+                int dx = e->pos().x()-_begin.x();//横向移动x
+                int dy = e->pos().y()-_begin.y();//纵向移动y
+                qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
+                for(int i=0;i<(*nowPolygon).length();i++){//让每个点都移动相同x,y
+                    (*nowPolygon)[i].setX((*nowPolygon)[i].x()+dx);
+                    (*nowPolygon)[i].setY((*nowPolygon)[i].y()+dy);
+                }
+                _begin = e->pos();//刷新拖拽点起始坐标
+
+            }
+            qDebug()<<"not in polygon";
             update();//触发窗体重绘
         }
     }
@@ -756,4 +792,34 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
          }
     }
 
+}
+
+int crossProduct(QPoint A, QPoint B, QPoint C){
+    return (B.x() - A.x()) * (C.y() - A.y()) - (C.x() - A.x()) * (B.y() - A.y());
+}
+
+//判断点Q是否在P1和P2的线段上
+bool OnSegment(QPoint P1,QPoint P2,QPoint Q)
+{
+    //前一个判断点Q在P1P2直线上 后一个判断在P1P2范围上
+    //QP1 X QP2
+    return crossProduct(Q,P1,P2)==0 && QPoint::dotProduct(P1-Q,P2-Q)<=0;
+}
+bool MyPaint::polyContains(QVector<QPoint> polygon, QPoint P){
+    bool flag = false; //相当于计数
+    QPoint P1,P2; //多边形一条边的两个顶点
+    for(int i=0,j=polygon.length()-1;i<polygon.length();j=i++)
+    {
+        //polygon[]是给出多边形的顶点
+        P1 = polygon[i];
+        P2 = polygon[j];
+        if(OnSegment(P1,P2,P)) return true; //点在多边形一条边上
+        //前一个判断min(P1.y,P2.y)<P.y<=max(P1.y,P2.y)
+        //这个判断代码我觉得写的很精妙 我网上看的 应该是大神模版
+        //后一个判断被测点 在 射线与边交点 的左边
+        if( ((P1.y()-P.y())>0 != (P2.y()-P.y())>0) && (P.x() - (P.y()-P1.y())*(P1.x()-P2.x())/(P1.y()-P2.y())-P1.x())<0)
+            flag = !flag;
+    }
+//    qDebug()<<"is in poly?"<<flag;
+    return flag;
 }

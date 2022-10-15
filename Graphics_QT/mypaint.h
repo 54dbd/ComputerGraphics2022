@@ -57,7 +57,7 @@ public:
     QVector<QRect>  _arc;//圆弧集合
     QVector<arcCenter> _arcCenter;
     //QVector<QRect> _secondaryCircle;//椭圆集合
-    QVector<QVector<point>> _polygon;//多边形集合
+    QVector<QVector<QPoint>> _polygon;//多边形集合
     QVector<QRect> _fill;
 
 
@@ -67,9 +67,9 @@ public:
     QVector<QPen> _brush;//笔刷集合
     QPoint _begin;//鼠标按下坐标、用于最后一个图形移动
     //初始化
-    QRect a;
-    QRect* nowRect,*nowEllipse;
-    int isInRect,isInEllipse;
+    QRect* nowRect, *nowEllipse;
+    QVector<QPoint>* nowPolygon;
+    int isInRect, isInEllipse,isInPolygon;
 
 signals:
     void sendPen(QPen*);
@@ -89,7 +89,7 @@ public slots:
     void startMove();//开始移动物体
     void createBrushWindow();
 
-
+    bool polyContains(QVector<QPoint> polygon, QPoint p);
 
 
 };

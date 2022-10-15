@@ -14,7 +14,8 @@ HEADERS += \
     Line.h \
     mypaint.h \
     newwindow.h \
-    Polygon.h
+    Polygon.h \
+    point.h
 
 RESOURCES += \
     images.qrc
