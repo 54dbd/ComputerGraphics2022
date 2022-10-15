@@ -253,35 +253,8 @@ void MyPaint::paintEvent(QPaintEvent *)
             poly.drawPolygon();
         }
         else if(_shape.at(c) == 8){
-            int x = _fill.at(i8).x();
-            int y = _fill.at(i8).y();
-            int xl,xr,i;
 
-            bool spanNeedFill;
-            class Fill f(pix,p);
-            QColor oldcolor = f.getPixelColor(x,y);
 
-            QPoint pt;
-            pt.setX(x);
-            pt.setY(y);
-            f.push(pt);
-            while(!f.isEmpty()){
-                pt = f.pop();
-                y=pt.y();
-                x=pt.x();
-
-                while(f.getPixelColor(x,y)==oldcolor){
-                    f.drawPixel(x,y);
-                    x++;
-                }
-                xr = x-1;
-                x = pt.x()-1;
-                while(f.getPixelColor(x,y)==oldcolor){
-                    f.drawPixel(x,y);
-
-                }
-
-            }
         }
         else if (_shape.at(c) == 9){ // bezier
             const vector<point2d>& bezierCurve = _bezierCurve.at(i9++);
@@ -410,12 +383,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             lastPolygon.append(a);
         }
         else if(_drawType == 8){
-            _lpress = true;//左键按下标志
-            QRect rect;//鼠标按下，直线一端开始
-            _fill.append(rect);//将新直线添加到直线集合
-            QRect& seed = _fill.last();//拿到新直线
-            seed.setTopLeft(e->pos());//记录鼠标的坐标(新直线开始一端坐标)
-            _shape.append(8);
+
 
         }
         else if (_drawType == 9){// beizer
