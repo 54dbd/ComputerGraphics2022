@@ -499,9 +499,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
                     _begin = e->pos();//刷新拖拽点起始坐标
                 }
             }
-
-
-            }
             update();//触发窗体重绘
 
         }
@@ -542,7 +539,8 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         {
             update();//触发窗体重绘
         }
- }
+    }
+}
 
 
 void MyPaint::mouseReleaseEvent(QMouseEvent *e)
