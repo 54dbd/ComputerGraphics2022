@@ -313,6 +313,8 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             qDebug()<<"brush size:"<<_brush.length();
 
            tempPen.setWidth(1);
+        } else if(_drawType == 9) { // Bezier
+            qDebug()<<"drawing bezier";
         }else{
             _brush.append(tempPen);//将当前笔刷颜色加入到笔刷颜色列表中
 
