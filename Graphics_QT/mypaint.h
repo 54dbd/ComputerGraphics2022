@@ -45,7 +45,7 @@ private:
     int _openflag;//打开图片
     QPixmap _pixmap;//画布图片
     QPen _pen;
-
+    int _drag;//拖拽标志
     newWindow *setBrushWindow = new newWindow();//设置窗口
 
 
@@ -66,6 +66,11 @@ public:
     QVector<int>  _shape;//图形类型集合，用于撤回功能
     QVector<QPen> _brush;//笔刷集合
     QPoint _begin;//鼠标按下坐标、用于最后一个图形移动
+    //初始化
+    QRect a;
+    QRect* nowRect,*nowEllipse;
+    int isInRect,isInEllipse;
+
 signals:
     void sendPen(QPen*);
 public slots:
@@ -81,7 +86,7 @@ public slots:
     void Bezier(); // 画贝塞尔曲线
     //void SecondaryCircle();
     void OpenPic();//打开图片
-
+    void startMove();//开始移动物体
     void createBrushWindow();
 
 

@@ -7,6 +7,7 @@
 #include "Fill.h"
 #include <QDebug>
 #include <iostream>
+#include <QRect>
 #include "newwindow.h"
 using namespace std;
 MyPaint::MyPaint(QWidget *parent) :
@@ -14,9 +15,12 @@ MyPaint::MyPaint(QWidget *parent) :
 {
      _lpress = false;//初始鼠标左键未按下
      _newPolygon = true;//代表多边形可以新建
+     _drag = 0;//默认非拖拽模式
      _drawType = 0;//初始为什么都不画
      _begin = pos();//拖拽的参考坐标，方便计算位移
      _openflag = 0;//初始不打开图片
+
+
      this->setGeometry(350,200,600,400);//设置窗体大小、位置
      setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
      //设置背景黑色
@@ -57,6 +61,9 @@ MyPaint::MyPaint(QWidget *parent) :
     saveasAction->setIcon(QIcon(":/png/images/saveas.png"));//图标
     saveasAction->setShortcut(QKeySequence(tr("Ctrl+ALT+S")));//热键
     tbar->addAction(saveasAction);//添加到工具栏
+
+    QAction *moveAction = new QAction(tr("&移动"), this);//直线动作
+    tbar->addAction(moveAction);//添加到工具栏
 
     QAction *lineAction = new QAction(tr("&直线"), this);//直线动作
     lineAction->setIcon(QIcon(":/png/images/line.png"));//图标
@@ -112,6 +119,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(bezierAction, SIGNAL(triggered()), this, SLOT(Bezier()));
 
     connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
+    connect(moveAction,SIGNAL(triggered()),this,SLOT(startMove()));
     //设置界面传参
     connect(this,SIGNAL(sendPen(QPen*)),setBrushWindow,SLOT(getPen(QPen*)));
 }
@@ -278,14 +286,21 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 {
     if(e->button() == Qt::LeftButton)//当鼠标左键按下
     {
+        _drag = 0;
         QPen tempPen(_pen);
-        if (_drawType == 7)//多边形
+        if(_drawType == 10){//移动
+            _drag = 1;
+            qDebug()<<"drag:"<<_drag;
+
+
+        }
+        if (_drawType == 7||_drawType == 10)//多边形
         {
             qDebug()<<"drawing polygon";
             qDebug()<<"shape size:"<<_shape.length();
             qDebug()<<"brush size:"<<_brush.length();
 
-           tempPen.setWidth(1);
+            tempPen.setWidth(1);
         } else if(_drawType == 9) { // Bezier
             qDebug()<<"drawing bezier";
         }else{
@@ -302,24 +317,45 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             lastLine.append(e->pos());//记录鼠标的坐标(新线条的开始坐标)
             _shape.append(1);
         }
-        else if(_drawType == 2)//矩形
+        else if(_drawType == 2||_drawType == 10)//矩形
         {
             _lpress = true;//左键按下标志
-            QRect rect;//鼠标按下，矩形开始
-            _rects.append(rect);//将新矩形添加到矩形集合
-            QRect& lastRect = _rects.last();//拿到新矩形
-            lastRect.setTopLeft(e->pos());//记录鼠标的坐标(新矩形的左上角坐标)
-             _shape.append(2);
+            if(!_drag){
+                qDebug()<<"new rect";
+                QRect rect;//鼠标按下，矩形开始
+                _rects.append(rect);//将新矩形添加到矩形集合
+                QRect& lastRect = _rects.last();//拿到新矩形
+                lastRect.setTopLeft(e->pos());//记录鼠标的坐标(新矩形的左上角坐标)
+                 _shape.append(2);
+            }else{
+                //寻找当前是哪个图形
+
+                if(isInRect){
+                    _begin = e->pos();
+                    qDebug()<<"found the rect";
+                }
+
+            }
+
+
 
         }
-        else if(_drawType == 3)//椭圆
+        else if(_drawType == 3||_drawType == 10)//椭圆
         {
             _lpress = true;//左键按下标志
-            QRect rect;//鼠标按下，椭圆开始
-            _ellipse.append(rect);//将新椭圆添加到椭圆集合
-            QRect& lastEllipse = _ellipse.last();//拿到新椭圆
-            lastEllipse.setTopLeft(e->pos());//记录鼠标的坐标(新椭圆的左上角坐标)
-             _shape.append(3);
+            if(!_drag){
+                QRect rect;//鼠标按下，椭圆开始
+                qDebug()<<"new ellipse";
+                _ellipse.append(rect);//将新椭圆添加到椭圆集合
+                QRect& lastEllipse = _ellipse.last();//拿到新椭圆
+                lastEllipse.setTopLeft(e->pos());//记录鼠标的坐标(新椭圆的左上角坐标)
+                 _shape.append(3);
+            }else{
+                if(isInEllipse){
+                    _begin = e->pos();
+                }
+            }
+
 
 
         }
@@ -393,6 +429,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
         }
 
+
     }
 }
 
@@ -401,7 +438,38 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 void MyPaint::mouseMoveEvent(QMouseEvent *e)
 {
 
-    setCursor(Qt::ArrowCursor);//恢复原始光标形状
+    isInRect=0;
+    isInEllipse=0;
+    //定位鼠标指到的图形
+    if(_rects.length()>0 ){
+        for(int i=0;i<_rects.length();i++ ){
+            if(_rects.at(i).contains(e->pos()))
+            {
+                nowRect = &_rects[i];
+                isInRect = 1;
+                qDebug()<<"now in rect["<<i<<"]";
+            }
+        }
+    }else if(_ellipse.length()>0){
+        for(int i=0;i<_ellipse.length();i++ ){
+            if(_ellipse.at(i).contains(e->pos()))
+            {
+                nowEllipse =&_ellipse[i];
+                isInEllipse = 1;
+                qDebug()<<"now in ellipse["<<i<<"]";
+
+            }
+
+        }
+    }
+    if(_drag && (isInRect||isInEllipse))
+    {
+        setCursor(Qt::SizeAllCursor);//拖拽模式下，并且在拖拽图形中，将光标形状改为十字
+    }else{
+        setCursor(Qt::ArrowCursor);//恢复原始光标形状
+        //_drag = 0;
+    }
+//    qDebug()<<"pressed:"<<_lpress;
     if(_lpress)
     {
         if(_drawType == 1)//铅笔画线
@@ -411,27 +479,60 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             lastLine.append(e->pos());//记录鼠标的坐标(线条的轨迹)
             update();//触发窗体重绘
         }
-        else if(_drawType == 2)
+        else if(_drawType == 2||(_drawType==10&&_rects.length()>0))
         {
-            QRect& lastRect = _rects.last();//拿到新矩形
-            lastRect.setBottomRight(e->pos());//更新矩形的右下角坐标
+//            qDebug()<<"drag:"<<_drag;
+            if(_drag==0)
+            {
+                QRect& lastRect = _rects.last();//拿到新矩形
+                lastRect.setBottomRight(e->pos());
+            }else{
+                //qDebug()<<"moving rect";
+                QRect& lastRect = _rects.last();//拿到新矩形
+                if(isInRect)
+                {
+
+                    int dx = e->pos().x()-_begin.x();//横向移动x
+                    int dy = e->pos().y()-_begin.y();//纵向移动y
+                    qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
+                    *nowRect = (*nowRect).adjusted(dx,dy,dx,dy);
+                    _begin = e->pos();//刷新拖拽点起始坐标
+                }
+            }
+
+
+            }
             update();//触发窗体重绘
 
         }
-        else if(_drawType == 3)
+        else if(_drawType == 3|| (_drawType==10&&_ellipse.length()>0))
         {
+            if(_drag == 0)//非拖拽
+            {
+                QRect& lastEllipse = _ellipse.last();//拿到新椭圆
+                lastEllipse.setBottomRight(e->pos());//更新椭圆的右下角坐标)
 
-            QRect& lastEllipse = _ellipse.last();//拿到新椭圆
-            lastEllipse.setBottomRight(e->pos());//更新椭圆的右下角坐标)
+            }else{
+                if(isInEllipse)
+                {
+                    int dx = e->pos().x()-_begin.x();//横向移动x
+                    int dy = e->pos().y()-_begin.y();//纵向移动y
+                    qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
+
+                    *nowEllipse = (*nowEllipse).adjusted(dx,dy,dx,dy);
+                    _begin = e->pos();//刷新拖拽点起始坐标
+                }
+            }
             update();//触发窗体重绘
         }
-        else if(_drawType == 4)
+        else if(_drawType == 4 && _line.length() > 0)
         {
             QRect& lastLine = _line.last();//拿到新直线
             lastLine.setBottomRight(e->pos());//更新直线另一端)
+            qDebug()<<"update line";
             update();//触发窗体重绘
         }
-        else if(_drawType == 5)
+        else if(_drawType == 5 && _arc.length() > 0)
         {
             QRect& lastArc = _arc.last();//拿到新圆弧
             lastArc.setBottomRight(e->pos());//更新圆弧的右下角坐标)
@@ -441,10 +542,8 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         {
             update();//触发窗体重绘
         }
-    }
+ }
 
-
-}
 
 void MyPaint::mouseReleaseEvent(QMouseEvent *e)
 {
@@ -459,20 +558,30 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
         else if(_drawType == 2)
         {
             QRect& lastRect = _rects.last();//拿到新矩形
-            lastRect.setBottomRight(e->pos());//不是拖拽时，更新矩形的右下角坐标)
+            if(!_drag)
+            {
+                lastRect.setBottomRight(e->pos());//不是拖拽时，更新矩形的右下角坐标)
+            }
+
             _lpress = false;
 
         }
         else if(_drawType == 3)
         {
             QRect& lastEllipse = _ellipse.last();//拿到新椭圆
-            lastEllipse.setBottomRight(e->pos());//不是拖拽时，更新椭圆的右下角坐标)
+            if(!_drag)
+            {
+                lastEllipse.setBottomRight(e->pos());//不是拖拽时，更新椭圆的右下角坐标)
+            }
             _lpress = false;
         }
         else if(_drawType == 4)
         {
-            QRect& lastLine = _line.last();//拿到新矩形
-            lastLine.setBottomRight(e->pos());//更新矩形的右下角坐标)
+            QRect& lastLine = _line.last();//拿到新直线
+            if(!_drag)
+            {
+                lastLine.setBottomRight(e->pos());//更新矩形的右下角坐标)
+            }
             _lpress = false;
         }
         else if(_drawType == 5)
@@ -498,53 +607,69 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
         else if (_drawType == 9){
             _lpress = false;
         }
+        else if (_drawType == 10){
+            _lpress = false;
+        }
     }
 }
 
 void MyPaint::Lines()
 {
     _drawType = 1;//铅笔
+    _drag = 0;
 }
 
 void MyPaint::Line()
 {
     _drawType = 4;//直线
+    _drag = 0;
 }
 
 void MyPaint::Rects()
 {
     _drawType = 2;//矩形
+    _drag = 0;
 
 }
 
 void MyPaint::Ellipses()
 {
     _drawType = 3;//椭圆
+    _drag = 0;
 }
 
 void MyPaint::Arc()
 {
     _drawType = 5;//圆弧
+    _drag = 0;
 }
 
 
 void MyPaint::ArcCenter()
 {
     _drawType = 6;//圆弧圆心
+    _drag = 0;
 }
 
 void MyPaint::Polygon() {
     _drawType = 7;
+    _drag = 0;
 }
 
 void MyPaint::Fill(){
     _drawType = 8;
+    _drag = 0;
+
 }
 
 void MyPaint::Bezier() {
     _drawType = 9;
+    _drag = 0;
 }
-
+void MyPaint::startMove(){
+    _drawType = 10;
+    _drag = 1;
+}
 
 void MyPaint::SavePic()
 {
@@ -611,7 +736,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
                          break;
              }
              _shape.pop_back();
-             //_drag = 0;//设置为非拖拽模式
+             _drag = 0;//设置为非拖拽模式
              update();
          }
      }
