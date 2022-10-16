@@ -299,10 +299,10 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             qDebug()<<"drawing polygon";
             tempPen.setWidth(1);
         }
-        //迷
-//        else if(_drawType == 9) { // Bezier
-//            qDebug()<<"drawing bezier";
-//        }
+        // 防止Bezier每新建一个点，就会添加一个笔刷，造成笔刷数组中存在大量的多余笔刷，导致修改颜色失效
+        else if(_drawType == 9) { // Bezier
+            qDebug()<<"drawing bezier";
+        }
         else{
             _brush.append(tempPen);//将当前笔刷颜色加入到笔刷颜色列表中
 
