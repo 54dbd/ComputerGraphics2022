@@ -284,8 +284,12 @@ void MyPaint::paintEvent(QPaintEvent *)
 
 void MyPaint::mousePressEvent(QMouseEvent *e)
 {
+
     if(e->button() == Qt::LeftButton)//当鼠标左键按下
     {
+        qDebug()<<"_brushSize:"<<_brush.length();
+        qDebug()<<"_shapeSize:"<<_shape.length();
+
         _drag = 0;
         QPen tempPen(_pen);
         if(_drawType == 10){//移动
@@ -298,9 +302,10 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             qDebug()<<"drawing polygon";
             tempPen.setWidth(1);
         }
-        // 防止Bezier每新建一个点，就会添加一个笔刷，造成笔刷数组中存在大量的多余笔刷，导致修改颜色失效
-        else if(_drawType == 9) { // Bezier
+        // 防止Bezier或者移动操作 每新建一个点，就会添加一个笔刷，造成笔刷数组中存在大量的多余笔刷，导致修改颜色失效
+        else if(_drawType == 0 || _drawType == 9 || _drawType == 10) { // Bezier & move
             qDebug()<<"drawing bezier";
+            qDebug()<<"moving shape";
         }
         else{
             _brush.append(tempPen);//将当前笔刷颜色加入到笔刷颜色列表中
