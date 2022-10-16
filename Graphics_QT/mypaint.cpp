@@ -292,7 +292,6 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             _drag = 1;
             qDebug()<<"drag:"<<_drag;
 
-
         }
         if (_drawType == 7)//多边形处理笔刷
         {
@@ -394,7 +393,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             _arcCenter.append(center);
             qDebug()<<"center at"<<center.x<<","<<center.y;
         }
-        else if (_drawType == 7) { // 绘制多边形
+        else if (_drawType == 7||(_drawType == 10&& isInPolygon)) { // 绘制多边形
             _lpress = true;//左键按下标志
             if(!_drag){
                 if (_newPolygon == true) {
@@ -495,12 +494,13 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         //_drag = 0;
     }
 //    qDebug()<<"pressed:"<<_lpress;
+
     if(_lpress)
     {
         qDebug()<<"isInEllipse"<<isInEllipse;
         qDebug()<<"isInPolygon"<<isInPolygon;
         qDebug()<<"isInRect"<<isInRect;
-
+        qDebug()<<"[move] _drawtype:"<<_drawType;
         if(_drawType == 1)//铅笔画线
         {
             if(_lines.size()<=0) return;//线条集合为空，不画线
@@ -568,6 +568,8 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
                 for(int i=0;i<(*nowPolygon).length();i++){//让每个点都移动相同x,y
                     (*nowPolygon)[i].setX((*nowPolygon)[i].x()+dx);
                     (*nowPolygon)[i].setY((*nowPolygon)[i].y()+dy);
+//                    (*nowPolygon)[i].setX(10);
+//                    (*nowPolygon)[i].setY(10);
                 }
                 _begin = e->pos();//刷新拖拽点起始坐标
 
@@ -631,7 +633,8 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             _lpress = false;
         }
         else if (_drawType == 7) {
-            _lpress = false;//标志左键释放
+            //多边形创建过程中会多次松开
+//            _lpress = false;//标志左键释放
             update();
         }
         else if(_drawType == 8){
@@ -781,6 +784,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
     else if (e->key() == Qt::Key_Escape) {
         if (_drawType == 7){
             update();
+            _lpress = false;
             _newPolygon = true;
         }
          if (_drawType == 9){ // bezier控制点绘制结束
