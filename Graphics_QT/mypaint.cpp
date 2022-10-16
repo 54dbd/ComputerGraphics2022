@@ -177,7 +177,7 @@ void MyPaint::paintEvent(QPaintEvent *)
         }
         else if(_shape.at(c) == 3)//正圆
         {
-            QPoint center,edge;
+            QPoint center;
             center = _ellipse.at(i3).center();
             int R = abs(center.y() - _ellipse.at(i3).bottom());
 
@@ -212,9 +212,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             start = _arc.at(i5).topLeft();
             end = _arc.at(i5).bottomRight();
             int x_s = start.x();
-            int x_e = end.x();
             int y_s = start.y();
-            int y_e = end.y();
 
 
             center = _arcCenter.at(i5);
