@@ -58,7 +58,7 @@ public:
     QVector<arcCenter> _arcCenter;
     //QVector<QRect> _secondaryCircle;//椭圆集合
     QVector<QVector<QPoint>> _polygon;//多边形集合
-    QVector<QRect> _fill;
+    QVector<QPoint> _fill;
 
 
     vector<vector<point2d>> _bezierCurve; // 若干条曲线
@@ -87,6 +87,8 @@ public slots:
     //void SecondaryCircle();
     void OpenPic();//打开图片
     void startMove();//开始移动物体
+    void startFill();
+
     void createBrushWindow();
 
     bool polyContains(QVector<QPoint> polygon, QPoint p);

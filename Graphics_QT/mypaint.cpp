@@ -20,7 +20,6 @@ MyPaint::MyPaint(QWidget *parent) :
      _begin = pos();//拖拽的参考坐标，方便计算位移
      _openflag = 0;//初始不打开图片
 
-
      this->setGeometry(350,200,600,400);//设置窗体大小、位置
      setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
      //设置背景黑色
@@ -62,8 +61,11 @@ MyPaint::MyPaint(QWidget *parent) :
     saveasAction->setShortcut(QKeySequence(tr("Ctrl+ALT+S")));//热键
     tbar->addAction(saveasAction);//添加到工具栏
 
-    QAction *moveAction = new QAction(tr("&移动"), this);//直线动作
+    QAction *moveAction = new QAction(tr("&移动"), this);//移动
     tbar->addAction(moveAction);//添加到工具栏
+
+    QAction *fillAction = new QAction(tr("&填充"), this);//填充
+    tbar->addAction(fillAction);//添加到工具栏
 
     QAction *lineAction = new QAction(tr("&直线"), this);//直线动作
     lineAction->setIcon(QIcon(":/png/images/line.png"));//图标
@@ -120,6 +122,8 @@ MyPaint::MyPaint(QWidget *parent) :
 
     connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
     connect(moveAction,SIGNAL(triggered()),this,SLOT(startMove()));
+    connect(fillAction,SIGNAL(triggered()),this,SLOT(startFill()));
+
     //设置界面传参
     connect(this,SIGNAL(sendPen(QPen*)),setBrushWindow,SLOT(getPen(QPen*)));
 }
@@ -134,7 +138,7 @@ void MyPaint::paintEvent(QPaintEvent *)
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
-    int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0;//各种图形的索引
+    int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11=0;//各种图形的索引
 
     for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
     {
@@ -172,6 +176,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             l2.MidPoint();
             l3.MidPoint();
             l4.MidPoint();
+
 
             i2++;
         }
@@ -273,6 +278,26 @@ void MyPaint::paintEvent(QPaintEvent *)
             class Bezier b(1, p, bezierCurve);
             b.drawBezier();
         }
+        else if(_shape.at(c) == 11){//fill
+            class Fill f(pix,p,pen);
+//            f.fillColor(Qt::blue);
+            //f.fillRect(*nowRect);
+            //DEBUG: test rect for all the shape
+            //
+//            QPoint p;
+            f.fillShape(_fill.at(i11),Qt::blue);
+            i11++;
+//            f.restoreColor();
+//            if(isInRect){
+//                //f.fillRect(*nowRect);
+//                //f.restoreColor();
+//            }else if (isInEllipse){
+
+//            }else if(isInPolygon){
+
+//            }
+
+        }
 
     }
     p.end();
@@ -322,6 +347,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
         else if(_drawType == 2||(_drawType == 10&& isInRect))//矩形
         {
             _lpress = true;//左键按下标志
+
             if(!_drag){
                 qDebug()<<"new rect";
                 QRect rect;//鼠标按下，矩形开始
@@ -335,15 +361,12 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
                     _begin = e->pos();
                     qDebug()<<"found the rect";
                 }
-
             }
-
-
-
         }
         else if(_drawType == 3||(_drawType == 10&& isInEllipse))//椭圆
         {
             _lpress = true;//左键按下标志
+
             if(!_drag){
                 QRect rect;//鼠标按下，椭圆开始
                 qDebug()<<"new ellipse";
@@ -359,6 +382,8 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 
                 }
             }
+
+
         }
         else if(_drawType == 4)//直线
         {
@@ -436,6 +461,12 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             point2d p(e->pos().x(), e->pos().y());
             _currentBezierCurve.push_back(p);
             qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
+        }
+        else if(_drawType == 11){//fill
+            QPoint pos = e->pos();
+            _fill.append(pos);
+            qDebug()<<"start fill at"<<pos.x()<<", "<<pos.y();
+            _shape.append(11);
         }
 
 
@@ -650,6 +681,9 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
         else if (_drawType == 10){
             _lpress = false;
         }
+        else if (_drawType == 11){
+            _lpress = false;
+        }
     }
 }
 
@@ -709,6 +743,11 @@ void MyPaint::Bezier() {
 void MyPaint::startMove(){
     _drawType = 10;
     _drag = 1;
+}
+
+void MyPaint::startFill(){
+    _drawType = 11;
+    _drag = 0;
 }
 
 void MyPaint::SavePic()
