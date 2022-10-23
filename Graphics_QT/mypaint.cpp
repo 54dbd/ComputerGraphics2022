@@ -11,6 +11,7 @@
 #include "newwindow.h"
 using namespace std;
 vector<vector<pointData>> MAP;
+
 MyPaint::MyPaint(QWidget *parent) :
     QMainWindow(parent)
 {
@@ -635,27 +636,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             lastLine.append(e->pos());//记录鼠标的坐标(线条的轨迹)
             update();//触发窗体重绘
         }
-        else if(_drawType == 2||(_drawType==10&&isInRect))
+        else if(_drawType == 2)
         {
 //            qDebug()<<"drag:"<<_drag;
-            if(_drag==0)
-            {
-                QRect& lastRect = _rects.last();//拿到新矩形
-                lastRect.setBottomRight(e->pos());
-            }else if(isInRect){
-                int dx = e->pos().x()-_begin.x();//横向移动x
-                int dy = e->pos().y()-_begin.y();//纵向移动y
-                qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
-                *nowRect = (*nowRect).adjusted(dx,dy,dx,dy);
-                _begin = e->pos();//刷新拖拽点起始坐标
-                if (isInFill) {
-                    dx = e->pos().x()-nowFill->x();
-                    dy = e->pos().y()-nowFill->y();
-                    nowFill->setX(nowFill->x()+dx);
-                    nowFill->setY(nowFill->y()+dy);
-                }
+            QRect& lastRect = _rects.last();//拿到新矩形
+            lastRect.setBottomRight(e->pos());
 
-            }
             update();//触发窗体重绘
 
         }
@@ -700,26 +686,7 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         {
             update();//触发窗体重绘
         }
-        else if(_drawType == 7||(_drawType==10&&isInPolygon)){
-            if(isInPolygon){
-                int dx = e->pos().x()-_begin.x();//横向移动x
-                int dy = e->pos().y()-_begin.y();//纵向移动y
-                qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
-                for(int i=0;i<(*nowPolygon).length();i++){//让每个点都移动相同x,y
-                    (*nowPolygon)[i].setX((*nowPolygon)[i].x()+dx);
-                    (*nowPolygon)[i].setY((*nowPolygon)[i].y()+dy);
-//                    (*nowPolygon)[i].setX(10);
-//                    (*nowPolygon)[i].setY(10);
-                }
-                _begin = e->pos();//刷新拖拽点起始坐标
-                if (isInFill) {
-                    dx = e->pos().x()-nowFill->x();
-                    dy = e->pos().y()-nowFill->y();
-                    nowFill->setX(nowFill->x()+dx);
-                    nowFill->setY(nowFill->y()+dy);
-                }
-
-            }
+        else if(_drawType == 7){
             qDebug()<<"not in polygon";
             update();//触发窗体重绘
         }
@@ -1031,15 +998,18 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
             update();
             break;*/
         case MOVE:
-            if(isInTagRect) {
-                qDebug() << "isinMove";
-                moveVector = e->pos() - _begin;    //计算移动向量，终点减起点
-                trM.setMoveTrans(moveVector);
-                nowRect->setTopLeft(trM * nowRect->topLeft());
-                nowRect->setBottomRight(trM * nowRect->bottomRight());
-                _begin = e->pos();
-                update();
+            qDebug() << "isinMove";
+            moveVector = e->pos() - _begin;    //计算移动向量，终点减起点
+            trM.setMoveTrans(moveVector);
+            nowRect->setTopLeft(trM * nowRect->topLeft());
+            nowRect->setBottomRight(trM * nowRect->bottomRight());
+            if(isInFill){
+                trM.setMoveTrans(nowRect->center() - *nowFill);
+                (*nowFill) = trM*(*nowFill);
             }
+            _begin = e->pos();
+            update();
+
             break;
         case ZOOM:
             if(isInTagRect){
@@ -1050,7 +1020,10 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
                 trM.setZoomTrans(zoomPropor_X,zoomPropor_Y); //生成缩放变换矩阵
                 nowRect->setTopLeft(trM*nowRect->topLeft());
                 nowRect->setBottomRight(trM*nowRect->bottomRight());  //对目标矩形的两个点同步变换
-
+                if(isInFill){
+                    trM.setMoveTrans(nowRect->center() - *nowFill);
+                    (*nowFill) = trM*(*nowFill);
+                }
                 trM.setMoveTrans(nowRect->bottomRight()-transRectTag->center()); //让标志矩形中心点跟随移动到新点
                 transRectTag->setTopLeft(trM*(transRectTag->topLeft()));
                 transRectTag->setBottomRight(trM*(transRectTag->bottomRight()));
@@ -1087,6 +1060,10 @@ void MyPaint::polygonTrans(QMouseEvent *e){
             for (int i = 0; i < nowPolygon->size(); ++i) {
                 (*nowPolygon)[i] = trM*((*nowPolygon)[i]);
             }
+            if(isInFill){
+                trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
+                (*nowFill) = trM*(*nowFill);
+            }
             _begin = e->pos();
             update();
             break;
@@ -1101,6 +1078,10 @@ void MyPaint::polygonTrans(QMouseEvent *e){
                 trM.setZoomTrans(zoomPropor_X, zoomPropor_Y); //生成缩放变换矩阵
                 for (int i = 0; i < nowPolygon->size(); ++i) {
                     (*nowPolygon)[i] = trM * (*nowPolygon)[i];
+                }
+                if(isInFill){
+                    trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
+                    (*nowFill) = trM*(*nowFill);
                 }
                 trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center()); //让标志矩形中心点跟随移动到新点
                 transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
