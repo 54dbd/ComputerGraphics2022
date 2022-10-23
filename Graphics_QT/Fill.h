@@ -78,7 +78,7 @@ public:
             pt = pop();
             y = pt.y();
             x = pt.x();
-            while(MAP[x][y].getColor()==oldColor){
+            while(MAP[x][y].getColor()==oldColor && x<599){
 //                qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
 //                qDebug()<<"[fillShape]old color is:"<<oldColor;
                 drawPixel(x,y);
@@ -88,7 +88,7 @@ public:
 //            qDebug()<<"[fillShape]old color is:"<<oldColor;
             xr = x -1;
             x = pt.x() - 1;
-            while(MAP[x][y].getColor()==oldColor){
+            while(MAP[x][y].getColor()==oldColor && x>0){
                 drawPixel(x,y);
                 x--;
             }
@@ -97,7 +97,7 @@ public:
             y = y + 1;
             while(x<xr){
                 spanNeedFill = false;
-                while(MAP[x][y].getColor()==oldColor){
+                while(MAP[x][y].getColor()==oldColor && x<599){
                     spanNeedFill = true;
                     x++;
 
@@ -115,7 +115,7 @@ public:
             y = y-2;
             while(x<xr){
                 spanNeedFill = false;
-                while(MAP[x][y].getColor()==oldColor){
+                while(MAP[x][y].getColor()==oldColor && x<599){
                     spanNeedFill = true;
                     x++;
 
@@ -147,6 +147,15 @@ public:
     QColor getPixelColor(int x,int y){
         QImage image = _pixmap.toImage();
         return image.pixelColor(x,y);
+    }
+
+    void getColorMap() {
+        QImage image = _pixmap.toImage();
+        for(int i = 0;i < 600;i++){
+            for(int j = 0;j < 400;j++){
+                MAP[i][j].setColor(image.pixelColor(i,j));
+            }
+        }
     }
 
 };

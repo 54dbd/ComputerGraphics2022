@@ -299,6 +299,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             //
 //            QPoint p;
             qDebug()<<"[paintEvent]filling i11[ "<<i11<<" ]";
+            f.getColorMap();
             f.fillShape(_fill.at(i11),pen.color());
             i11++;
 //            f.restoreColor();

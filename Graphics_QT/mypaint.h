@@ -71,8 +71,9 @@ public:
     QPoint _begin;//鼠标按下坐标、用于最后一个图形移动
     //初始化
     QRect* nowRect, *nowEllipse;
+    QPoint* nowFill;
     QVector<QPoint>* nowPolygon;
-    int isInRect, isInEllipse,isInPolygon;
+    int isInRect, isInEllipse,isInPolygon, isInFill;
 
 signals:
     void sendPen(QPen*);
