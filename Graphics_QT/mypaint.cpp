@@ -177,10 +177,18 @@ void MyPaint::paintEvent(QPaintEvent *)
             class Line l2(x_s,y_s,x_s,y_e,1,p, pen);
             class Line l3(x_e,y_e,x_s,y_e,1,p, pen);
             class Line l4(x_e,y_e,x_e,y_s,1,p, pen);
-            l1.MidPoint();
-            l2.MidPoint();
-            l3.MidPoint();
-            l4.MidPoint();
+            if(!_lpress){//松开时
+                l1.MidPoint();
+                l2.MidPoint();
+                l3.MidPoint();
+                l4.MidPoint();
+            }else{//按住时
+                l1.MidPointNoMap();
+                l2.MidPointNoMap();
+                l3.MidPointNoMap();
+                l4.MidPointNoMap();
+            }
+
 
 
             i2++;
@@ -291,8 +299,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             //
 //            QPoint p;
             qDebug()<<"[paintEvent]filling i11[ "<<i11<<" ]";
-            f.fillShape(_fill.at(i11),Qt::blue);
-
+            f.fillShape(_fill.at(i11),pen.color());
             i11++;
 //            f.restoreColor();
 //            if(isInRect){
@@ -652,6 +659,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
                 lastEllipse.setBottomRight(e->pos());//不是拖拽时，更新椭圆的右下角坐标)
             }
             _lpress = false;
+            update();
         }
         else if(_drawType == 4)
         {

@@ -31,38 +31,6 @@ public:
         _pen.setColor(tempColor);
     }
 
-    void fillRect(QRect rect){
-        QPoint start = rect.topLeft();
-        QPoint end = rect.bottomRight();
-        int x_s = start.x();
-        int x_e = end.x();
-        int y_s = start.y();
-        int y_e = end.y();
-        int temp = 0;
-        if(x_s-x_e>0){
-            temp = x_s;
-            x_s = x_e;
-            x_e = temp;
-        }
-        if(y_s-y_e>0){
-            temp = y_s;
-            y_s = y_e;
-            y_e = temp;
-        }
-        for(int i=x_s;i<x_e;i++){
-            for(int j=y_s;j<y_e;j++)
-            {
-                drawPixel(i,j);
-            }
-        }
-    }
-    void fillEllipse(QRect ellipse){
-
-    }
-    void fillPolygon(QVector<QPoint> polygon){
-
-    }
-
     void timeGetColor(){
        clock_t start,end;
        start = clock();
@@ -95,7 +63,7 @@ public:
     */
     void fillShape(QPoint point, QColor newColor){
         //将点击位置的颜色设置为需要替换的颜色
-        QColor oldColor = getPixelColor(point.x(),point.y());
+        QColor oldColor = MAP[point.x()][point.y()].getColor();
         if(oldColor==newColor)
             return;
         //笔刷设置为需要的新颜色

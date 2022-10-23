@@ -115,9 +115,15 @@ public:
 //            }
 //        }
         //不使用笔刷
+        painter.setPen(_pen);
         painter.drawPoint(x, y);
         MAP[x][y].setColor(_pen.color());
+
     };
+    void drawPixelNoMap(int x, int y){
+        painter.setPen(_pen);
+        painter.drawPoint(x, y);
+    }
 };
 
 
