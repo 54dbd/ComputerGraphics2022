@@ -7,6 +7,7 @@
 #include <QStack>
 #include <QColor>
 #include <QImage>
+#include <ctime>
 #include <QDebug>
 #include "Brush.h"
 
@@ -19,7 +20,7 @@ private:
     QPen &_pen;
     QColor tempColor;
 public:
-    Fill(QPixmap &map,QPainter &p, QPen &pen): Brush(1,p), _pixmap(map),_pen(pen){
+    Fill(QPixmap &map,QPainter &p, QPen &pen): Brush(1,p, pen), _pixmap(map),_pen(pen){
 
     }
     void fillColor(QColor color){
@@ -61,6 +62,31 @@ public:
     void fillPolygon(QVector<QPoint> polygon){
 
     }
+
+    void timeGetColor(){
+       clock_t start,end;
+       start = clock();
+       qDebug()<<"start QT timing!";
+        for(int i=0;i<600;i++){
+            for(int j=0;j<400;j++){
+                getPixelColor(i,j);
+            }
+        }
+        end = clock();
+        double endtime=(double)(end-start)/CLOCKS_PER_SEC;
+        qDebug()<<"QT Total time:"<<endtime<<" s";		//s为单位
+
+        start = clock();
+        qDebug()<<"start MAP timing!";
+         for(int i=0;i<600;i++){
+             for(int j=0;j<400;j++){
+                 MAP[i][j].getColor();
+             }
+         }
+         end = clock();
+         endtime=(double)(end-start)/CLOCKS_PER_SEC;
+         qDebug()<<"MAP Total time:"<<endtime<<" s";		//s为单位
+    }
     /*
      * point:填充起始点
      *
@@ -70,6 +96,8 @@ public:
     void fillShape(QPoint point, QColor newColor){
         //将点击位置的颜色设置为需要替换的颜色
         QColor oldColor = getPixelColor(point.x(),point.y());
+        if(oldColor==newColor)
+            return;
         //笔刷设置为需要的新颜色
         _pen.setColor(newColor);
         int xl,xr,i,x,y;
@@ -82,17 +110,17 @@ public:
             pt = pop();
             y = pt.y();
             x = pt.x();
-            while(getPixelColor(x,y)==oldColor){
-                qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
-                qDebug()<<"[fillShape]old color is:"<<oldColor;
+            while(MAP[x][y].getColor()==oldColor){
+//                qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
+//                qDebug()<<"[fillShape]old color is:"<<oldColor;
                 drawPixel(x,y);
                 x++;
             }
-            qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
-            qDebug()<<"[fillShape]old color is:"<<oldColor;
+//            qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
+//            qDebug()<<"[fillShape]old color is:"<<oldColor;
             xr = x -1;
             x = pt.x() - 1;
-            while(getPixelColor(x,y)==oldColor){
+            while(MAP[x][y].getColor()==oldColor){
                 drawPixel(x,y);
                 x--;
             }
@@ -101,7 +129,7 @@ public:
             y = y + 1;
             while(x<xr){
                 spanNeedFill = false;
-                while(getPixelColor(x,y)==oldColor){
+                while(MAP[x][y].getColor()==oldColor){
                     spanNeedFill = true;
                     x++;
 
@@ -113,13 +141,13 @@ public:
                     spanNeedFill= false;
 
                 }
-                while(getPixelColor(x,y)!=oldColor&&x<xr)x++;
+                while(MAP[x][y].getColor()!=oldColor&&x<xr)x++;
             }
             x = xl;
             y = y-2;
             while(x<xr){
                 spanNeedFill = false;
-                while(getPixelColor(x,y)==oldColor){
+                while(MAP[x][y].getColor()==oldColor){
                     spanNeedFill = true;
                     x++;
 
@@ -131,7 +159,7 @@ public:
                     spanNeedFill= false;
 
                 }
-                while(getPixelColor(x,y)!=oldColor&&x<xr)x++;
+                while(MAP[x][y].getColor()!=oldColor&&x<xr)x++;
             }
         }
     }

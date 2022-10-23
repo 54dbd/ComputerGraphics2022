@@ -10,6 +10,7 @@
 #include <QRect>
 #include "newwindow.h"
 using namespace std;
+vector<vector<pointData>> MAP;
 MyPaint::MyPaint(QWidget *parent) :
     QMainWindow(parent)
 {
@@ -20,16 +21,20 @@ MyPaint::MyPaint(QWidget *parent) :
      _begin = pos();//拖拽的参考坐标，方便计算位移
      _openflag = 0;//初始不打开图片
 
-     this->setGeometry(350,200,600,400);//设置窗体大小、位置
+     this->setGeometry(350,200,600,400);//设置窗体大小、位置，大小：(600*400)px
      setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
-     //设置背景黑色
-     //方法一
-//     QPalette palt(this->palette());
-//     palt.setColor(QPalette::Background, Qt::white);
-//     this->setAutoFillBackground(true);
-//     this->setPalette(palt);
-     //方法二
+     //设置背景白色
        this->setStyleSheet("background-color:white;");
+     //初始化MAP
+     for(int i=0;i<600;i++){
+         vector<pointData> row;
+         MAP.push_back(row);
+         for(int j=0;j<400;j++){
+             //对每一行中的每一列进行添加点
+             pointData point(QPoint(i,j), Qt::white);
+             MAP[i].push_back(point);
+         }
+     }
 
     //创建工具栏
     QToolBar *tbar = addToolBar(tr("工具栏"));
@@ -154,7 +159,7 @@ void MyPaint::paintEvent(QPaintEvent *)
                   int x_e = line.at(j+1).x();
                   int y_s = line.at(j).y();
                   int y_e = line.at(j+1).y();
-                  class Line l(x_s,y_s,x_e,y_e,1,p);
+                  class Line l(x_s,y_s,x_e,y_e,1,p, pen);
                   l.MidPoint();
               }
         }
@@ -168,10 +173,10 @@ void MyPaint::paintEvent(QPaintEvent *)
             int y_s = start.y();
             int y_e = end.y();
             //创建直线
-            class Line l1(x_s,y_s,x_e,y_s,1,p);
-            class Line l2(x_s,y_s,x_s,y_e,1,p);
-            class Line l3(x_e,y_e,x_s,y_e,1,p);
-            class Line l4(x_e,y_e,x_e,y_s,1,p);
+            class Line l1(x_s,y_s,x_e,y_s,1,p, pen);
+            class Line l2(x_s,y_s,x_s,y_e,1,p, pen);
+            class Line l3(x_e,y_e,x_s,y_e,1,p, pen);
+            class Line l4(x_e,y_e,x_e,y_s,1,p, pen);
             l1.MidPoint();
             l2.MidPoint();
             l3.MidPoint();
@@ -187,7 +192,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             int R = abs(center.y() - _ellipse.at(i3).bottom());
 
             //画圆
-            Circle C(center.x(),center.y(),0,1,p);
+            Circle C(center.x(),center.y(),0,1,p, pen);
             C.SetR(R);
             C.DrawCircle();
             i3++;
@@ -202,7 +207,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             int y_s = start.y();
             int y_e = end.y();
             //创建直线
-            class Line l(x_s,y_s,x_e,y_e,1,p);
+            class Line l(x_s,y_s,x_e,y_e,1,p, pen);
             l.MidPoint();
             i4++;
 
@@ -229,7 +234,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             pen.setWidth(1);
             p.setPen(pen);
 
-            Brush b(3,p);
+            Brush b(3,p,pen);
             if(i5==_arcCenter.length()-1)//只保留最后一个
                 b.drawPixel(center.x,center.y);
 
@@ -237,7 +242,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             pen = temp;
             p.setPen(pen);
 
-            class Arc a(center.x,center.y,center.R, 1, p);
+            class Arc a(center.x,center.y,center.R, 1, p, pen);
             a.DrawArc(start.x(),start.y(),end.x(),end.y());
 
             i5++;
@@ -250,7 +255,7 @@ void MyPaint::paintEvent(QPaintEvent *)
         }
         else if (_shape.at(c) == 7) { // 绘制多边形
             const QVector<QPoint>& polygon = _polygon.at(i7++);//取出一个多边形
-            class Polygon poly(1, p, this->screen()->size().height());
+            class Polygon poly(1, p, this->screen()->size().height(), pen);
             for(int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
             {
                 int temp = (j + 1) % polygon.size();
@@ -272,10 +277,10 @@ void MyPaint::paintEvent(QPaintEvent *)
 
             // 画控制点
             for (auto i : bezierCurve) {
-                Circle C(i.x,i.y,4,1,p);
+                Circle C(i.x,i.y,4,1,p, pen);
                 C.DrawCircle();
             }
-            class Bezier b(1, p, bezierCurve);
+            class Bezier b(1, p, bezierCurve, pen);
             b.drawBezier();
         }
         else if(_shape.at(c) == 11){//fill
@@ -285,9 +290,10 @@ void MyPaint::paintEvent(QPaintEvent *)
             //DEBUG: test rect for all the shape
             //
 //            QPoint p;
-            qDebug()<<"[paintEvent]filling i11[ "<<i11++<<" ]";
-            //f.fillShape(_fill.at(i11),Qt::blue);
-            //i11++;
+            qDebug()<<"[paintEvent]filling i11[ "<<i11<<" ]";
+            f.fillShape(_fill.at(i11),Qt::blue);
+
+            i11++;
 //            f.restoreColor();
 //            if(isInRect){
 //                //f.fillRect(*nowRect);
@@ -479,7 +485,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 
 void MyPaint::mouseMoveEvent(QMouseEvent *e)
 {
-
+    qDebug()<< "current color:"<<MAP[e->pos().x()][e->pos().y()].getColor();
     isInRect = 0;
     isInEllipse = 0;
     isInPolygon = 0;
@@ -864,7 +870,6 @@ bool MyPaint::polyContains(QVector<QPoint> polygon, QPoint P){
         P2 = polygon[j];
         if(OnSegment(P1,P2,P)) return true; //点在多边形一条边上
         //前一个判断min(P1.y,P2.y)<P.y<=max(P1.y,P2.y)
-        //这个判断代码我觉得写的很精妙 我网上看的 应该是大神模版
         //后一个判断被测点 在 射线与边交点 的左边
         if( ((P1.y()-P.y())>0 != (P2.y()-P.y())>0) && (P.x() - (P.y()-P1.y())*(P1.x()-P2.x())/(P1.y()-P2.y())-P1.x())<0)
             flag = !flag;

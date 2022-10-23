@@ -12,6 +12,7 @@ private:
     vector<vector<int>>const* brush;
     COLORREF color;
     QPainter &painter;
+    QPen &_pen;
 public:
     //方块刷_9
     const vector<vector<int>> brush_9 = {
@@ -65,7 +66,7 @@ public:
     const vector<vector<int>> brush_1 = {
         {1,},
     };
-    Brush(int W, QPainter &p):painter(p) {
+    Brush(int W, QPainter &p, QPen &pen):painter(p),_pen(pen) {
         setBrushType(W);
         //不使用QT内置笔刷宽度控制，如果有需要可以在这里开启
         //painter.setPen(QPen(C,W));
@@ -111,11 +112,11 @@ public:
 //        for (int i = 0; i < (*brush).size(); i++) {
 //            for (int j = 0; j < (*brush).size(); j++) {
 //                if ((*brush)[i][j]) painter.drawPoint(x + i, y + j);
-
 //            }
 //        }
         //不使用笔刷
         painter.drawPoint(x, y);
+        MAP[x][y].setColor(_pen.color());
     };
 };
 

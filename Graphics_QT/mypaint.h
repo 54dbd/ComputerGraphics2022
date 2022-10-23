@@ -18,6 +18,9 @@
 #include "point.h"
 #include <vector>
 using namespace std;
+
+
+extern vector<vector<pointData>> MAP;
 struct arcCenter{
     int x,y;
     int R;
@@ -46,6 +49,7 @@ private:
     QPixmap _pixmap;//画布图片
     QPen _pen;
     int _drag;//拖拽标志
+
     newWindow *setBrushWindow = new newWindow();//设置窗口
 
 
@@ -59,7 +63,6 @@ public:
     //QVector<QRect> _secondaryCircle;//椭圆集合
     QVector<QVector<QPoint>> _polygon;//多边形集合
     QVector<QPoint> _fill;
-
 
     vector<vector<point2d>> _bezierCurve; // 若干条曲线
     vector<point2d> _currentBezierCurve; // 当前控制点容器

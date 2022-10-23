@@ -12,7 +12,7 @@ private:
     int width;
 
 public:
-    Line(int XS, int YS, int XE, int YE, int W, QPainter &painter):Brush(W,painter) {
+    Line(int XS, int YS, int XE, int YE, int W, QPainter &painter, QPen pen):Brush(W,painter,pen) {
         x_s = XS;
         x_e = XE;
         y_s = YS;

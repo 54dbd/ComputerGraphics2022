@@ -10,7 +10,7 @@ using namespace std;
 class Bezier: public Brush
 {
 public:
-    Bezier(int penWidth, QPainter &p, vector<point2d> points): Brush(penWidth, p){
+    Bezier(int penWidth, QPainter &p, vector<point2d> points, QPen pen): Brush(penWidth, p, pen){
         controlPoints = points;
     }
     point2d recursive_bezier(const std::vector<point2d> &control_points, double t)

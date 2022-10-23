@@ -28,7 +28,7 @@ private:
     }
 
 public:
-    Circle(int X, int Y, int R ,int W, QPainter &p):Brush(W,p) {
+    Circle(int X, int Y, int R ,int W, QPainter &p, QPen pen):Brush(W,p,pen) {
         cx = X;
         cy = Y;
         r = R;

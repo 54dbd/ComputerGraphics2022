@@ -145,7 +145,7 @@ private:
     }
 
 public:
-    Arc(int X, int Y, int R, int W, QPainter& p) :Brush(W, p) {
+    Arc(int X, int Y, int R, int W, QPainter& p, QPen pen) :Brush(W, p, pen) {
         cx = X;
         cy = Y;
         r = R;

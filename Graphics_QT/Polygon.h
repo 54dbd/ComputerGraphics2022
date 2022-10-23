@@ -38,7 +38,7 @@ private:
     //COLORREF color;
 
 public:
-    Polygon(int W, QPainter &p, int height) : Brush(W, p) {
+    Polygon(int W, QPainter &p, int height, QPen pen) : Brush(W, p, pen) {
         ymax = height;
         edgeTable = new Edge *[height];
         for (int i = 0; i < height; ++i) {
