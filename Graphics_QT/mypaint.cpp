@@ -285,8 +285,9 @@ void MyPaint::paintEvent(QPaintEvent *)
             //DEBUG: test rect for all the shape
             //
 //            QPoint p;
-            f.fillShape(_fill.at(i11),Qt::blue);
-            i11++;
+            qDebug()<<"[paintEvent]filling i11[ "<<i11++<<" ]";
+            //f.fillShape(_fill.at(i11),Qt::blue);
+            //i11++;
 //            f.restoreColor();
 //            if(isInRect){
 //                //f.fillRect(*nowRect);
