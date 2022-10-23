@@ -70,6 +70,7 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(moveAction);//添加到工具栏
 
     QAction *fillAction = new QAction(tr("&填充"), this);//填充
+    fillAction->setIcon(QIcon(":/png/images/fill.png"));//图标
     tbar->addAction(fillAction);//添加到工具栏
 
     QAction *lineAction = new QAction(tr("&直线"), this);//直线动作

@@ -11,5 +11,6 @@
         <file>images/1.png</file>
         <file>images/arc.png</file>
         <file>images/arcCenter.png</file>
+        <file>images/fill.png</file>
     </qresource>
 </RCC>
