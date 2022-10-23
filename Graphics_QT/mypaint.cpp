@@ -497,6 +497,7 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
     isInRect = 0;
     isInEllipse = 0;
     isInPolygon = 0;
+    isInFill = 0;
     int isArrow = 1;
     //定位鼠标指到的图形
     if(_rects.length()>0 ){
@@ -506,6 +507,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
                 nowRect = &_rects[i];
                 isInRect = 1;
                 isArrow = 0;
+                for (int j = 0; j < _fill.length(); j++) {
+                    if (_rects.at(i).contains(_fill.at(j))) {
+                        nowFill = &_fill[j];
+                        isInFill = 1;
+                    }
+                }
 //                qDebug()<<"now in rect["<<i<<"]";
             }
         }
@@ -571,6 +578,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
                 qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
                 *nowRect = (*nowRect).adjusted(dx,dy,dx,dy);
                 _begin = e->pos();//刷新拖拽点起始坐标
+                if (isInFill) {
+                    dx = e->pos().x()-nowFill->x();
+                    dy = e->pos().y()-nowFill->y();
+                    nowFill->setX(nowFill->x()+dx);
+                    nowFill->setY(nowFill->y()+dy);
+                }
 
             }
             update();//触发窗体重绘
