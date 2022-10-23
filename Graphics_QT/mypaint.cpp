@@ -463,6 +463,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
         }
         else if(_drawType == 11){//fill
+            _lpress = true;
             QPoint pos = e->pos();
             _fill.append(pos);
             qDebug()<<"start fill at"<<pos.x()<<", "<<pos.y();
@@ -683,6 +684,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
         }
         else if (_drawType == 11){
             _lpress = false;
+            update();
         }
     }
 }
