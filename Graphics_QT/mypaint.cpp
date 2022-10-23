@@ -67,6 +67,7 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(saveasAction);//添加到工具栏
 
     QAction *moveAction = new QAction(tr("&移动"), this);//移动
+    moveAction->setIcon(QIcon(":/png/images/move.png"));//图标
     tbar->addAction(moveAction);//添加到工具栏
 
     QAction *fillAction = new QAction(tr("&填充"), this);//填充
@@ -104,10 +105,12 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(arcCenterAction);
 
     QAction *polygonAction = new QAction(tr("&多边形"), this);//多边形动作
+    polygonAction->setIcon(QIcon(":/png/images/polygon.png"));//图标
     polygonAction->setShortcut(QKeySequence(tr("Ctrl+P")));//热键
     tbar->addAction(polygonAction);
 
     QAction *bezierAction = new QAction(tr("&贝塞尔"), this);//贝塞尔
+    bezierAction->setIcon(QIcon(":/png/images/bezier.png"));//图标
     tbar->addAction(bezierAction);
 
 

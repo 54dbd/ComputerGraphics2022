@@ -12,5 +12,8 @@
         <file>images/arc.png</file>
         <file>images/arcCenter.png</file>
         <file>images/fill.png</file>
+        <file>images/bezier.png</file>
+        <file>images/polygon.png</file>
+        <file>images/move.png</file>
     </qresource>
 </RCC>
