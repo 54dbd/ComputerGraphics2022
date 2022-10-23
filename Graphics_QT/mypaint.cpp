@@ -525,6 +525,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
                 nowEllipse =&_ellipse[i];
                 isInEllipse = 1;
                 isArrow = 0;
+                for (int j = 0; j < _fill.length(); j++) {
+                    if (_ellipse.at(i).contains(_fill.at(j))) {
+                        nowFill = &_fill[j];
+                        isInFill = 1;
+                    }
+                }
 //                qDebug()<<"now in ellipse["<<i<<"]";
             }
         }
@@ -536,6 +542,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
                 nowPolygon =&_polygon[i];
                 isInPolygon = 1;
                 isArrow = 0;
+                for (int j = 0; j < _fill.length(); j++) {
+                    if (polyContains(_polygon[i],_fill.at(j))) {
+                        nowFill = &_fill[j];
+                        isInFill = 1;
+                    }
+                }
 //                qDebug()<<"now in polygon["<<i<<"]";
             }
         }
@@ -603,6 +615,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
                 qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
                 *nowEllipse = (*nowEllipse).adjusted(dx,dy,dx,dy);
                 _begin = e->pos();//刷新拖拽点起始坐标
+                if (isInFill) {
+                    dx = e->pos().x()-nowFill->x();
+                    dy = e->pos().y()-nowFill->y();
+                    nowFill->setX(nowFill->x()+dx);
+                    nowFill->setY(nowFill->y()+dy);
+                }
 
             }
             update();//触发窗体重绘
@@ -636,6 +654,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
 //                    (*nowPolygon)[i].setY(10);
                 }
                 _begin = e->pos();//刷新拖拽点起始坐标
+                if (isInFill) {
+                    dx = e->pos().x()-nowFill->x();
+                    dy = e->pos().y()-nowFill->y();
+                    nowFill->setX(nowFill->x()+dx);
+                    nowFill->setY(nowFill->y()+dy);
+                }
 
             }
             qDebug()<<"not in polygon";
