@@ -75,6 +75,7 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(saveasAction);//添加到工具栏
 
     QAction *transAction = new QAction(tr("&图形变换"), this); /**变换动作**/
+    transAction->setIcon(QIcon(":/png/images/trans.png"));//图标
     tbar->addAction(transAction);//添加到工具栏
 
     QAction *fillAction = new QAction(tr("&填充"), this);//填充
@@ -615,9 +616,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         if(_lpress)
             Transform(e);
     }else{
-        isInEllipse = 0;
-        isInPolygon = 0;
-        isInRect = 0;
         setCursor(Qt::ArrowCursor);//恢复原始光标形状
         //_drag = 0;
     }
@@ -1073,8 +1071,6 @@ void MyPaint::polygonTrans(QMouseEvent *e){
                 //zoomPropor_Y = abs(e->pos().y() - referancePoint.y())*1.0/abs(_begin.y() - referancePoint.y());
                 zoomPropor_X = abs(e->pos().x() - referancePoint.x()) * 1.0/abs(transRectTag->center().x() - referancePoint.x());
                 zoomPropor_Y = abs(e->pos().y() - referancePoint.y()) * 1.0/abs(transRectTag->center().y() - referancePoint.y());
-                qDebug() << zoomPropor_X;
-                qDebug() << zoomPropor_Y;
                 trM.setZoomTrans(zoomPropor_X, zoomPropor_Y); //生成缩放变换矩阵
                 for (int i = 0; i < nowPolygon->size(); ++i) {
                     (*nowPolygon)[i] = trM * (*nowPolygon)[i];
@@ -1089,7 +1085,26 @@ void MyPaint::polygonTrans(QMouseEvent *e){
                 update();
                 //_begin = e->pos();
             }
-        //case ROTATE:
+        case ROTATE:
+            //if(isInTagRect) {
+                angle = -1*getAngle(referancePoint, _begin, e->pos());
+                //if(_begin.x()<)
+                trM.setRotateTrans(angle);
+                for (int i = 0; i < nowPolygon->size(); ++i) {
+                    (*nowPolygon)[i] = trM * (*nowPolygon)[i];
+                }
+                if(isInFill){
+                    trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
+                    (*nowFill) = trM*(*nowFill);
+                }
+                trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center()); //让标志矩形中心点跟随移动到新点
+                transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+                transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
+                update();
+                _begin = e->pos();
+           // }
+
+
     }
 }
 
@@ -1109,25 +1124,13 @@ QPoint getPolyCenter(QVector<QPoint> polygon){
 
 double getAngle(QPoint origin,QPoint p1,QPoint p2)
 {
-    double x1,y1,x2,y2,x3,y3,x4,y4;
-    double x,y;
-    cin>>x1>>y1>>x2>>y2>>x3>>y3>>x4>>y4;
-    x=(x1-x2)*(x1-x2)+(y1-y2)*(y1-y2);
-    y=(x3-x4)*(x3-x4)+(y3-y4)*(y3-y4);
-    double s1,s2;
-    s1=sqrt(x);
-    s2=sqrt(y);
-    double s3;
-    s3=(x2-x1)*(x4-x3)+(y2-y1)*(y4-y3);
-    double s4;
-    s4=abs(s3);
-    double ans,ans2;
-    ans2=s4/(s1*s2);
-    ans=acos(ans2);
-    double ans3;
-    ans3=(180*ans)/3.1415926;
-    cout<<fixed<<setprecision(2)<<(long double)ans3;
-    QRect q;
-    q.topRight();
-    return 0;
+    int x1 = p1.x(),y1 = p1.y(),x2 = p2.x(), y2 = p2.y(),x3 = origin.x(),y3 = origin.y();
+    double theta = atan2(x1 - x3, y1 - y3) - atan2(x2 - x3, y2 - y3);
+    if (theta > M_PI)
+        theta -= 2 * M_PI;
+    if (theta < -M_PI)
+        theta += 2 * M_PI;
+
+    theta = abs(theta * 180.0 / M_PI);
+    return theta;
 }

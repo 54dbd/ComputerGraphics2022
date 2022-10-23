@@ -15,5 +15,6 @@
         <file>images/bezier.png</file>
         <file>images/polygon.png</file>
         <file>images/move.png</file>
+        <file>images/trans.png</file>
     </qresource>
 </RCC>
