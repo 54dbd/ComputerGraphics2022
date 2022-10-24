@@ -22,7 +22,6 @@ void newWindow::getPen(QPen* p){
     qDebug()<<"setting pen";
 }
 
-
 void newWindow::on_horizontalSlider_sliderMoved(int position)//position: 1~20
 {
     _width = position;
@@ -93,12 +92,15 @@ void newWindow::on_dashLine_stateChanged(int arg1)
 {
     qDebug()<<arg1<<(*pen).style();
     if(arg1){
+        emit sendStyle(Qt::DashLine);
         _style = Qt::DashLine;
 
     }else{
+        emit sendStyle(Qt::DashLine);
         _style = Qt::SolidLine;
     }
     (*pen).setStyle(_style);
+    qDebug()<<"penIsSolid:"<<(*pen).style();
 
 }
 

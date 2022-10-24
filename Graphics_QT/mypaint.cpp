@@ -140,6 +140,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(fillAction,SIGNAL(triggered()),this,SLOT(startFill()));
     //设置界面传参
     connect(this,SIGNAL(sendPen(QPen*)),setBrushWindow,SLOT(getPen(QPen*)));
+    connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)),this, SLOT(setDashLine(Qt::PenStyle)));
 }
 
 void MyPaint::paintEvent(QPaintEvent *)
@@ -191,7 +192,10 @@ void MyPaint::paintEvent(QPaintEvent *)
                   int y_s = line.at(j).y();
                   int y_e = line.at(j+1).y();
                   class Line l(x_s,y_s,x_e,y_e,1,p, pen);
-                  l.DashLine();
+                  if(pen.style()==Qt::DashLine)
+                    l.DashLine();
+                  else
+                    l.MidPoint();
               }
         }
         else if(_shape.at(c) == 2)//矩形
@@ -209,15 +213,31 @@ void MyPaint::paintEvent(QPaintEvent *)
             class Line l3(x_e,y_e,x_s,y_e,1,p, pen);
             class Line l4(x_e,y_e,x_e,y_s,1,p, pen);
             if(!_lpress){//松开时
-                l1.MidPoint();
-                l2.MidPoint();
-                l3.MidPoint();
-                l4.MidPoint();
+                if(pen.style()==Qt::DashLine){
+                    l1.DashLine();
+                    l2.DashLine();
+                    l3.DashLine();
+                    l4.DashLine();
+                }else{
+                    l1.MidPoint();
+                    l2.MidPoint();
+                    l3.MidPoint();
+                    l4.MidPoint();
+                }
+
             }else{//按住时
-                l1.MidPointNoMap();
-                l2.MidPointNoMap();
-                l3.MidPointNoMap();
-                l4.MidPointNoMap();
+                if(pen.style()==Qt::DashLine){
+                    l1.dashLineNoMap();
+                    l2.dashLineNoMap();
+                    l3.dashLineNoMap();
+                    l4.dashLineNoMap();
+                }else{
+                    l1.MidPointNoMap();
+                    l2.MidPointNoMap();
+                    l3.MidPointNoMap();
+                    l4.MidPointNoMap();
+                }
+
             }
 
 
@@ -233,7 +253,10 @@ void MyPaint::paintEvent(QPaintEvent *)
             //画圆
             Circle C(center.x(),center.y(),0,1,p, pen);
             C.SetR(R);
-            C.DrawCircle();
+            if(pen.style()==Qt::DashLine)
+                C.DrawDashLIneCircle();
+            else
+                C.DrawCircle();
             i3++;
         }
         else if(_shape.at(c) == 4)//直线
@@ -247,7 +270,10 @@ void MyPaint::paintEvent(QPaintEvent *)
             int y_e = end.y();
             //创建直线
             class Line l(x_s,y_s,x_e,y_e,1,p, pen);
-            l.DashLine();
+            if (pen.style()==Qt::DashLine)
+                l.DashLine();
+            else
+                l.MidPoint();
             i4++;
 
         }
@@ -1106,6 +1132,7 @@ void MyPaint::polygonTrans(QMouseEvent *e){
 
 
     }
+
 }
 
 QPoint getPolyCenter(QVector<QPoint> polygon){
@@ -1133,4 +1160,13 @@ double getAngle(QPoint origin,QPoint p1,QPoint p2)
 
     theta = abs(theta * 180.0 / M_PI);
     return theta;
+}
+
+void MyPaint::setDashLine(Qt::PenStyle style){//设置虚线变量
+    qDebug()<<"style:"<<style;
+    if(style == Qt::DashLine){
+        isDashLine = true;
+    }else{
+        isDashLine = false;
+    }
 }

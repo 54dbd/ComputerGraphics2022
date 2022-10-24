@@ -21,6 +21,7 @@ public:
     explicit newWindow(QWidget *parent = nullptr);
     ~newWindow();
 signals:
+    void sendStyle(Qt::PenStyle style);
 private slots:
     void on_pushButton_clicked();
     void getPen(QPen*);

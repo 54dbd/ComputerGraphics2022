@@ -68,6 +68,7 @@ private:
     QPoint referancePoint;          //变换时由用户设置的参照点
     bool isSpecificRefer = false;            //是否存在指定的参照点
     bool isInTagRect = false;
+    bool isDashLine = false;
     int removeRectIndex;
     enum transform _transFlag;      //变换标志位
     QRect *transRectTag = new QRect(100,100,20,20);             //标签矩形
@@ -126,7 +127,7 @@ public slots:
     void createBrushWindow();
 
     bool polyContains(QVector<QPoint> polygon, QPoint p);
-
+    void setDashLine(Qt::PenStyle style);
 
 };
 void Drag();

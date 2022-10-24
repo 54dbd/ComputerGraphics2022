@@ -11,9 +11,10 @@ class Line: public Brush
 private:
     int x_s, y_s, x_e, y_e, x, y;
     int width;
+    QPen _pen;
 
 public:
-    Line(int XS, int YS, int XE, int YE, int W, QPainter &painter, QPen pen):Brush(W,painter,pen) {
+    Line(int XS, int YS, int XE, int YE, int W, QPainter &painter, QPen &pen):Brush(W,painter,pen) {
         x_s = XS;
         x_e = XE;
         y_s = YS;
@@ -21,6 +22,7 @@ public:
         width = W;
         x = XS;
         y = YS;
+        _pen = pen;
 
     }
     Line(QPoint start, QPoint end, int W, QPainter &painter,QPen &pen):Brush(W,painter,pen) {
@@ -112,6 +114,30 @@ public:
             drawPixelNoMap(temp_x, temp_y);
         }
     }
+    void dashLineNoMap(){
+        drawPixelNoMap(x_s, y_s); // 绘制初始点
+
+        bool vertical = false, horizontal = false, diagonal = false;
+        Translate(vertical, horizontal, diagonal);
+        int a = y_s - y_e, b = x_e - x_s;
+        int d = a + a + b; // d:初始增量
+        int d1 = a + a, d2 = a + a + b + b; // d1:东方增量 d2:东北方增量
+        int x = x_s, y = y_s; // 当前绘制点
+        for (x = x + 1; x <= x_e; ++x) {
+            if (d < 0) {
+                d += d2;
+                y++;
+            }
+            else {
+                d += d1;
+            }
+            int temp_x = x, temp_y = y;
+            Restore(vertical, horizontal, diagonal, temp_x, temp_y);
+            if(abs(x)%(10*_pen.width()/2)>=5*_pen.width()/2){// 间距随宽度扩大
+                drawPixelNoMap(temp_x, temp_y);
+            }
+        }
+    }
     void MidPoint() {
         drawPixel(x_s, y_s); // 绘制初始点
 
@@ -153,7 +179,7 @@ public:
             }
             int temp_x = x, temp_y = y;
             Restore(vertical, horizontal, diagonal, temp_x, temp_y);
-            if(abs(x)%10>=5){
+            if(abs(x)%(10*_pen.width()/2)>=5*_pen.width()/2){// 间距随宽度扩大
                 drawPixel(temp_x, temp_y);
             }
 

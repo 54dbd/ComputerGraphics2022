@@ -13,6 +13,7 @@ class Circle : public Brush
 private:
     int cx, cy, r;
     COLORREF color;
+    QPen _pen;
 
     void CirclePoint(int x, int y) {
         drawPixel(x + cx, y + cy);
@@ -32,6 +33,7 @@ public:
         cx = X;
         cy = Y;
         r = R;
+        _pen = pen;
     }
 
     void SetCenter(int X, int Y) {
