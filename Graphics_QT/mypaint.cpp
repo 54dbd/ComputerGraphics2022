@@ -11,6 +11,7 @@
 #include "newwindow.h"
 using namespace std;
 vector<vector<pointData>> MAP;
+
 MyPaint::MyPaint(QWidget *parent) :
     QMainWindow(parent)
 {
@@ -20,10 +21,17 @@ MyPaint::MyPaint(QWidget *parent) :
      _drawType = 0;//初始为什么都不画
      _begin = pos();//拖拽的参考坐标，方便计算位移
      _openflag = 0;//初始不打开图片
+     _transFlag = NOTRANS;
 
-     this->setGeometry(350,200,600,400);//设置窗体大小、位置，大小：(600*400)px
+     this->setGeometry(350,200,600,400);//设置窗体大小、位置
      setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
-     //设置背景白色
+     //设置背景黑色
+     //方法一
+//     QPalette palt(this->palette());
+//     palt.setColor(QPalette::Background, Qt::white);
+//     this->setAutoFillBackground(true);
+//     this->setPalette(palt);
+     //方法二
        this->setStyleSheet("background-color:white;");
      //初始化MAP
      for(int i=0;i<600;i++){
@@ -66,9 +74,9 @@ MyPaint::MyPaint(QWidget *parent) :
     saveasAction->setShortcut(QKeySequence(tr("Ctrl+ALT+S")));//热键
     tbar->addAction(saveasAction);//添加到工具栏
 
-    QAction *moveAction = new QAction(tr("&移动"), this);//移动
-    moveAction->setIcon(QIcon(":/png/images/move.png"));//图标
-    tbar->addAction(moveAction);//添加到工具栏
+    QAction *transAction = new QAction(tr("&图形变换"), this); /**变换动作**/
+    transAction->setIcon(QIcon(":/png/images/trans.png"));//图标
+    tbar->addAction(transAction);//添加到工具栏
 
     QAction *fillAction = new QAction(tr("&填充"), this);//填充
     fillAction->setIcon(QIcon(":/png/images/fill.png"));//图标
@@ -105,12 +113,10 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(arcCenterAction);
 
     QAction *polygonAction = new QAction(tr("&多边形"), this);//多边形动作
-    polygonAction->setIcon(QIcon(":/png/images/polygon.png"));//图标
     polygonAction->setShortcut(QKeySequence(tr("Ctrl+P")));//热键
     tbar->addAction(polygonAction);
 
     QAction *bezierAction = new QAction(tr("&贝塞尔"), this);//贝塞尔
-    bezierAction->setIcon(QIcon(":/png/images/bezier.png"));//图标
     tbar->addAction(bezierAction);
 
 
@@ -130,9 +136,8 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(bezierAction, SIGNAL(triggered()), this, SLOT(Bezier()));
 
     connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
-    connect(moveAction,SIGNAL(triggered()),this,SLOT(startMove()));
+    connect(transAction,SIGNAL(triggered()),this,SLOT(startTrans()));
     connect(fillAction,SIGNAL(triggered()),this,SLOT(startFill()));
-
     //设置界面传参
     connect(this,SIGNAL(sendPen(QPen*)),setBrushWindow,SLOT(getPen(QPen*)));
 }
@@ -148,6 +153,28 @@ void MyPaint::paintEvent(QPaintEvent *)
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11=0;//各种图形的索引
+
+
+    if(_drawType==10 ) {
+
+        QPoint start,end;
+        start = transRectTag->topLeft();
+        end = transRectTag->bottomRight();
+        int x_s = start.x();
+        int x_e = end.x();
+        int y_s = start.y();
+        int y_e = end.y();
+        QPen pen;
+        //创建直线
+        class Line l1(x_s,y_s,x_e,y_s,1,p,pen);
+        class Line l2(x_s,y_s,x_s,y_e,1,p,pen);
+        class Line l3(x_e,y_e,x_s,y_e,1,p,pen);
+        class Line l4(x_e,y_e,x_e,y_s,1,p,pen);
+        l1.MidPoint();
+        l2.MidPoint();
+        l3.MidPoint();
+        l4.MidPoint();
+    }
 
     for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
     {
@@ -335,6 +362,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
         _drag = 0;
         QPen tempPen(_pen);
         if(_drawType == 10){//移动
+            update();
             _drag = 1;
             qDebug()<<"drag:"<<_drag;
 
@@ -497,19 +525,20 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 
 void MyPaint::mouseMoveEvent(QMouseEvent *e)
 {
-    qDebug()<< "current color:"<<MAP[e->pos().x()][e->pos().y()].getColor();
-    isInRect = 0;
-    isInEllipse = 0;
-    isInPolygon = 0;
+
     isInFill = 0;
+    isInTagRect = false;
     int isArrow = 1;
     //定位鼠标指到的图形
     if(_rects.length()>0 ){
         for(int i=0;i<_rects.length();i++ ){
             if(_rects.at(i).contains(e->pos()))
             {
+                removeRectIndex = i;
                 nowRect = &_rects[i];
                 isInRect = 1;
+                isInPolygon = 0;
+                isInEllipse = 0;
                 isArrow = 0;
                 for (int j = 0; j < _fill.length(); j++) {
                     if (_rects.at(i).contains(_fill.at(j))) {
@@ -527,6 +556,8 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             {
                 nowEllipse =&_ellipse[i];
                 isInEllipse = 1;
+                isInPolygon = 0;
+                isInRect = 0;
                 isArrow = 0;
                 for (int j = 0; j < _fill.length(); j++) {
                     if (_ellipse.at(i).contains(_fill.at(j))) {
@@ -544,6 +575,8 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             {
                 nowPolygon =&_polygon[i];
                 isInPolygon = 1;
+                isInEllipse = 0;
+                isInRect = 0;
                 isArrow = 0;
                 for (int j = 0; j < _fill.length(); j++) {
                     if (polyContains(_polygon[i],_fill.at(j))) {
@@ -555,14 +588,34 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             }
         }
     }
+    if(transRectTag->contains(e->pos())) {
+        isInTagRect = true;
+        isArrow = 0;
+    }
 
-    if(!isArrow && _drag)
+    if(_drawType == 10 ){
+        if(isInRect) {
+            transMatrix trM;
+            trM.setMoveTrans(nowRect->bottomRight() - transRectTag->center());
+            transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+            transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
+        }
+        else if(isInPolygon){
+            transMatrix trM;
+            trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center());
+            transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+            transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
+        }
+
+    }
+
+
+    if(!isArrow && _drag && _drawType == 10)
     {
         setCursor(Qt::SizeAllCursor);//拖拽模式下，并且在拖拽图形中，将光标形状改为十字
+        if(_lpress)
+            Transform(e);
     }else{
-        isInEllipse = 0;
-        isInPolygon = 0;
-        isInRect = 0;
         setCursor(Qt::ArrowCursor);//恢复原始光标形状
         //_drag = 0;
     }
@@ -581,27 +634,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             lastLine.append(e->pos());//记录鼠标的坐标(线条的轨迹)
             update();//触发窗体重绘
         }
-        else if(_drawType == 2||(_drawType==10&&isInRect))
+        else if(_drawType == 2)
         {
 //            qDebug()<<"drag:"<<_drag;
-            if(_drag==0)
-            {
-                QRect& lastRect = _rects.last();//拿到新矩形
-                lastRect.setBottomRight(e->pos());
-            }else if(isInRect){
-                int dx = e->pos().x()-_begin.x();//横向移动x
-                int dy = e->pos().y()-_begin.y();//纵向移动y
-                qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
-                *nowRect = (*nowRect).adjusted(dx,dy,dx,dy);
-                _begin = e->pos();//刷新拖拽点起始坐标
-                if (isInFill) {
-                    dx = e->pos().x()-nowFill->x();
-                    dy = e->pos().y()-nowFill->y();
-                    nowFill->setX(nowFill->x()+dx);
-                    nowFill->setY(nowFill->y()+dy);
-                }
+            QRect& lastRect = _rects.last();//拿到新矩形
+            lastRect.setBottomRight(e->pos());
 
-            }
             update();//触发窗体重绘
 
         }
@@ -637,6 +675,7 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         }
         else if(_drawType == 5 && _arc.length() > 0)
         {
+
             QRect& lastArc = _arc.last();//拿到新圆弧
             lastArc.setBottomRight(e->pos());//更新圆弧的右下角坐标)
             update();//触发窗体重绘
@@ -645,26 +684,7 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         {
             update();//触发窗体重绘
         }
-        else if(_drawType == 7||(_drawType==10&&isInPolygon)){
-            if(isInPolygon){
-                int dx = e->pos().x()-_begin.x();//横向移动x
-                int dy = e->pos().y()-_begin.y();//纵向移动y
-                qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
-                for(int i=0;i<(*nowPolygon).length();i++){//让每个点都移动相同x,y
-                    (*nowPolygon)[i].setX((*nowPolygon)[i].x()+dx);
-                    (*nowPolygon)[i].setY((*nowPolygon)[i].y()+dy);
-//                    (*nowPolygon)[i].setX(10);
-//                    (*nowPolygon)[i].setY(10);
-                }
-                _begin = e->pos();//刷新拖拽点起始坐标
-                if (isInFill) {
-                    dx = e->pos().x()-nowFill->x();
-                    dy = e->pos().y()-nowFill->y();
-                    nowFill->setX(nowFill->x()+dx);
-                    nowFill->setY(nowFill->y()+dy);
-                }
-
-            }
+        else if(_drawType == 7){
             qDebug()<<"not in polygon";
             update();//触发窗体重绘
         }
@@ -799,9 +819,10 @@ void MyPaint::Bezier() {
     _drawType = 9;
     _drag = 0;
 }
-void MyPaint::startMove(){
+
+void MyPaint::startTrans(){
     _drawType = 10;
-    _drag = 1;
+    _drag = 0;
 }
 
 void MyPaint::startFill(){
@@ -895,7 +916,21 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
              vector <point2d>().swap(_currentBezierCurve);
              update();
          }
-    }
+     }
+     else if(e->key() == Qt::Key_M && _drawType == 10){
+
+         _transFlag = MOVE;
+     }
+     else if(e->key() == Qt::Key_Z && _drawType == 10){
+
+         _transFlag = ZOOM;
+     }
+     else if(e->key() == Qt::Key_R && _drawType == 10){
+         _transFlag = ROTATE;
+     }
+     else if(e->key() == Qt::Key_S&& _drawType == 10){
+         _transFlag = NOTRANS;
+     }
 
 }
 
@@ -920,10 +955,182 @@ bool MyPaint::polyContains(QVector<QPoint> polygon, QPoint P){
         P2 = polygon[j];
         if(OnSegment(P1,P2,P)) return true; //点在多边形一条边上
         //前一个判断min(P1.y,P2.y)<P.y<=max(P1.y,P2.y)
+        //这个判断代码我觉得写的很精妙 我网上看的 应该是大神模版
         //后一个判断被测点 在 射线与边交点 的左边
         if( ((P1.y()-P.y())>0 != (P2.y()-P.y())>0) && (P.x() - (P.y()-P1.y())*(P1.x()-P2.x())/(P1.y()-P2.y())-P1.x())<0)
             flag = !flag;
     }
 //    qDebug()<<"is in poly?"<<flag;
     return flag;
+
+}
+
+/**变换函数**/
+void MyPaint::Transform(QMouseEvent *e) {
+    if(isInRect)
+        rectTrans(e);
+    else if(isInEllipse);
+    else if(isInPolygon)
+        polygonTrans(e);
+}
+
+void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
+    transMatrix trM;
+    double zoomPropor_X,zoomPropor_Y;  //进行缩放的比例
+    QPoint moveVector;              //进行移动的向量
+    double angle;
+    if(isSpecificRefer) {
+        trM.setReference(referancePoint);  //是否有用户设定的参考点，有则设为该点
+    }
+    else {
+        referancePoint = nowRect->center();
+        trM.setReference(referancePoint);   //没有则设为矩形中心
+    }
+    switch (_transFlag) {
+        /*case MOVE:
+            int dx = e->pos().x()-_begin.x();//横向移动x
+            int dy = e->pos().y()-_begin.y();//纵向移动y
+            qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
+            *nowRect = (*nowRect).adjusted(dx,dy,dx,dy);
+            _begin = e->pos();//刷新拖拽点起始坐标
+            update();
+            break;*/
+        case MOVE:
+            qDebug() << "isinMove";
+            moveVector = e->pos() - _begin;    //计算移动向量，终点减起点
+            trM.setMoveTrans(moveVector);
+            nowRect->setTopLeft(trM * nowRect->topLeft());
+            nowRect->setBottomRight(trM * nowRect->bottomRight());
+            if(isInFill){
+                trM.setMoveTrans(nowRect->center() - *nowFill);
+                (*nowFill) = trM*(*nowFill);
+            }
+            _begin = e->pos();
+            update();
+
+            break;
+        case ZOOM:
+            if(isInTagRect){
+                //计算缩放比例，直接来说就是计算怎么让标志矩形中心点移动到现在的点
+                zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(transRectTag->center().x()-referancePoint.x());
+                zoomPropor_Y = abs(e->pos().y()-referancePoint.y())*1.0/abs(transRectTag->center().y()-referancePoint.y());
+
+                trM.setZoomTrans(zoomPropor_X,zoomPropor_Y); //生成缩放变换矩阵
+                nowRect->setTopLeft(trM*nowRect->topLeft());
+                nowRect->setBottomRight(trM*nowRect->bottomRight());  //对目标矩形的两个点同步变换
+                if(isInFill){
+                    trM.setMoveTrans(nowRect->center() - *nowFill);
+                    (*nowFill) = trM*(*nowFill);
+                }
+                trM.setMoveTrans(nowRect->bottomRight()-transRectTag->center()); //让标志矩形中心点跟随移动到新点
+                transRectTag->setTopLeft(trM*(transRectTag->topLeft()));
+                transRectTag->setBottomRight(trM*(transRectTag->bottomRight()));
+            }
+            _begin = e->pos();
+            update();
+            break;
+        case ROTATE:
+            if(isInTagRect){
+
+            }
+
+
+
+    }
+}
+
+void MyPaint::polygonTrans(QMouseEvent *e){
+    transMatrix trM;
+    double zoomPropor_X,zoomPropor_Y;  //进行缩放的比例
+    QPoint moveVector;              //进行移动的向量
+    double angle;
+    if(isSpecificRefer)
+        trM.setReference(referancePoint);
+    else {
+        referancePoint = getPolyCenter(*nowPolygon);
+        trM.setReference(referancePoint);
+    }
+
+    switch (_transFlag) {
+        case MOVE:
+            moveVector = e->pos() - _begin;    //计算移动向量，终点减起点
+            trM.setMoveTrans(moveVector);
+            for (int i = 0; i < nowPolygon->size(); ++i) {
+                (*nowPolygon)[i] = trM*((*nowPolygon)[i]);
+            }
+            if(isInFill){
+                trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
+                (*nowFill) = trM*(*nowFill);
+            }
+            _begin = e->pos();
+            update();
+            break;
+        case ZOOM:
+            if(isInTagRect) {
+                //zoomPropor_X = abs(e->pos().x() - referancePoint.x())*1.0/abs(_begin.x() - referancePoint.x());
+                //zoomPropor_Y = abs(e->pos().y() - referancePoint.y())*1.0/abs(_begin.y() - referancePoint.y());
+                zoomPropor_X = abs(e->pos().x() - referancePoint.x()) * 1.0/abs(transRectTag->center().x() - referancePoint.x());
+                zoomPropor_Y = abs(e->pos().y() - referancePoint.y()) * 1.0/abs(transRectTag->center().y() - referancePoint.y());
+                trM.setZoomTrans(zoomPropor_X, zoomPropor_Y); //生成缩放变换矩阵
+                for (int i = 0; i < nowPolygon->size(); ++i) {
+                    (*nowPolygon)[i] = trM * (*nowPolygon)[i];
+                }
+                if(isInFill){
+                    trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
+                    (*nowFill) = trM*(*nowFill);
+                }
+                trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center()); //让标志矩形中心点跟随移动到新点
+                transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+                transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
+                update();
+                //_begin = e->pos();
+            }
+        case ROTATE:
+            //if(isInTagRect) {
+                angle = -1*getAngle(referancePoint, _begin, e->pos());
+                //if(_begin.x()<)
+                trM.setRotateTrans(angle);
+                for (int i = 0; i < nowPolygon->size(); ++i) {
+                    (*nowPolygon)[i] = trM * (*nowPolygon)[i];
+                }
+                if(isInFill){
+                    trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
+                    (*nowFill) = trM*(*nowFill);
+                }
+                trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center()); //让标志矩形中心点跟随移动到新点
+                transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+                transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
+                update();
+                _begin = e->pos();
+           // }
+
+
+    }
+}
+
+QPoint getPolyCenter(QVector<QPoint> polygon){
+    int PointNum = polygon.size();
+    int x_cen = 0,y_cen = 0;
+    for (int i = 0; i < PointNum; ++i) {
+        x_cen += polygon[i].x();
+        y_cen += polygon[i].y();
+    }
+    x_cen /= PointNum;
+    y_cen /= PointNum;
+    return QPoint(x_cen,y_cen);
+}
+
+
+
+double getAngle(QPoint origin,QPoint p1,QPoint p2)
+{
+    int x1 = p1.x(),y1 = p1.y(),x2 = p2.x(), y2 = p2.y(),x3 = origin.x(),y3 = origin.y();
+    double theta = atan2(x1 - x3, y1 - y3) - atan2(x2 - x3, y2 - y3);
+    if (theta > M_PI)
+        theta -= 2 * M_PI;
+    if (theta < -M_PI)
+        theta += 2 * M_PI;
+
+    theta = abs(theta * 180.0 / M_PI);
+    return theta;
 }

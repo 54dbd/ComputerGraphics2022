@@ -2,6 +2,7 @@
 #define LINE_H
 #include <iostream>
 #include <QCursor>
+#include <QPoint>
 #include "Brush.h"
 using namespace std;
 class Line: public Brush
@@ -20,6 +21,16 @@ public:
         width = W;
         x = XS;
         y = YS;
+
+    }
+    Line(QPoint start, QPoint end, int W, QPainter &painter,QPen &pen):Brush(W,painter,pen) {
+        x_s = start.x();
+        x_e = end.x();
+        y_s = start.y();
+        y_e = end.y();
+        width = W;
+        x = x_s;
+        y = y_s;
 
     }
     void Bresenham() {
@@ -172,7 +183,20 @@ public:
         if (horizontal) x = -x;
         if (vertical) y = -y;
     }
+
+    void testDraw(){
+        x_s += 100;
+        y_s += 100;
+        x_e += 100;
+        y_e += 100;
+        MidPoint();
+
+    }
+
 };
+
+
+
 
 //void Lines(int brushType) {
 //    int X1, Y1;

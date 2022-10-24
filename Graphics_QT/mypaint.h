@@ -17,14 +17,30 @@
 #include "newwindow.h"
 #include "point.h"
 #include <vector>
+#include "TransMatrix.h"
+
 using namespace std;
+
+enum transform{
+    NOTRANS,
+    MOVE,
+    ZOOM,
+    ROTATE
+};
 
 
 extern vector<vector<pointData>> MAP;
+
 struct arcCenter{
     int x,y;
     int R;
 };
+
+struct TransRect{
+    QPoint topLeft,topRight,bottomLeft,bottomRight;
+    TransRect(QPoint tl,QPoint tr,QPoint bl,QPoint br):topLeft(tl),topRight(tr),bottomLeft(bl),bottomRight(br){}
+};
+
 
 class MyPaint : public QMainWindow
 {
@@ -48,10 +64,19 @@ private:
     int _openflag;//打开图片
     QPixmap _pixmap;//画布图片
     QPen _pen;
-    int _drag;//拖拽标志
 
+    QPoint referancePoint;          //变换时由用户设置的参照点
+    bool isSpecificRefer = false;            //是否存在指定的参照点
+    bool isInTagRect = false;
+    int removeRectIndex;
+    enum transform _transFlag;      //变换标志位
+    QRect *transRectTag = new QRect(100,100,20,20);             //标签矩形
+    QVector<QPoint> tempTransPolygon;
+
+    int _drag;
     newWindow *setBrushWindow = new newWindow();//设置窗口
 
+    transMatrix trans;
 
 public:
     QVector<QVector<QPoint> > _lines;//线条集合(一条线条可包含多个线段)
@@ -59,6 +84,7 @@ public:
     QVector<QRect> _ellipse;//椭圆集合
     QVector<QRect>  _line;//直线集合
     QVector<QRect>  _arc;//圆弧集合
+    QVector<TransRect> _transRect;  //旋转矩形集合
     QVector<arcCenter> _arcCenter;
     //QVector<QRect> _secondaryCircle;//椭圆集合
     QVector<QVector<QPoint>> _polygon;//多边形集合
@@ -73,7 +99,11 @@ public:
     QRect* nowRect, *nowEllipse;
     QPoint* nowFill;
     QVector<QPoint>* nowPolygon;
-    int isInRect, isInEllipse,isInPolygon, isInFill;
+    int isInRect, isInEllipse,isInPolygon,isInFill;
+    void circleTrans(QMouseEvent *e);
+    void polygonTrans(QMouseEvent *e);
+    void rectTrans(QMouseEvent *e);
+    void Transform(QMouseEvent *e);
 
 signals:
     void sendPen(QPen*);
@@ -90,7 +120,7 @@ public slots:
     void Bezier(); // 画贝塞尔曲线
     //void SecondaryCircle();
     void OpenPic();//打开图片
-    void startMove();//开始移动物体
+    void startTrans();//开始移动物体
     void startFill();
 
     void createBrushWindow();
@@ -99,5 +129,8 @@ public slots:
 
 
 };
-
+void Drag();
+void drawRect(QRect rec,QPixmap p);
+double getAngle(QPoint origin,QPoint p1,QPoint p2);
+QPoint getPolyCenter(QVector<QPoint> poly);
 #endif // MYPAINT_H

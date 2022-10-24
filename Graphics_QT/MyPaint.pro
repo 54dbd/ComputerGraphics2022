@@ -12,6 +12,7 @@ HEADERS += \
     Circle.h \
     Fill.h \
     Line.h \
+    TransMatrix.h \
     mypaint.h \
     newwindow.h \
     Polygon.h \
