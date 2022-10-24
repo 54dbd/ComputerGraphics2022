@@ -164,7 +164,7 @@ void MyPaint::paintEvent(QPaintEvent *)
                   int y_s = line.at(j).y();
                   int y_e = line.at(j+1).y();
                   class Line l(x_s,y_s,x_e,y_e,1,p, pen);
-                  l.MidPoint();
+                  l.DashLine();
               }
         }
         else if(_shape.at(c) == 2)//矩形
@@ -220,7 +220,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             int y_e = end.y();
             //创建直线
             class Line l(x_s,y_s,x_e,y_e,1,p, pen);
-            l.MidPoint();
+            l.DashLine();
             i4++;
 
         }
