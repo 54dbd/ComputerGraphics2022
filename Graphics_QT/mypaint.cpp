@@ -117,10 +117,12 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(arcCenterAction);
 
     QAction *polygonAction = new QAction(tr("&多边形"), this);//多边形动作
+    polygonAction->setIcon(QIcon(":/png/images/polygon.png"));//图标
     polygonAction->setShortcut(QKeySequence(tr("Ctrl+P")));//热键
     tbar->addAction(polygonAction);
 
     QAction *bezierAction = new QAction(tr("&贝塞尔"), this);//贝塞尔
+    bezierAction->setIcon(QIcon(":/png/images/bezier.png"));//图标
     tbar->addAction(bezierAction);
 
     QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
