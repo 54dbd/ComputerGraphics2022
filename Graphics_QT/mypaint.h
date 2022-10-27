@@ -69,6 +69,9 @@ private:
     QLabel* statusBarLabel;
 
     QPoint referancePoint;          //变换时由用户设置的参照点
+    QRect  tempTransRect;
+    QVector<QPoint>  tempTransPoly;
+    bool iscomfirm = true;
     bool isSpecificRefer = false;            //是否存在指定的参照点
     bool isInTagRect = false;
     bool isDashLine = false;
@@ -76,14 +79,14 @@ private:
     enum transform _transFlag;      //变换标志位
     QRect *transRectTag = new QRect(100,100,20,20);             //标签矩形
     QVector<QPoint> tempTransPolygon;
-
+    bool test = false;
     int _drag;
     newWindow *setBrushWindow = new newWindow();//设置窗口
 
     transMatrix trans;
 
 public:
-    QVector<QVector<QPoint> > _lines;//线条集合(一条线条可包含多个线段)
+    QVector<QVector<QPoint>> _lines;//线条集合(一条线条可包含多个线段)
     QVector<QRect> _rects;//矩形集合
     QVector<QRect> _ellipse;//椭圆集合
     QVector<QRect>  _line;//直线集合

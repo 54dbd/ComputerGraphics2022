@@ -825,6 +825,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
         }
         else if (_drawType == 10){
             _lpress = false;
+            iscomfirm = true;
         }
         else if (_drawType == 11){
             _lpress = false;
@@ -1094,7 +1095,12 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
     double zoomPropor_X,zoomPropor_Y;  //进行缩放的比例
     QPoint moveVector;              //进行移动的向量
     double angle;
-    if(isSpecificRefer) {
+
+    if (iscomfirm){
+       tempTransRect = *nowRect;
+       iscomfirm = false;
+    }
+    if (isSpecificRefer) {
         trM.setReference(referancePoint);  //是否有用户设定的参考点，有则设为该点
     }
     else {
@@ -1127,12 +1133,11 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
         case ZOOM:
             if(isInTagRect){
                 //计算缩放比例，直接来说就是计算怎么让标志矩形中心点移动到现在的点
-                zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(transRectTag->center().x()-referancePoint.x());
-                zoomPropor_Y = abs(e->pos().y()-referancePoint.y())*1.0/abs(transRectTag->center().y()-referancePoint.y());
-
+                zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(tempTransRect.bottomRight().x() - referancePoint.x());
+                zoomPropor_Y = abs(e->pos().y()-referancePoint.y())*1.0/abs(tempTransRect.bottomRight().y() - referancePoint.y());
                 trM.setZoomTrans(zoomPropor_X,zoomPropor_Y); //生成缩放变换矩阵
-                nowRect->setTopLeft(trM*nowRect->topLeft());
-                nowRect->setBottomRight(trM*nowRect->bottomRight());  //对目标矩形的两个点同步变换
+                nowRect->setTopLeft(trM*tempTransRect.topLeft());
+                nowRect->setBottomRight(trM*tempTransRect.bottomRight());  //对目标矩形的两个点同步变换
                 if(isInFill){
                     trM.setMoveTrans(nowRect->center() - *nowFill);
                     (*nowFill) = trM*(*nowFill);
@@ -1159,6 +1164,12 @@ void MyPaint::polygonTrans(QMouseEvent *e){
     double zoomPropor_X,zoomPropor_Y;  //进行缩放的比例
     QPoint moveVector;              //进行移动的向量
     double angle;
+
+    if (iscomfirm){
+        tempTransPoly = *nowPolygon;
+        iscomfirm = false;
+    }
+
     if(isSpecificRefer)
         trM.setReference(referancePoint);
     else {
@@ -1182,31 +1193,34 @@ void MyPaint::polygonTrans(QMouseEvent *e){
             break;
         case ZOOM:
             if(isInTagRect) {
+                test = true;
                 //zoomPropor_X = abs(e->pos().x() - referancePoint.x())*1.0/abs(_begin.x() - referancePoint.x());
                 //zoomPropor_Y = abs(e->pos().y() - referancePoint.y())*1.0/abs(_begin.y() - referancePoint.y());
-                zoomPropor_X = abs(e->pos().x() - referancePoint.x()) * 1.0/abs(transRectTag->center().x() - referancePoint.x());
-                zoomPropor_Y = abs(e->pos().y() - referancePoint.y()) * 1.0/abs(transRectTag->center().y() - referancePoint.y());
+                zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(tempTransPoly[0].x() - referancePoint.x());
+                zoomPropor_Y = abs(e->pos().y()-referancePoint.y())*1.0/abs(tempTransPoly[0].y() - referancePoint.y());
                 trM.setZoomTrans(zoomPropor_X, zoomPropor_Y); //生成缩放变换矩阵
                 for (int i = 0; i < nowPolygon->size(); ++i) {
-                    (*nowPolygon)[i] = trM * (*nowPolygon)[i];
+                    (*nowPolygon)[i] = trM * tempTransPoly[i];
                 }
-                if(isInFill){
-                    trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
-                    (*nowFill) = trM*(*nowFill);
-                }
+            if(isInFill){
+                trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
+                (*nowFill) = trM*(*nowFill);
+            }
                 trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center()); //让标志矩形中心点跟随移动到新点
                 transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
                 transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
                 update();
                 //_begin = e->pos();
             }
+            break;
         case ROTATE:
-            //if(isInTagRect) {
-                angle = -1*getAngle(referancePoint, _begin, e->pos());
-                //if(_begin.x()<)
+            if(isInTagRect) {
+                angle = getAngle(referancePoint, tempTransPoly[0], e->pos());
                 trM.setRotateTrans(angle);
+                if(angle>30||angle<-30)   /**旋转时连续旋转超过60多度时会出现bug，目前原因尚不明确，处理方法为每次超过30度时更新暂存多边形，则下次的角度从零计算**/
+                    iscomfirm = true;     /**切勿删除！！！！！！！！！！！！**/
                 for (int i = 0; i < nowPolygon->size(); ++i) {
-                    (*nowPolygon)[i] = trM * (*nowPolygon)[i];
+                    (*nowPolygon)[i] = trM * tempTransPoly[i];
                 }
                 if(isInFill){
                     trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
@@ -1215,25 +1229,52 @@ void MyPaint::polygonTrans(QMouseEvent *e){
                 trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center()); //让标志矩形中心点跟随移动到新点
                 transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
                 transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
-                update();
                 _begin = e->pos();
-           // }
-
-
+                update();
+            }
     }
 
 }
 
-QPoint getPolyCenter(QVector<QPoint> polygon){
-    int PointNum = polygon.size();
-    int x_cen = 0,y_cen = 0;
-    for (int i = 0; i < PointNum; ++i) {
-        x_cen += polygon[i].x();
-        y_cen += polygon[i].y();
+
+double Area(QPoint p0, QPoint p1, QPoint p2)
+{
+    double area = 0;
+    area = p0.x()*p1.y() + p1.x()*p2.y() + p2.x()*p0.y() - p1.x()*p0.y() - p2.x()*p1.y() - p0.x()*p2.y();
+    return area / 2;
+}
+
+QPoint getPolyCenter(QVector<QPoint> Poly)
+{
+    QPoint p0 = Poly[0];
+    QPoint p1 = Poly[1];
+    QPoint p2;
+    int Center_X,Center_Y;
+    double sumarea = 0, sumx = 0, sumy = 0;
+    double area;
+    for (int i = 2; i < Poly.size(); i++)
+    {
+        p2 = Poly[i];
+        area = Area(p0,p1,p2);
+        sumarea += area;
+        sumx += (p0.x() + p1.x() + p2.x())*area; //求∑cx[i] * s[i]和∑cy[i] * s[i]
+        sumy += (p0.y() + p1.y() + p2.y())*area;
+        p1 = p2;//求总面积
     }
-    x_cen /= PointNum;
-    y_cen /= PointNum;
-    return QPoint(x_cen,y_cen);
+    Center_X = (int)(sumx / sumarea / 3.0 );
+    Center_Y = (int)(sumy / sumarea / 3.0 );
+    qDebug()<<Center_X;
+    qDebug()<<Center_Y;
+    return QPoint(Center_X,Center_Y);
+
+    /*double Cx = 0,Cy = 0;
+    for(QPoint q :Poly){
+        Cx += q.x();
+        Cy += q.y();
+    }
+    Cx /= Poly.size();
+    Cy /= Poly.size();
+    return QPoint((int)Cx,(int)Cy);*/
 }
 
 
@@ -1242,12 +1283,15 @@ double getAngle(QPoint origin,QPoint p1,QPoint p2)
 {
     int x1 = p1.x(),y1 = p1.y(),x2 = p2.x(), y2 = p2.y(),x3 = origin.x(),y3 = origin.y();
     double theta = atan2(x1 - x3, y1 - y3) - atan2(x2 - x3, y2 - y3);
+
     if (theta > M_PI)
         theta -= 2 * M_PI;
     if (theta < -M_PI)
         theta += 2 * M_PI;
 
     theta = abs(theta * 180.0 / M_PI);
+    if((x2-x3)*(y2-y1)-(y2-y3)*(x2-x1)<0)
+        theta *= -1;
     return theta;
 }
 
