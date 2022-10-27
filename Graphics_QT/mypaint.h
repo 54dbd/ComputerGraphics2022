@@ -90,6 +90,7 @@ public:
     //QVector<QRect> _secondaryCircle;//椭圆集合
     QVector<QVector<QPoint>> _polygon;//多边形集合
     QVector<QPoint> _fill;
+    QRect _crop;// 裁剪的矩形
 
     vector<vector<QPoint>> _bezierCurve; // 若干条曲线
     vector<QPoint> _currentBezierCurve; // 当前控制点容器
@@ -105,6 +106,7 @@ public:
     void polygonTrans(QMouseEvent *e);
     void rectTrans(QMouseEvent *e);
     void Transform(QMouseEvent *e);
+    QRect CS_ClipLine(QRect line, int XL, int XR, int YB, int YT, QPen pen);
 
 signals:
     void sendPen(QPen*);
@@ -119,6 +121,7 @@ public slots:
     void Polygon();//画多边形
     void Fill();//填充图形
     void Bezier(); // 画贝塞尔曲线
+    void Clip(); // 裁切线段
     //void SecondaryCircle();
     void OpenPic();//打开图片
     void startTrans();//开始移动物体
@@ -134,4 +137,5 @@ void Drag();
 void drawRect(QRect rec,QPixmap p);
 double getAngle(QPoint origin,QPoint p1,QPoint p2);
 QPoint getPolyCenter(QVector<QPoint> poly);
+int encode(int x, int y, int XL, int XR, int YB, int YT);
 #endif // MYPAINT_H

@@ -9,6 +9,10 @@
 #include <iostream>
 #include <QRect>
 #include "newwindow.h"
+#define LEFT 1
+#define RIGHT 2
+#define BOTTOM 4
+#define TOP 8
 using namespace std;
 vector<vector<pointData>> MAP;
 
@@ -119,6 +123,8 @@ MyPaint::MyPaint(QWidget *parent) :
     QAction *bezierAction = new QAction(tr("&贝塞尔"), this);//贝塞尔
     tbar->addAction(bezierAction);
 
+    QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
+    tbar->addAction(clipAction);
 
 
 
@@ -134,6 +140,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(arcCenterAction, SIGNAL(triggered()), this, SLOT(ArcCenter()));
     connect(polygonAction, SIGNAL(triggered()), this, SLOT(Polygon()));
     connect(bezierAction, SIGNAL(triggered()), this, SLOT(Bezier()));
+    connect(clipAction, SIGNAL(triggered()), this, SLOT(Clip()));
 
     connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
     connect(transAction,SIGNAL(triggered()),this,SLOT(startTrans()));
@@ -370,7 +377,29 @@ void MyPaint::paintEvent(QPaintEvent *)
 //            }
 
         }
-
+        else if(_shape.at(c) == 12)//显示裁切矩形
+        {
+            QPoint start,end;
+            start = _crop.topLeft();
+            end = _crop.bottomRight();
+            int x_s = start.x();
+            int x_e = end.x();
+            int y_s = start.y();
+            int y_e = end.y();
+            //创建直线
+            class Line l1(x_s,y_s,x_e,y_s,1,p, pen);
+            class Line l2(x_s,y_s,x_s,y_e,1,p, pen);
+            class Line l3(x_e,y_e,x_s,y_e,1,p, pen);
+            class Line l4(x_e,y_e,x_e,y_s,1,p, pen);
+            if(_lpress){ //按住时
+                l1.dashLineNoMap();
+                l2.dashLineNoMap();
+                l3.dashLineNoMap();
+                l4.dashLineNoMap();
+            }else{
+                _shape.remove(c);
+            }
+        }
     }
     p.end();
     p.begin(this);//将当前窗体作为画布
@@ -541,6 +570,11 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             _fill.append(pos);
             qDebug()<<"start fill at"<<pos.x()<<", "<<pos.y();
             _shape.append(11);
+        }
+        else if(_drawType == 12) {
+            _lpress = true;//左键按下标志
+            _crop.setTopLeft(e->pos());//记录鼠标的坐标(新直线开始一端坐标)
+            _shape.append(12);
         }
 
 
@@ -714,6 +748,10 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             qDebug()<<"not in polygon";
             update();//触发窗体重绘
         }
+        else if(_drawType == 12) {
+            _crop.setBottomRight(e->pos());//更新直线另一端)
+            update();//触发窗体重绘
+        }
     }
 }
 
@@ -789,6 +827,37 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             _lpress = false;
             update();
         }
+        else if (_drawType == 12){
+            _lpress = false;
+            int XL = _crop.topLeft().x() < _crop.bottomRight().x() ? _crop.topLeft().x() : _crop.bottomRight().x();
+            int XR = _crop.topLeft().x() > _crop.bottomRight().x() ? _crop.topLeft().x() : _crop.bottomRight().x();
+            int YB = _crop.topLeft().y() > _crop.bottomRight().y() ? _crop.topLeft().y() : _crop.bottomRight().y();
+            int YT = _crop.topLeft().y() < _crop.bottomRight().y() ? _crop.topLeft().y() : _crop.bottomRight().y();
+            int k = 0;
+            QVector<QRect> newLine;
+            QVector<QPen> newBrush;
+            for (int i = 0; i < _shape.length(); i++) {
+                if(_shape.at(i - k) == 4) {
+                    QPen pen = _brush.at(i - k);
+                    QRect line = _line.at(0);
+                    QRect newline = CS_ClipLine(line, XL, XR, YB, YT, pen);
+                    if (newline.topLeft().x() != -1){
+                        newLine.append(newline);
+                        newBrush.append(pen);
+                    }
+                    _brush.remove(i - k);
+                    _shape.remove(i - k);
+                    _line.remove(0);
+                    k++;
+                }
+            }
+            for (int i = 0; i < newLine.length(); ++i) {
+                _line.append(newLine.at(i));
+                _brush.append(newBrush.at(i));
+                _shape.append(4);
+                update();
+            }
+        }
     }
 }
 
@@ -853,6 +922,11 @@ void MyPaint::startTrans(){
 
 void MyPaint::startFill(){
     _drawType = 11;
+    _drag = 0;
+}
+
+void MyPaint::Clip() {
+    _drawType = 12;
     _drag = 0;
 }
 
@@ -1160,6 +1234,69 @@ double getAngle(QPoint origin,QPoint p1,QPoint p2)
 
     theta = abs(theta * 180.0 / M_PI);
     return theta;
+}
+
+int encode(int x, int y, int XL, int XR, int YB, int YT) {
+    int c = 0;
+    if (x < XL) c |= LEFT; // 置位CL
+    if (x > XR) c |= RIGHT; // 置位CR
+    if (y > YB) c |= BOTTOM; // 置位CB
+    if (y < YT) c |= TOP; // 置位CT
+    return c;
+}
+
+QRect MyPaint::CS_ClipLine(QRect line, int XL, int XR, int YB, int YT, QPen pen) {
+    int x1 = line.topLeft().x();
+    int x2 = line.bottomRight().x();
+    int y1 = line.topLeft().y();
+    int y2 = line.bottomRight().y();
+
+    int x, y;
+    int code1, code2, code;
+    // 端点坐标编码
+    code1 = encode(x1, y1, XL, XR, YB, YT);
+    code2 = encode(x2, y2, XL, XR, YB, YT);
+    qDebug() << "XL:" << XL << "XR:" << XR << "YB:" << YB << "YT:" << YT;
+    qDebug() << "x1:" << x1 << "y1:" << y1 << "x2:" << x2 << "y2:" << y2;
+    qDebug() << code1 << code2;
+    // 直到”完全可见”为止
+    while (code1 != 0 || code2 != 0) {
+        // 排除”显然不可见”情况
+        if ((code1 & code2) != 0)
+            return QRect(-1,-1,-1,-1);
+        code = code1;
+        // 求得在窗口外的点
+        if (code1 == 0)
+            code = code2;
+        // 按顺序检测到端点的编码不为0，才把线段与对应的窗口边界求交。
+        if ((LEFT & code) != 0) { // 线段与窗口左边延长线相交
+            x = XL;
+            y = y1 + (y2 - y1) * (XL - x1) / (x2 - x1);
+        } else if ((RIGHT & code) != 0) { // 线段与窗口右边延长线相交
+            x = XR;
+            y = y1 + (y2 - y1) * (XR - x1) / (x2 - x1);
+        } else if ((BOTTOM & code) != 0) { // 线段与窗口下边延长线相交
+            y = YB;
+            x = x1 + (x2 - x1) * (YB - y1) / (y2 - y1);
+        } else if ((TOP & code) != 0) { // 线段与窗口上边延长线相交
+            y = YT;
+            x = x1 + (x2 - x1) * (YT - y1) / (y2 - y1);
+        }
+        if (code == code1) { //裁去P1到交点
+            x1 = x;
+            y1 = y;
+            code1 = encode(x1, y1, XL, XR, YB, YT);
+        } else {  //裁去P2到交点
+            x2 = x;
+            y2 = y;
+            code2 = encode(x2, y2, XL, XR, YB, YT);
+        }
+    }
+    QPoint topLeft(x1, y1), bottomRight(x2, y2);
+    QRect rect;//鼠标按下，直线一端开始
+    rect.setTopLeft(topLeft);
+    rect.setBottomRight(bottomRight);
+    return rect;
 }
 
 void MyPaint::setDashLine(Qt::PenStyle style){//设置虚线变量
