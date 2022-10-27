@@ -845,10 +845,11 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
                     QPen pen = _brush.at(i - k);
                     QRect line = _line.at(0);
                     QRect newline = CS_ClipLine(line, XL, XR, YB, YT, pen);
-                    if (newline.topLeft().x() != -1){
+                    if (newline.topLeft().x() != -1){//如果不是完全剪切整条线段
                         newLine.append(newline);
                         newBrush.append(pen);
                     }
+                    //删除原来的线段
                     _brush.remove(i - k);
                     _shape.remove(i - k);
                     _line.remove(0);
