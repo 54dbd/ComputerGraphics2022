@@ -399,8 +399,6 @@ void MyPaint::paintEvent(QPaintEvent *)
                 l2.dashLineNoMap();
                 l3.dashLineNoMap();
                 l4.dashLineNoMap();
-            }else{
-                _shape.remove(c);
             }
         }
     }
@@ -837,22 +835,32 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             int XR = _crop.topLeft().x() > _crop.bottomRight().x() ? _crop.topLeft().x() : _crop.bottomRight().x();
             int YB = _crop.topLeft().y() > _crop.bottomRight().y() ? _crop.topLeft().y() : _crop.bottomRight().y();
             int YT = _crop.topLeft().y() < _crop.bottomRight().y() ? _crop.topLeft().y() : _crop.bottomRight().y();
-            int k = 0;
             QVector<QRect> newLine;
             QVector<QPen> newBrush;
+            vector<int> deleteNo;
+            int cropNo;
             for (int i = 0; i < _shape.length(); i++) {
-                if(_shape.at(i - k) == 4) {
-                    QPen pen = _brush.at(i - k);
-                    QRect line = _line.at(0);
+                if(_shape.at(i) == 4) {
+                    QPen pen = _brush.at(i);
+                    QRect line = _line.at(i);
                     QRect newline = CS_ClipLine(line, XL, XR, YB, YT, pen);
                     if (newline.topLeft().x() != -1){
                         newLine.append(newline);
                         newBrush.append(pen);
                     }
-                    _brush.remove(i - k);
-                    _shape.remove(i - k);
-                    _line.remove(0);
-                    k++;
+                    deleteNo.push_back(i);
+                }
+            }
+            sort(deleteNo.rbegin(), deleteNo.rend());
+            for (int i = 0; i < deleteNo.size(); ++i) {
+                _line.remove(deleteNo[i]);
+                _shape.remove(deleteNo[i]);
+                _brush.remove(deleteNo[i]);
+            }
+            for (int i = 0; i < _shape.length(); i++) {
+                if(_shape.at(i) == 12) {
+                    _shape.remove(i);
+                    _brush.remove(i);
                 }
             }
             for (int i = 0; i < newLine.length(); ++i) {
@@ -1262,9 +1270,6 @@ QRect MyPaint::CS_ClipLine(QRect line, int XL, int XR, int YB, int YT, QPen pen)
     // 端点坐标编码
     code1 = encode(x1, y1, XL, XR, YB, YT);
     code2 = encode(x2, y2, XL, XR, YB, YT);
-    qDebug() << "XL:" << XL << "XR:" << XR << "YB:" << YB << "YT:" << YT;
-    qDebug() << "x1:" << x1 << "y1:" << y1 << "x2:" << x2 << "y2:" << y2;
-    qDebug() << code1 << code2;
     // 直到”完全可见”为止
     while (code1 != 0 || code2 != 0) {
         // 排除”显然不可见”情况
