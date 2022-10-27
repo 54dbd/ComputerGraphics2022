@@ -895,7 +895,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
                 if(_shape.at(i) == 4) {
                     QPen pen = _brush.at(i);
                     QRect line = _line.at(i);
-                    QRect newline = CS_ClipLine(line, XL, XR, YB, YT);
+                    QRect newline = MidPoint_ClipLine(line, XL, XR, YB, YT);
                     if (newline.topLeft().x() != -1){//如果不是完全剪切整条线段
                         newLine.append(newline);
                         newBrush.append(pen);
@@ -1360,6 +1360,82 @@ QRect MyPaint::CS_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
     rect.setTopLeft(topLeft);
     rect.setBottomRight(bottomRight);
     return rect;
+}
+
+QRect MyPaint::MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
+    int x1 = line.topLeft().x();
+    int x2 = line.bottomRight().x();
+    int y1 = line.topLeft().y();
+    int y2 = line.bottomRight().y();
+
+    int xa = x1, ya = y1, xb = x2, yb = y2;
+    int code1, code2, code_m;
+    // 端点坐标编码
+    code1 = encode(x1, y1, XL, XR, YB, YT);
+    code2 = encode(x2, y2, XL, XR, YB, YT);
+
+    // 两个点都在窗口内，显然可见，直接返回直线
+    if (code1 == 0 && code2 == 0) {
+        return line;
+    }
+    // 两个点都在窗口外，显然不可见，直接返回空
+    else if ((code1 & code2) != 0) {
+        return QRect(-1,-1,-1,-1);
+    }
+    // 对于剩下的情况，需要使用中点算法
+    // 首先先求P1点最近的窗口边界点Pa点
+    if(code1 != 0){
+        int x_0 = x1, y_0 = y1, x_1 = x2, y_1 = y2;
+        int code_0 = encode(x_0, y_0, XL, XR, YB, YT);
+        int code_1 = encode(x_1, y_1, XL, XR, YB, YT);
+        while(true){
+            int xm = (x_0 + x_1) / 2;
+            int ym = (y_0 + y_1) / 2;
+            int distance;
+            code_m = encode(xm, ym, XL, XR, YB, YT);
+            if((code_0 & code_m) == 0) {
+                x_1 = xm;
+                y_1 = ym;
+                code_1 = code_m;
+            } else {
+                x_0 = xm;
+                y_0 = ym;
+                code_0 = code_m;
+            }
+            if ((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0)<= 4) {
+                xa = xm;
+                ya = ym;
+                break;
+            }
+        }
+    }
+    // 随后求P2点最近的窗口边界点Pb点
+    if(code2 != 0){
+        int x_0 = x1, y_0 = y1, x_1 = x2, y_1 = y2;
+        int code_0 = encode(x_0, y_0, XL, XR, YB, YT);
+        int code_1 = encode(x_1, y_1, XL, XR, YB, YT);
+        while(true){
+            int xm = (x_0 + x_1) / 2;
+            int ym = (y_0 + y_1) / 2;
+            code_m = encode(xm, ym, XL, XR, YB, YT);
+            if((code_1 & code_m) == 0) {
+                x_0 = xm;
+                y_0 = ym;
+                code_0 = code_m;
+            } else {
+                x_1 = xm;
+                y_1 = ym;
+                code_1 = code_m;
+            }
+            if ((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0) <= 4) {
+                xb = xm;
+                yb = ym;
+                break;
+            }
+        }
+    }
+    QPoint topLeft(xa, ya), bottomRight(xb, yb);
+    return QRect(topLeft, bottomRight);
 }
 
 void MyPaint::setDashLine(Qt::PenStyle style){//设置虚线变量

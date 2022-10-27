@@ -111,7 +111,8 @@ public:
     void polygonTrans(QMouseEvent *e);
     void rectTrans(QMouseEvent *e);
     void Transform(QMouseEvent *e);
-    QRect CS_ClipLine(QRect line, int XL, int XR, int YB, int YT);
+    static QRect CS_ClipLine(QRect line, int XL, int XR, int YB, int YT);
+    static QRect MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT);
 
     void updateCoordiante( int x, int y);
 
