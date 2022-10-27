@@ -167,7 +167,9 @@ void MyPaint::paintEvent(QPaintEvent *)
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11=0;//各种图形的索引
 
 
-    if(_drawType==10 ) {
+
+
+    if(_drawType==10 ) {  //绘制标志矩形与自定义参考点
 
         QPoint start,end;
         start = transRectTag->topLeft();
@@ -186,6 +188,17 @@ void MyPaint::paintEvent(QPaintEvent *)
         l2.MidPoint();
         l3.MidPoint();
         l4.MidPoint();
+
+        if(isSpecificRefer){
+            for (int i = referancePoint.x()-3; i < referancePoint.x()+4 ; ++i) {
+                Brush b(1,p,pen);
+                b.drawPixel(i,referancePoint.y());
+            }
+            for (int i = referancePoint.y()-3; i < referancePoint.y()+4 ; ++i) {
+                Brush b(1,p,pen);
+                b.drawPixel(referancePoint.x(),i);
+            }
+        }
     }
 
     for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
@@ -421,6 +434,14 @@ void MyPaint::paintEvent(QPaintEvent *)
 
 void MyPaint::mousePressEvent(QMouseEvent *e)
 {
+
+    if(e->button() == Qt::MiddleButton){
+        if(_drawType == 10){
+            referancePoint = e->pos();
+            isSpecificRefer = true;
+            update();
+        }
+    }
 
     if(e->button() == Qt::LeftButton)//当鼠标左键按下
     {
@@ -710,6 +731,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
             transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
         }
+        else if(isInEllipse){
+            transMatrix trM;
+            trM.setMoveTrans(nowEllipse->bottomRight()- transRectTag->center());
+            transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+            transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
+        }
 
     }
 
@@ -747,26 +774,12 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             update();//触发窗体重绘
 
         }
-        else if(_drawType == 3|| (_drawType==10&&isInEllipse))
+        else if(_drawType == 3)
         {
             if(_drag == 0)//非拖拽
             {
                 QRect& lastEllipse = _ellipse.last();//拿到新椭圆
-                lastEllipse.setBottomRight(e->pos());//更新椭圆的右下角坐标)
-
-            }else if(isInEllipse){
-                int dx = e->pos().x()-_begin.x();//横向移动x
-                int dy = e->pos().y()-_begin.y();//纵向移动y
-                qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
-                *nowEllipse = (*nowEllipse).adjusted(dx,dy,dx,dy);
-                _begin = e->pos();//刷新拖拽点起始坐标
-                if (isInFill) {
-                    dx = e->pos().x()-nowFill->x();
-                    dy = e->pos().y()-nowFill->y();
-                    nowFill->setX(nowFill->x()+dx);
-                    nowFill->setY(nowFill->y()+dy);
-                }
-
+                lastEllipse.setBottomRight(e->pos());//更新椭圆的右下角坐标
             }
             update();//触发窗体重绘
         }
@@ -1096,7 +1109,8 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
          _transFlag = ROTATE;
      }
      else if(e->key() == Qt::Key_S&& _drawType == 10){
-         _transFlag = NOTRANS;
+         isSpecificRefer = false;
+         update();
      }
 
 }
@@ -1136,7 +1150,8 @@ bool MyPaint::polyContains(QVector<QPoint> polygon, QPoint P){
 void MyPaint::Transform(QMouseEvent *e) {
     if(isInRect)
         rectTrans(e);
-    else if(isInEllipse);
+    else if(isInEllipse)
+        circleTrans(e);
     else if(isInPolygon)
         polygonTrans(e);
 }
@@ -1244,7 +1259,6 @@ void MyPaint::polygonTrans(QMouseEvent *e){
             break;
         case ZOOM:
             if(isInTagRect) {
-                test = true;
                 //zoomPropor_X = abs(e->pos().x() - referancePoint.x())*1.0/abs(_begin.x() - referancePoint.x());
                 //zoomPropor_Y = abs(e->pos().y() - referancePoint.y())*1.0/abs(_begin.y() - referancePoint.y());
                 zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(tempTransPoly[0].x() - referancePoint.x());
@@ -1287,6 +1301,78 @@ void MyPaint::polygonTrans(QMouseEvent *e){
 
 }
 
+void MyPaint::circleTrans(QMouseEvent *e) {
+    transMatrix trM;
+    double zoomPropor_X, zoomPropor_Y;  //进行缩放的比例
+    QPoint moveVector;              //进行移动的向量
+    double angle;
+    int R;
+    if (iscomfirm) {
+        tempTransRect = *nowEllipse;
+        iscomfirm = false;
+    }
+    if (isSpecificRefer) {
+        trM.setReference(referancePoint);  //是否有用户设定的参考点，有则设为该点
+    } else {
+        referancePoint = nowEllipse->center();
+        trM.setReference(referancePoint);   //没有则设为矩形中心
+    }
+    switch (_transFlag) {
+
+        case MOVE:
+            moveVector = e->pos() - _begin;    //计算移动向量，终点减起点
+            trM.setMoveTrans(moveVector);
+            nowEllipse->setTopLeft(trM * nowEllipse->topLeft());
+            nowEllipse->setBottomRight(trM * nowEllipse->bottomRight());
+            if (isInFill) {
+                trM.setMoveTrans(nowEllipse->center() - *nowFill);
+                (*nowFill) = trM * (*nowFill);
+            }
+            _begin = e->pos();
+            update();
+        case ZOOM:
+            if(isInTagRect){
+                //计算缩放比例，直接来说就是计算怎么让标志矩形中心点移动到现在的点
+                zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(tempTransRect.bottomRight().x() - referancePoint.x());
+                trM.setZoomTrans(zoomPropor_X,zoomPropor_X); //生成缩放变换矩阵
+                nowEllipse->setTopLeft(trM*tempTransRect.topLeft());
+                nowEllipse->setBottomRight(trM*tempTransRect.bottomRight());  //对目标圆外接矩形的两个点同步变换
+                if(isInFill){
+                    trM.setMoveTrans(nowRect->center() - *nowFill);
+                    (*nowFill) = trM*(*nowFill);
+                }
+                trM.setMoveTrans(nowEllipse->bottomRight()-transRectTag->center()); //让标志矩形中心点跟随移动到新点
+                transRectTag->setTopLeft(trM*(transRectTag->topLeft()));
+                transRectTag->setBottomRight(trM*(transRectTag->bottomRight()));
+            }
+            _begin = e->pos();
+            update();
+            break;
+        case ROTATE:
+            if(isInTagRect) {
+                angle = getAngle(referancePoint, tempTransRect.bottomRight(), e->pos());
+                trM.setRotateTrans(angle);
+                if(angle>30||angle<-30)   /**旋转时连续旋转超过60多度时会出现bug，目前原因尚不明确，处理方法为每次超过30度时更新暂存多边形，则下次的角度从零计算**/
+                    iscomfirm = true;     /**切勿删除！！！！！！！！！！！！**/
+
+                R = tempTransRect.width();
+                nowEllipse->setBottomRight(trM*tempTransRect.bottomRight());
+                nowEllipse->setTopLeft(QPoint(nowEllipse->bottomRight().x()-R,nowEllipse->bottomRight().y()+R));
+
+                if(isInFill){
+                    trM.setMoveTrans(nowEllipse->center() - *nowFill);
+                    (*nowFill) = trM*(*nowFill);
+                }
+                trM.setMoveTrans(nowEllipse->bottomRight() - transRectTag->center()); //让标志矩形中心点跟随移动到新点
+                transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+                transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
+                _begin = e->pos();
+                update();
+            }
+            break;
+    }
+
+}
 
 double Area(QPoint p0, QPoint p1, QPoint p2)
 {
@@ -1495,3 +1581,5 @@ void MyPaint::updateCoordiante(int x, int y){
     QString output = "当前坐标("+QString::number(x,10)+", "+QString::number(y,10)+")";
     statusBarLabel->setText(output);
 }
+
+
