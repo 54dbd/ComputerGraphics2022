@@ -844,7 +844,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
                 if(_shape.at(i) == 4) {
                     QPen pen = _brush.at(i);
                     QRect line = _line.at(i);
-                    QRect newline = CS_ClipLine(line, XL, XR, YB, YT, pen);
+                    QRect newline = CS_ClipLine(line, XL, XR, YB, YT);
                     if (newline.topLeft().x() != -1){//如果不是完全剪切整条线段
                         newLine.append(newline);
                         newBrush.append(pen);
@@ -1260,7 +1260,7 @@ int encode(int x, int y, int XL, int XR, int YB, int YT) {
     return c;
 }
 
-QRect MyPaint::CS_ClipLine(QRect line, int XL, int XR, int YB, int YT, QPen pen) {
+QRect MyPaint::CS_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
     int x1 = line.topLeft().x();
     int x2 = line.bottomRight().x();
     int y1 = line.topLeft().y();
