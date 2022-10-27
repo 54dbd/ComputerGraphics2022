@@ -848,6 +848,13 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
                         newLine.append(newline);
                         newBrush.append(pen);
                     }
+<<<<<<< HEAD
+                    //删除原来的线段
+                    _brush.remove(i - k);
+                    _shape.remove(i - k);
+                    _line.remove(0);
+                    k++;
+=======
                     deleteNo.push_back(i);
                 }
             }
@@ -861,6 +868,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
                 if(_shape.at(i) == 12) {
                     _shape.remove(i);
                     _brush.remove(i);
+>>>>>>> 4f9395ce4c09f6cab893cfac2e5f94e21a961d1a
                 }
             }
             for (int i = 0; i < newLine.length(); ++i) {
