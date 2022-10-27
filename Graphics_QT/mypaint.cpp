@@ -30,6 +30,7 @@ MyPaint::MyPaint(QWidget *parent) :
      _transFlag = NOTRANS;
 
      this->setGeometry(350,200,600,400);//设置窗体大小、位置
+     this->setFixedSize(600,400);
      setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
      this->setStyleSheet("background-color:white;");
      //初始化MAP

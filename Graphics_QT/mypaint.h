@@ -19,6 +19,7 @@
 #include <vector>
 #include <QLabel>
 #include "TransMatrix.h"
+#include "Brush.h"
 
 using namespace std;
 

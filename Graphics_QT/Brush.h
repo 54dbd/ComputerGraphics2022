@@ -6,6 +6,8 @@
 #include <QPen>
 #define COLORREF QColor
 using namespace std;
+class pointData;
+extern vector<vector<pointData>> MAP;
 class Brush
 {
 private:
@@ -116,14 +118,23 @@ public:
 //            }
 //        }
         //不使用笔刷
-        painter.setPen(_pen);
-        painter.drawPoint(x, y);
-        MAP[x][y].setColor(_pen.color());
+        if(checkLegalPos(x,y,600,400)){
+            painter.setPen(_pen);
+            painter.drawPoint(x, y);
+            MAP[x][y].setColor(_pen.color());
+        }
+
 
     };
     void drawPixelNoMap(int x, int y){
         painter.setPen(_pen);
         painter.drawPoint(x, y);
+    }
+    bool checkLegalPos(int x, int y, int width, int height){
+        if(x>=0 && x<=width && y >= 0 && y<= height){
+            return true;
+        }else
+            return false;
     }
 };
 
