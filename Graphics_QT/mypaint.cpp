@@ -904,11 +904,11 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             QVector<QRect> newLine;
             QVector<QPen> newBrush;
             vector<int> deleteNo;
-            int cropNo;
+            int k = 0;
             for (int i = 0; i < _shape.length(); i++) {
                 if(_shape.at(i) == 4) {
                     QPen pen = _brush.at(i);
-                    QRect line = _line.at(i);
+                    QRect line = _line.at(k++);
                     QRect newline = MidPoint_ClipLine(line, XL, XR, YB, YT);
                     if (newline.topLeft().x() != -1){//如果不是完全剪切整条线段
                         newLine.append(newline);
@@ -919,7 +919,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             }
             sort(deleteNo.rbegin(), deleteNo.rend());
             for (int i = 0; i < deleteNo.size(); ++i) {
-                _line.remove(deleteNo[i]);
+                _line.remove(deleteNo.size()-i-1);
                 _shape.remove(deleteNo[i]);
                 _brush.remove(deleteNo[i]);
             }
