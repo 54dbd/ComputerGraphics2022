@@ -8,6 +8,8 @@
 #include <QDebug>
 #include <iostream>
 #include <QRect>
+#include <QLabel>
+#include <QStatusBar>
 #include "newwindow.h"
 #define LEFT 1
 #define RIGHT 2
@@ -29,14 +31,7 @@ MyPaint::MyPaint(QWidget *parent) :
 
      this->setGeometry(350,200,600,400);//设置窗体大小、位置
      setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
-     //设置背景黑色
-     //方法一
-//     QPalette palt(this->palette());
-//     palt.setColor(QPalette::Background, Qt::white);
-//     this->setAutoFillBackground(true);
-//     this->setPalette(palt);
-     //方法二
-       this->setStyleSheet("background-color:white;");
+     this->setStyleSheet("background-color:white;");
      //初始化MAP
      for(int i=0;i<600;i++){
          vector<pointData> row;
@@ -47,6 +42,7 @@ MyPaint::MyPaint(QWidget *parent) :
              MAP[i].push_back(point);
          }
      }
+
 
     //创建工具栏
     QToolBar *tbar = addToolBar(tr("工具栏"));
@@ -128,8 +124,13 @@ MyPaint::MyPaint(QWidget *parent) :
     QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
     tbar->addAction(clipAction);
 
-
-
+    //创建底部状态栏
+    statusBarLabel = new QLabel("当前坐标：",this);
+    statusBarLabel->setMinimumWidth(250);
+    QStatusBar* statusBar = new QStatusBar(this);
+    statusBar ->addWidget(statusBarLabel);
+    statusBar->setGeometry(0,380,600,20);
+    statusBar->setStyleSheet("border: solid black 2px;");
 
     //连接信号与槽函数
     connect(linesAction, SIGNAL(triggered()), this, SLOT(Lines()));
@@ -592,6 +593,7 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
     isInTagRect = false;
     int isArrow = 1;
     //定位鼠标指到的图形
+    updateCoordiante(e->pos().x(),e->pos().y());
     if(_rects.length()>0 ){
         for(int i=0;i<_rects.length();i++ ){
             if(_rects.at(i).contains(e->pos()))
@@ -1308,4 +1310,9 @@ void MyPaint::setDashLine(Qt::PenStyle style){//设置虚线变量
     }else{
         isDashLine = false;
     }
+}
+
+void MyPaint::updateCoordiante(int x, int y){
+    QString output = "当前坐标("+QString::number(x,10)+", "+QString::number(y,10)+")";
+    statusBarLabel->setText(output);
 }

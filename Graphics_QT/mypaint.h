@@ -17,6 +17,7 @@
 #include "newwindow.h"
 #include "point.h"
 #include <vector>
+#include <QLabel>
 #include "TransMatrix.h"
 
 using namespace std;
@@ -64,6 +65,7 @@ private:
     int _openflag;//打开图片
     QPixmap _pixmap;//画布图片
     QPen _pen;
+    QLabel* statusBarLabel;
 
     QPoint referancePoint;          //变换时由用户设置的参照点
     bool isSpecificRefer = false;            //是否存在指定的参照点
@@ -107,6 +109,8 @@ public:
     void rectTrans(QMouseEvent *e);
     void Transform(QMouseEvent *e);
     QRect CS_ClipLine(QRect line, int XL, int XR, int YB, int YT, QPen pen);
+
+    void updateCoordiante( int x, int y);
 
 signals:
     void sendPen(QPen*);
