@@ -351,6 +351,13 @@ void MyPaint::paintEvent(QPaintEvent *)
         else if (_shape.at(c) == 9){ // bezier
             const vector<QPoint>& bezierCurve = _bezierCurve.at(i9++);
 
+            //使控制点不受笔刷大小影响
+            QPen temp = pen;
+            pen.setWidth(1);
+            p.setPen(pen);
+
+            Brush t_brush(3, p, pen);
+
             // 画控制点
             for (auto i : bezierCurve) {
                 Circle C(i.x(),i.y(),4,1,p, pen);
@@ -358,6 +365,10 @@ void MyPaint::paintEvent(QPaintEvent *)
             }
             class Bezier b(1, p, bezierCurve, pen);
             b.drawBezier();
+
+            //恢复笔刷大小
+            pen = temp;
+            p.setPen(pen);
         }
         else if(_shape.at(c) == 11){//fill
             class Fill f(pix,p,pen);
@@ -560,11 +571,23 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 
 
         }
-        else if (_drawType == 9){// beizer
+        else if (_drawType == 9 || (_drawType == 10)){// beizer
             _lpress = true;
-            QPoint p(e->pos().x(), e->pos().y());
-            _currentBezierCurve.push_back(p);
-            qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
+            if (!_drag)
+            {
+                QPoint p(e->pos().x(), e->pos().y());
+                _currentBezierCurve.push_back(p);
+                qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
+            }
+            for (int i = 0; i < _bezierCurve.size(); ++i) {
+                for (int j = 0; j < _bezierCurve[i].size(); ++j) {
+                    // 判断当前点是否在控制点的圆内
+                    if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 && e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4)
+                    {
+                        nowControlPoint = &_bezierCurve[i][j];
+                    }
+                }
+            }
         }
         else if(_drawType == 11){//fill
             _lpress = true;
@@ -651,6 +674,24 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             }
         }
     }
+    if (!_bezierCurve.empty())
+    {
+        for (int i = 0; i < _bezierCurve.size(); ++i) {
+            for (int j = 0; j < _bezierCurve[i].size(); ++j) {
+                // 判断当前点是否在控制点的圆内
+                // if (e->pos().x() == _bezierCurve[i][j].x() && e->pos().y() == _bezierCurve[i][j].y())
+                if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 && e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4)
+                {
+                    isOnPoint = 1;
+                    isInEllipse = 0;
+                    isInPolygon = 0;
+                    isInRect = 0;
+                    isArrow = 0;
+                }
+            }
+        }
+    }
+
     if(transRectTag->contains(e->pos())) {
         isInTagRect = true;
         isArrow = 0;
@@ -751,6 +792,15 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             qDebug()<<"not in polygon";
             update();//触发窗体重绘
         }
+        else if (_drawType == 10){ // bezier移动控制点
+            if (!_bezierCurve.empty() && isOnPoint && !isInEllipse && !isInPolygon && !isInRect)
+            {
+                *nowControlPoint = QPoint(e->pos().x(), e->pos().y());
+                _begin = e->pos();//刷新拖拽点起始坐标
+            }
+            isOnPoint = 0;
+            update();
+        }
         else if(_drawType == 12) {
             _crop.setBottomRight(e->pos());//更新直线另一端)
             update();//触发窗体重绘
@@ -824,6 +874,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             _lpress = false;
         }
         else if (_drawType == 10){
+//            nowControlPoint = NULL;
             _lpress = false;
             iscomfirm = true;
         }
@@ -845,7 +896,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
                 if(_shape.at(i) == 4) {
                     QPen pen = _brush.at(i);
                     QRect line = _line.at(i);
-                    QRect newline = CS_ClipLine(line, XL, XR, YB, YT);
+                    QRect newline = MidPoint_ClipLine(line, XL, XR, YB, YT);
                     if (newline.topLeft().x() != -1){//如果不是完全剪切整条线段
                         newLine.append(newline);
                         newBrush.append(pen);
@@ -1353,6 +1404,82 @@ QRect MyPaint::CS_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
     rect.setTopLeft(topLeft);
     rect.setBottomRight(bottomRight);
     return rect;
+}
+
+QRect MyPaint::MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
+    int x1 = line.topLeft().x();
+    int x2 = line.bottomRight().x();
+    int y1 = line.topLeft().y();
+    int y2 = line.bottomRight().y();
+
+    int xa = x1, ya = y1, xb = x2, yb = y2;
+    int code1, code2, code_m;
+    // 端点坐标编码
+    code1 = encode(x1, y1, XL, XR, YB, YT);
+    code2 = encode(x2, y2, XL, XR, YB, YT);
+
+    // 两个点都在窗口内，显然可见，直接返回直线
+    if (code1 == 0 && code2 == 0) {
+        return line;
+    }
+    // 两个点都在窗口外，显然不可见，直接返回空
+    else if ((code1 & code2) != 0) {
+        return QRect(-1,-1,-1,-1);
+    }
+    // 对于剩下的情况，需要使用中点算法
+    // 首先先求P1点最近的窗口边界点Pa点
+    if(code1 != 0){
+        int x_0 = x1, y_0 = y1, x_1 = x2, y_1 = y2;
+        int code_0 = encode(x_0, y_0, XL, XR, YB, YT);
+        int code_1 = encode(x_1, y_1, XL, XR, YB, YT);
+        while(true){
+            int xm = (x_0 + x_1) / 2;
+            int ym = (y_0 + y_1) / 2;
+            int distance;
+            code_m = encode(xm, ym, XL, XR, YB, YT);
+            if((code_0 & code_m) == 0) {
+                x_1 = xm;
+                y_1 = ym;
+                code_1 = code_m;
+            } else {
+                x_0 = xm;
+                y_0 = ym;
+                code_0 = code_m;
+            }
+            if ((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0)<= 4) {
+                xa = xm;
+                ya = ym;
+                break;
+            }
+        }
+    }
+    // 随后求P2点最近的窗口边界点Pb点
+    if(code2 != 0){
+        int x_0 = x1, y_0 = y1, x_1 = x2, y_1 = y2;
+        int code_0 = encode(x_0, y_0, XL, XR, YB, YT);
+        int code_1 = encode(x_1, y_1, XL, XR, YB, YT);
+        while(true){
+            int xm = (x_0 + x_1) / 2;
+            int ym = (y_0 + y_1) / 2;
+            code_m = encode(xm, ym, XL, XR, YB, YT);
+            if((code_1 & code_m) == 0) {
+                x_0 = xm;
+                y_0 = ym;
+                code_0 = code_m;
+            } else {
+                x_1 = xm;
+                y_1 = ym;
+                code_1 = code_m;
+            }
+            if ((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0) <= 4) {
+                xb = xm;
+                yb = ym;
+                break;
+            }
+        }
+    }
+    QPoint topLeft(xa, ya), bottomRight(xb, yb);
+    return QRect(topLeft, bottomRight);
 }
 
 void MyPaint::setDashLine(Qt::PenStyle style){//设置虚线变量

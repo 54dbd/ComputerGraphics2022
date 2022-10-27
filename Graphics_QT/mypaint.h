@@ -100,6 +100,7 @@ public:
 
     vector<vector<QPoint>> _bezierCurve; // 若干条曲线
     vector<QPoint> _currentBezierCurve; // 当前控制点容器
+    int isOnPoint; // 是否在控制点上
     QVector<int>  _shape;//图形类型集合，用于撤回功能
     QVector<QPen> _brush;//笔刷集合
     QPoint _begin;//鼠标按下坐标、用于最后一个图形移动
@@ -107,12 +108,14 @@ public:
     QRect* nowRect, *nowEllipse;
     QPoint* nowFill;
     QVector<QPoint>* nowPolygon;
+    QPoint *nowControlPoint;
     int isInRect, isInEllipse,isInPolygon,isInFill;
     void circleTrans(QMouseEvent *e);
     void polygonTrans(QMouseEvent *e);
     void rectTrans(QMouseEvent *e);
     void Transform(QMouseEvent *e);
-    QRect CS_ClipLine(QRect line, int XL, int XR, int YB, int YT);
+    static QRect CS_ClipLine(QRect line, int XL, int XR, int YB, int YT);
+    static QRect MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT);
 
     void updateCoordiante( int x, int y);
 
