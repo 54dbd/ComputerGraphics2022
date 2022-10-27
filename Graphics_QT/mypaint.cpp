@@ -920,8 +920,10 @@ void MyPaint::Bezier() {
 }
 
 void MyPaint::startTrans(){
-    _drawType = 10;
-    _drag = 0;
+    if (_shape.length() != 0) {
+        _drawType = 10;
+        _drag = 0;
+    }
 }
 
 void MyPaint::startFill(){
