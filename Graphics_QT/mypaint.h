@@ -79,7 +79,6 @@ private:
     enum transform _transFlag;      //变换标志位
     QRect *transRectTag = new QRect(100,100,20,20);             //标签矩形
     QVector<QPoint> tempTransPolygon;
-    bool test = false;
     int _drag;
     newWindow *setBrushWindow = new newWindow();//设置窗口
 
@@ -142,6 +141,7 @@ public slots:
 
     bool polyContains(QVector<QPoint> polygon, QPoint p);
     void setDashLine(Qt::PenStyle style);
+
 
 };
 void Drag();
