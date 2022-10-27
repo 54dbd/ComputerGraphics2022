@@ -351,6 +351,13 @@ void MyPaint::paintEvent(QPaintEvent *)
         else if (_shape.at(c) == 9){ // bezier
             const vector<QPoint>& bezierCurve = _bezierCurve.at(i9++);
 
+            //使控制点不受笔刷大小影响
+            QPen temp = pen;
+            pen.setWidth(1);
+            p.setPen(pen);
+
+            Brush t_brush(3, p, pen);
+
             // 画控制点
             for (auto i : bezierCurve) {
                 Circle C(i.x(),i.y(),4,1,p, pen);
@@ -358,6 +365,10 @@ void MyPaint::paintEvent(QPaintEvent *)
             }
             class Bezier b(1, p, bezierCurve, pen);
             b.drawBezier();
+
+            //恢复笔刷大小
+            pen = temp;
+            p.setPen(pen);
         }
         else if(_shape.at(c) == 11){//fill
             class Fill f(pix,p,pen);
@@ -560,11 +571,23 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 
 
         }
-        else if (_drawType == 9){// beizer
+        else if (_drawType == 9 || (_drawType == 10)){// beizer
             _lpress = true;
-            QPoint p(e->pos().x(), e->pos().y());
-            _currentBezierCurve.push_back(p);
-            qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
+            if (!_drag)
+            {
+                QPoint p(e->pos().x(), e->pos().y());
+                _currentBezierCurve.push_back(p);
+                qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
+            }
+            for (int i = 0; i < _bezierCurve.size(); ++i) {
+                for (int j = 0; j < _bezierCurve[i].size(); ++j) {
+                    // 判断当前点是否在控制点的圆内
+                    if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 && e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4)
+                    {
+                        nowControlPoint = &_bezierCurve[i][j];
+                    }
+                }
+            }
         }
         else if(_drawType == 11){//fill
             _lpress = true;
@@ -651,6 +674,24 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             }
         }
     }
+    if (!_bezierCurve.empty())
+    {
+        for (int i = 0; i < _bezierCurve.size(); ++i) {
+            for (int j = 0; j < _bezierCurve[i].size(); ++j) {
+                // 判断当前点是否在控制点的圆内
+                // if (e->pos().x() == _bezierCurve[i][j].x() && e->pos().y() == _bezierCurve[i][j].y())
+                if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 && e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4)
+                {
+                    isOnPoint = 1;
+                    isInEllipse = 0;
+                    isInPolygon = 0;
+                    isInRect = 0;
+                    isArrow = 0;
+                }
+            }
+        }
+    }
+
     if(transRectTag->contains(e->pos())) {
         isInTagRect = true;
         isArrow = 0;
@@ -751,6 +792,15 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             qDebug()<<"not in polygon";
             update();//触发窗体重绘
         }
+        else if (_drawType == 10){ // bezier移动控制点
+            if (!_bezierCurve.empty() && isOnPoint && !isInEllipse && !isInPolygon && !isInRect)
+            {
+                *nowControlPoint = QPoint(e->pos().x(), e->pos().y());
+                _begin = e->pos();//刷新拖拽点起始坐标
+            }
+            isOnPoint = 0;
+            update();
+        }
         else if(_drawType == 12) {
             _crop.setBottomRight(e->pos());//更新直线另一端)
             update();//触发窗体重绘
@@ -824,6 +874,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             _lpress = false;
         }
         else if (_drawType == 10){
+//            nowControlPoint = NULL;
             _lpress = false;
         }
         else if (_drawType == 11){
