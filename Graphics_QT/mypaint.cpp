@@ -338,11 +338,11 @@ void MyPaint::paintEvent(QPaintEvent *)
 
         }
         else if (_shape.at(c) == 9){ // bezier
-            const vector<point2d>& bezierCurve = _bezierCurve.at(i9++);
+            const vector<QPoint>& bezierCurve = _bezierCurve.at(i9++);
 
             // 画控制点
             for (auto i : bezierCurve) {
-                Circle C(i.x,i.y,4,1,p, pen);
+                Circle C(i.x(),i.y(),4,1,p, pen);
                 C.DrawCircle();
             }
             class Bezier b(1, p, bezierCurve, pen);
@@ -531,7 +531,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
         }
         else if (_drawType == 9){// beizer
             _lpress = true;
-            point2d p(e->pos().x(), e->pos().y());
+            QPoint p(e->pos().x(), e->pos().y());
             _currentBezierCurve.push_back(p);
             qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
         }
@@ -939,7 +939,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
              _brush.append(_pen);
              _shape.append(9);
              _bezierCurve.push_back(_currentBezierCurve);
-             vector <point2d>().swap(_currentBezierCurve);
+             vector <QPoint>().swap(_currentBezierCurve);
              update();
          }
      }

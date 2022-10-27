@@ -11,8 +11,9 @@ class Brush
 private:
     vector<vector<int>>const* brush;
     COLORREF color;
-    QPainter &painter;
+protected:
     QPen &_pen;
+    QPainter &painter;
 public:
     //方块刷_9
     const vector<vector<int>> brush_9 = {
