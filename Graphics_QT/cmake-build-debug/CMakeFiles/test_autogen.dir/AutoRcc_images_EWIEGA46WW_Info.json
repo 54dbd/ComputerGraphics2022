@@ -1,0 +1,37 @@
+{
+	"BUILD_DIR" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/test_autogen",
+	"CMAKE_BINARY_DIR" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug",
+	"CMAKE_CURRENT_SOURCE_DIR" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT",
+	"CMAKE_SOURCE_DIR" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT",
+	"INCLUDE_DIR" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/test_autogen/include",
+	"INPUTS" : 
+	[
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/bezier.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/saveas.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/polygon.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/1.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/ellipse.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/rect.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/arc.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/texts.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/fill.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/save.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/open.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/line.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/lines.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/trans.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/move.png",
+		"C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images/arcCenter.png"
+	],
+	"LOCK_FILE" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/CMakeFiles/test_autogen.dir/AutoRcc_images_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "images" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_images.cpp",
+	"RCC_EXECUTABLE" : "C:/Qt/6.3.2/mingw_64/./bin/rcc.exe",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/CMakeFiles/test_autogen.dir/AutoRcc_images_EWIEGA46WW_Used.txt",
+	"SOURCE" : "C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/images.qrc",
+	"VERBOSITY" : 0
+}

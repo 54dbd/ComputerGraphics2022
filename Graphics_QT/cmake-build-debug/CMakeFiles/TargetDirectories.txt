@@ -1,0 +1,5 @@
+C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/CMakeFiles/test.dir
+C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/CMakeFiles/test_autogen_timestamp_deps.dir
+C:/Users/Administrator/source/repos/Graphics/ComputerGraphics2022/Graphics_QT/cmake-build-debug/CMakeFiles/test_autogen.dir
