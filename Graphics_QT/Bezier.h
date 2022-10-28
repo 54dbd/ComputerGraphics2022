@@ -51,9 +51,7 @@ private:
     vector<point2d> controlPoints;
 };
 
-//int k = 3;
-//int n = 0;
-//double *u;
+
 class Bspline: public Brush
 {
 public:
@@ -101,7 +99,6 @@ public:
     {
         U = new double[n + k_step + 2];
         for (int i = 0; i < n + k_step + 2; ++i) {
-//            U[i] = static_cast<double>(i / (n + k_step));
             U[i] = i; // 均匀即可 所有控制点的权重求和为1
         }
         double step = 0.0005;
@@ -114,44 +111,7 @@ public:
         }
         delete[] U;
     }
-//    double getLambda(int i, int r, double t) {
-//        if (fabs(u[i + k - r] - u[i]) <= 1e-7) {
-//            return 0;
-//        }
-//        else {
-//            return (t - u[i]) / (u[i + k - r] - u[i]);
-//        }
-//    }
-////使用de Boor Cox递推公式来分别递归计算点的x，y坐标
-//    double deBoorCox_X(int i, int r, double t) {
-//        if (r == 0) return controlPoints[i].x;
-//        else {
-//            return getLambda(i, r, t)*deBoorCox_X(i, r - 1, t) + (1 - getLambda(i, r, t))*deBoorCox_X(i - 1, r - 1, t);
-//        }
-//    }
-//    double deBoorCox_Y(int i, int r, double t) {
-//        if (r == 0) return controlPoints[i].y;
-//        else {
-//            return getLambda(i, r, t)*deBoorCox_Y(i, r - 1, t) + (1 - getLambda(i, r, t))*deBoorCox_Y(i - 1, r - 1, t);
-//        }
-//    }
-////根据参数得出B-spline曲线
-//    void drawBspline() {
-//
-//        u = new double[n + k + 2];
-//        for (int i = 0; i <= n + k + 1; i++) {
-//            u[i] = i;
-//        }
-//        //在区间u(k-1)~u(n+1)，分割区间计算
-//        double step = 0.0005;
-//        for (int j = k - 1; j < n + 1; j++) {
-//            for (double t = u[j]; t < u[j + 1]; t += step) {
-//                int x = qRound(deBoorCox_X(j, k - 1, t));
-//                int y = qRound(deBoorCox_Y(j, k - 1, t));
-//                drawPixel(x, y);}
-//        }
-//        delete[] u;
-//    }
+
 private:
     vector<point2d> controlPoints;
     int k_step; // k阶 需要自定义
