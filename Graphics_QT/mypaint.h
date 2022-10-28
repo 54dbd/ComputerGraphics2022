@@ -99,7 +99,14 @@ public:
 
     vector<vector<QPoint>> _bezierCurve; // 若干条曲线
     vector<QPoint> _currentBezierCurve; // 当前控制点容器
-    int isOnPoint; // 是否在控制点上
+    vector<vector<QPoint>> _bsplineCurve;
+    vector<QPoint> _currentBsplineCurve;
+    vector<int> k_steps; // 每条bspline曲线的阶数
+    QPoint *nowControlPoint;
+    int isOnPoint1; // 是否在控制点上bezier
+    int isOnPoint2; // 是否在控制点上bspline
+
+
     QVector<int>  _shape;//图形类型集合，用于撤回功能
     QVector<QPen> _brush;//笔刷集合
     QPoint _begin;//鼠标按下坐标、用于最后一个图形移动
@@ -107,7 +114,6 @@ public:
     QRect* nowRect, *nowEllipse;
     QPoint* nowFill;
     QVector<QPoint>* nowPolygon;
-    QPoint *nowControlPoint;
     int isInRect, isInEllipse,isInPolygon,isInFill;
     void circleTrans(QMouseEvent *e);
     void polygonTrans(QMouseEvent *e);
@@ -131,6 +137,7 @@ public slots:
     void Polygon();//画多边形
     void Fill();//填充图形
     void Bezier(); // 画贝塞尔曲线
+    void Bspline();
     void Clip(); // 裁切线段
     //void SecondaryCircle();
     void OpenPic();//打开图片

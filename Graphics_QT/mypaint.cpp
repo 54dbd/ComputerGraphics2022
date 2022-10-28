@@ -122,6 +122,10 @@ MyPaint::MyPaint(QWidget *parent) :
     bezierAction->setIcon(QIcon(":/png/images/bezier.png"));//图标
     tbar->addAction(bezierAction);
 
+    QAction *bsplineAction = new QAction(tr("&B样条"), this);
+//    bsplineAction->setIcon(QIcon(":/png/images/bspline.png"));//图标
+    tbar->addAction(bsplineAction);
+
     QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
     tbar->addAction(clipAction);
 
@@ -144,6 +148,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(arcCenterAction, SIGNAL(triggered()), this, SLOT(ArcCenter()));
     connect(polygonAction, SIGNAL(triggered()), this, SLOT(Polygon()));
     connect(bezierAction, SIGNAL(triggered()), this, SLOT(Bezier()));
+    connect(bsplineAction, SIGNAL(triggered()), this, SLOT(Bspline()));
     connect(clipAction, SIGNAL(triggered()), this, SLOT(Clip()));
 
     connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
@@ -164,7 +169,7 @@ void MyPaint::paintEvent(QPaintEvent *)
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
-    int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11=0;//各种图形的索引
+    int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11=0, i13 = 0;//各种图形的索引
 
 
 
@@ -379,10 +384,45 @@ void MyPaint::paintEvent(QPaintEvent *)
             class Bezier b(1, p, bezierCurve, pen);
             b.drawBezier();
 
+            for (auto & i : _currentBezierCurve) {
+                Circle C(i.x(),i.y(),4,1,p, pen);
+                C.DrawCircle();
+            }
+
             //恢复笔刷大小
             pen = temp;
             p.setPen(pen);
         }
+        else if (_shape.at(c) == 13){ // bspline
+            const vector<QPoint>& bsplineCurve = _bsplineCurve.at(i13++);
+
+            //使控制点不受笔刷大小影响
+            QPen temp = pen;
+            pen.setWidth(1);
+            p.setPen(pen);
+
+            Brush t_brush(3, p, pen);
+
+            // 画控制点
+            for (auto i : bsplineCurve) {
+                Circle C(i.x(),i.y(),4,1,p, pen);
+                C.DrawCircle();
+            }
+            // 需要交互设置k阶 目前设置为3
+            int temp_k = 3;
+            class Bspline b(1, p, bsplineCurve, temp_k, pen);
+            b.drawBspline();
+
+            for (auto & i : _currentBsplineCurve) {
+                Circle C(i.x(),i.y(),4,1,p, pen);
+                C.DrawCircle();
+            }
+
+            //恢复笔刷大小
+            pen = temp;
+            p.setPen(pen);
+        }
+
         else if(_shape.at(c) == 11){//fill
             class Fill f(pix,p,pen);
 //            f.fillColor(Qt::blue);
@@ -427,6 +467,28 @@ void MyPaint::paintEvent(QPaintEvent *)
             }
         }
     }
+
+    // 画控制点 存储在mypaint中 vector<QPoint>
+    QPen pen = _pen;
+    p.setPen(pen);
+    QPen temp = pen;
+    pen.setWidth(1);
+    p.setPen(pen);
+    Brush t_brush(3, p, pen);
+    // 画控制点
+    for (auto & i : _currentBezierCurve) {
+        Circle C(i.x(),i.y(),4,1,p, pen);
+        C.DrawCircle();
+    }
+    for (auto & i : _currentBsplineCurve) {
+        Circle C(i.x(),i.y(),4,1,p, pen);
+        C.DrawCircle();
+    }
+    //恢复笔刷大小
+    pen = temp;
+    p.setPen(pen);
+    update();
+
     p.end();
     p.begin(this);//将当前窗体作为画布
     p.drawPixmap(0,0, pix);//将pixmap画到窗体
@@ -461,9 +523,10 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             qDebug()<<"drawing polygon";
             tempPen.setWidth(1);
         }
-        // 防止Bezier或者移动操作 每新建一个点，就会添加一个笔刷，造成笔刷数组中存在大量的多余笔刷，导致修改颜色失效
-        else if(_drawType == 0 || _drawType == 9 || _drawType == 10) { // Bezier & move
+        // 防止Bezier/spline或者移动操作 每新建一个点，就会添加一个笔刷，造成笔刷数组中存在大量的多余笔刷，导致修改颜色失效
+        else if(_drawType == 0 || _drawType == 9 || _drawType == 13 || _drawType == 10) { // Bezier & move
             qDebug()<<"drawing bezier";
+            qDebug()<<"drawing bspline";
             qDebug()<<"moving shape";
         }
         else{
@@ -592,7 +655,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 
 
         }
-        else if (_drawType == 9 || (_drawType == 10)){// beizer
+        else if (_drawType == 9 || (_drawType == 10)){// beizer的绘制和bezier/bspline的控制点定位
             _lpress = true;
             if (!_drag)
             {
@@ -603,11 +666,29 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             for (int i = 0; i < _bezierCurve.size(); ++i) {
                 for (int j = 0; j < _bezierCurve[i].size(); ++j) {
                     // 判断当前点是否在控制点的圆内
-                    if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 && e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4)
+                    if (e->pos().x() <= _bezierCurve[i][j].x() + 10 && e->pos().x() >= _bezierCurve[i][j].x() - 10 && e->pos().y() <= _bezierCurve[i][j].y() + 10 && e->pos().y() >= _bezierCurve[i][j].y() - 10)
                     {
                         nowControlPoint = &_bezierCurve[i][j];
                     }
                 }
+            }
+            for (int i = 0; i < _bsplineCurve.size(); ++i) {
+                for (int j = 0; j < _bsplineCurve[i].size(); ++j) {
+                    // 判断当前点是否在控制点的圆内
+                    if (e->pos().x() <= _bsplineCurve[i][j].x() + 10 && e->pos().x() >= _bsplineCurve[i][j].x() - 10 && e->pos().y() <= _bsplineCurve[i][j].y() + 10 && e->pos().y() >= _bsplineCurve[i][j].y() - 10)
+                    {
+                        nowControlPoint = &_bsplineCurve[i][j];
+                    }
+                }
+            }
+        }
+        else if (_drawType == 13){// bspline
+            _lpress = true;
+            if (!_drag)
+            {
+                QPoint p(e->pos().x(), e->pos().y());
+                _currentBsplineCurve.push_back(p);
+                qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
             }
         }
         else if(_drawType == 11){//fill
@@ -703,7 +784,26 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
                 // if (e->pos().x() == _bezierCurve[i][j].x() && e->pos().y() == _bezierCurve[i][j].y())
                 if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 && e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4)
                 {
-                    isOnPoint = 1;
+                    isOnPoint1 = 1;
+                    isOnPoint2 = 0;
+                    isInEllipse = 0;
+                    isInPolygon = 0;
+                    isInRect = 0;
+                    isArrow = 0;
+                }
+            }
+        }
+    }
+    if (!_bsplineCurve.empty())
+    {
+        for (int i = 0; i < _bsplineCurve.size(); ++i) {
+            for (int j = 0; j < _bsplineCurve[i].size(); ++j) {
+                // 判断当前点是否在控制点的圆内
+                // if (e->pos().x() == _bezierCurve[i][j].x() && e->pos().y() == _bezierCurve[i][j].y())
+                if (e->pos().x() <= _bsplineCurve[i][j].x() + 4 && e->pos().x() >= _bsplineCurve[i][j].x() - 4 && e->pos().y() <= _bsplineCurve[i][j].y() + 4 && e->pos().y() >= _bsplineCurve[i][j].y() - 4)
+                {
+                    isOnPoint1 = 0;
+                    isOnPoint2 = 1;
                     isInEllipse = 0;
                     isInPolygon = 0;
                     isInRect = 0;
@@ -805,13 +905,19 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             qDebug()<<"not in polygon";
             update();//触发窗体重绘
         }
-        else if (_drawType == 10){ // bezier移动控制点
-            if (!_bezierCurve.empty() && isOnPoint && !isInEllipse && !isInPolygon && !isInRect)
+        else if (_drawType == 10){ // bezier/spline移动控制点
+            if (!_bezierCurve.empty() && isOnPoint1 && !isOnPoint2 &&  !isInEllipse && !isInPolygon && !isInRect)
             {
                 *nowControlPoint = QPoint(e->pos().x(), e->pos().y());
                 _begin = e->pos();//刷新拖拽点起始坐标
             }
-            isOnPoint = 0;
+            isOnPoint1 = 0;
+            if (!_bsplineCurve.empty() && !isOnPoint1 && isOnPoint2 && !isInEllipse && !isInPolygon && !isInRect)
+            {
+                *nowControlPoint = QPoint(e->pos().x(), e->pos().y());
+                _begin = e->pos();//刷新拖拽点起始坐标
+            }
+            isOnPoint2 = 0;
             update();
         }
         else if(_drawType == 12) {
@@ -886,8 +992,10 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
         else if (_drawType == 9){
             _lpress = false;
         }
+        else if (_drawType == 13){
+            _lpress = false;
+        }
         else if (_drawType == 10){
-//            nowControlPoint = NULL;
             _lpress = false;
             iscomfirm = true;
         }
@@ -993,6 +1101,11 @@ void MyPaint::Bezier() {
     _drag = 0;
 }
 
+void MyPaint::Bspline() {
+    _drawType = 13;
+    _drag = 0;
+}
+
 void MyPaint::startTrans(){
     if (_shape.length() != 0) {
         _drawType = 10;
@@ -1089,13 +1202,20 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
             _lpress = false;
             _newPolygon = true;
         }
-         if (_drawType == 9){ // bezier控制点绘制结束
-             _brush.append(_pen);
-             _shape.append(9);
-             _bezierCurve.push_back(_currentBezierCurve);
-             vector <QPoint>().swap(_currentBezierCurve);
-             update();
-         }
+        if (_drawType == 9){ // bezier控制点绘制结束
+            _brush.append(_pen);
+            _shape.append(9);
+            _bezierCurve.push_back(_currentBezierCurve);
+            vector <QPoint>().swap(_currentBezierCurve);
+            update();
+        }
+        if (_drawType == 13){ // bspline控制点绘制结束
+            _brush.append(_pen);
+            _shape.append(13);
+            _bsplineCurve.push_back(_currentBsplineCurve);
+            vector <QPoint>().swap(_currentBsplineCurve);
+            update();
+        }
      }
      else if(e->key() == Qt::Key_M && _drawType == 10){
 
