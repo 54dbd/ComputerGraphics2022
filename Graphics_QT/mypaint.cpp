@@ -467,27 +467,27 @@ void MyPaint::paintEvent(QPaintEvent *)
             }
         }
     }
-
-    // 画控制点 存储在mypaint中 vector<QPoint>
-    QPen pen = _pen;
-    p.setPen(pen);
-    QPen temp = pen;
-    pen.setWidth(1);
-    p.setPen(pen);
-    Brush t_brush(3, p, pen);
-    // 画控制点
-    for (auto & i : _currentBezierCurve) {
-        Circle C(i.x(),i.y(),4,1,p, pen);
-        C.DrawCircle();
+    if(!_currentBezierCurve.empty() || !_currentBsplineCurve.empty())
+    {
+        QPen pen = _pen;
+        p.setPen(pen);
+        QPen temp = pen;
+        pen.setWidth(1);
+        p.setPen(pen);
+        Brush t_brush(3, p, pen);
+        // 画控制点
+        for (auto & i : _currentBezierCurve) {
+            Circle C(i.x(),i.y(),4,1,p, pen);
+            C.DrawCircle();
+        }
+        for (auto & i : _currentBsplineCurve) {
+            Circle C(i.x(),i.y(),4,1,p, pen);
+            C.DrawCircle();
+        }
+        //恢复笔刷大小
+        pen = temp;
+        p.setPen(pen);
     }
-    for (auto & i : _currentBsplineCurve) {
-        Circle C(i.x(),i.y(),4,1,p, pen);
-        C.DrawCircle();
-    }
-    //恢复笔刷大小
-    pen = temp;
-    p.setPen(pen);
-    update();
 
     p.end();
     p.begin(this);//将当前窗体作为画布
@@ -991,9 +991,11 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
         }
         else if (_drawType == 9){
             _lpress = false;
+            update();
         }
         else if (_drawType == 13){
             _lpress = false;
+            update();
         }
         else if (_drawType == 10){
             _lpress = false;
