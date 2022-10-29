@@ -4,7 +4,7 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mypaint.cpp \
-    newwindow.cpp
+    configwindow.cpp
 
 HEADERS += \
     Arc.h \
@@ -14,7 +14,7 @@ HEADERS += \
     Line.h \
     TransMatrix.h \
     mypaint.h \
-    newwindow.h \
+    configwindow.h \
     Polygon.h \
     point.h
 
@@ -26,4 +26,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
-    newwindow.ui
+    configwindow.ui

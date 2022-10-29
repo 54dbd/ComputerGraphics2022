@@ -14,7 +14,7 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QTextEdit>
-#include "newwindow.h"
+#include "configwindow.h"
 #include "point.h"
 #include <vector>
 #include <QLabel>
@@ -81,7 +81,7 @@ private:
     QRect *transRectTag = new QRect(100,100,20,20);             //标签矩形
     QVector<QPoint> tempTransPolygon;
     int _drag;
-    newWindow *setBrushWindow = new newWindow();//设置窗口
+    configWindow *setBrushWindow = new configWindow();//设置窗口
 
     transMatrix trans;
 

@@ -22,9 +22,9 @@ add_executable(Graphics images.qrc
         Line.h
         mypaint.cpp
         mypaint.h
-        newwindow.cpp
-        newwindow.h
-        newwindow.ui
+        configwindow.cpp
+        configwindow.h
+        configwindow.ui
         Polygon.h
         Bezier.h
         point.h

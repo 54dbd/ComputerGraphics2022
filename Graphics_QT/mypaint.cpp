@@ -10,7 +10,7 @@
 #include <QRect>
 #include <QLabel>
 #include <QStatusBar>
-#include "newwindow.h"
+#include "configwindow.h"
 #include "utils.h"
 
 using namespace std;
