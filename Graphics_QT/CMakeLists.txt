@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
-project(test)
+project(Graphics)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
@@ -14,7 +14,7 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(test images.qrc
+add_executable(Graphics images.qrc
         main.cpp
         Arc.h
         Brush.h
@@ -28,8 +28,8 @@ add_executable(test images.qrc
         Polygon.h
         Bezier.h
         point.h
-        Fill.h)
-target_link_libraries(test
+        Fill.h utils.h)
+target_link_libraries(Graphics
         Qt::Core
         Qt::Gui
         Qt::Widgets

@@ -21,6 +21,7 @@
 #include "TransMatrix.h"
 #include "Brush.h"
 
+
 using namespace std;
 
 enum transform{
@@ -119,8 +120,6 @@ public:
     void polygonTrans(QMouseEvent *e);
     void rectTrans(QMouseEvent *e);
     void Transform(QMouseEvent *e);
-    static QRect CS_ClipLine(QRect line, int XL, int XR, int YB, int YT);
-    static QRect MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT);
 
     void updateCoordiante( int x, int y);
 
@@ -146,7 +145,6 @@ public slots:
 
     void createBrushWindow();
 
-    bool polyContains(QVector<QPoint> polygon, QPoint p);
     void setDashLine(Qt::PenStyle style);
 
 
@@ -155,5 +153,4 @@ void Drag();
 void drawRect(QRect rec,QPixmap p);
 double getAngle(QPoint origin,QPoint p1,QPoint p2);
 QPoint getPolyCenter(QVector<QPoint> poly);
-int encode(int x, int y, int XL, int XR, int YB, int YT);
 #endif // MYPAINT_H

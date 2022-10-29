@@ -118,7 +118,7 @@ public:
 //            }
 //        }
         //不使用笔刷
-        if(checkLegalPos(x,y,600,400)){
+        if(checkLegalPos(x,y,599,399)){
             painter.setPen(_pen);
             painter.drawPoint(x, y);
             MAP[x][y].setColor(_pen.color());
