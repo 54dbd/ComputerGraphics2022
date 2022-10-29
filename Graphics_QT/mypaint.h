@@ -132,6 +132,8 @@ public:
 
     void updateCoordiante(int x, int y);
 
+
+
 signals:
 
     void sendPen(QPen *);
@@ -161,7 +163,7 @@ public slots:
     void createLightWindow();
 
     void setDashLine(Qt::PenStyle style);
-
+    void cleanScreen();
 
 };
 

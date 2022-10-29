@@ -12,6 +12,8 @@
 #define BOTTOM 4
 #define TOP 8
 
+extern vector<vector<pointData>> MAP;
+
 int encode(int x, int y, int XL, int XR, int YB, int YT) {
     int c = 0;
     if (x < XL) c |= LEFT; // 置位CL
@@ -312,5 +314,15 @@ QVector<QPoint> cropPolygon(const QVector<QPoint>& polygon, const QVector<QPoint
     }
     return result;
 }
-
+void initMAP(){
+    for (int i = 0; i < 600; i++) {
+        vector<pointData> row;
+        MAP.push_back(row);
+        for (int j = 0; j < 400; j++) {
+            //对每一行中的每一列进行添加点
+            pointData point(QPoint(i, j), Qt::white);
+            MAP[i].push_back(point);
+        }
+    }
+}
 #endif //GRAPHICS_UTILS_H

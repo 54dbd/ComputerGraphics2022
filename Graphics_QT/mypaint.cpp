@@ -31,15 +31,7 @@ MyPaint::MyPaint(QWidget *parent) :
     setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
     this->setStyleSheet("background-color:white;");
     //初始化MAP
-    for (int i = 0; i < 600; i++) {
-        vector<pointData> row;
-        MAP.push_back(row);
-        for (int j = 0; j < 400; j++) {
-            //对每一行中的每一列进行添加点
-            pointData point(QPoint(i, j), Qt::white);
-            MAP[i].push_back(point);
-        }
-    }
+    initMAP();
 
 
     //创建工具栏
@@ -56,6 +48,9 @@ MyPaint::MyPaint(QWidget *parent) :
     //笔刷颜色
     QAction *setBrush = new QAction(tr("&笔刷"), this);
     tbar->addAction(setBrush);
+
+    QAction *clean = new QAction(tr("&清除"), this);
+    tbar->addAction(clean);
 
     QAction *openAction = new QAction(tr("&打开"), this);//打开动作
     openAction->setIcon(QIcon(":/png/images/open.png"));//图标
@@ -154,6 +149,9 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(bsplineAction, SIGNAL(triggered()), this, SLOT(Bspline()));
     connect(clipAction, SIGNAL(triggered()), this, SLOT(Clip()));
     connect(clipPolygon, SIGNAL(triggered()), this, SLOT(ClipPolygon()));
+    connect(clean, SIGNAL(triggered()), this, SLOT(cleanScreen()));
+
+
 
     connect(transAction, SIGNAL(triggered()), this, SLOT(startTrans()));
     connect(fillAction, SIGNAL(triggered()), this, SLOT(startFill()));
@@ -1088,11 +1086,41 @@ void MyPaint::OpenPic() {
     }
 }
 
+void MyPaint::cleanScreen(){
+    _lpress = false;//初始鼠标左键未按下
+    _newPolygon = true;//代表多边形可以新建
+    _drag = 0;//默认非拖拽模式
+    _drawType = 0;//初始为什么都不画
+    _begin = pos();//拖拽的参考坐标，方便计算位移
+    _openflag = 0;//初始不打开图片
+    _transFlag = NOTRANS;
+    _lines.clear();
+    _rects.clear();//矩形集合
+    _ellipse.clear();//椭圆集合
+    _line.clear();//直线集合
+    _arc.clear();//圆弧集合
+    _transRect.clear();  //旋转矩形集合
+    _arcCenter.clear();
+    _polygon.clear();//多边形集合
+    _fill.clear();
+    _cropPolygon.clear();// 裁切多边形
+    k_steps.clear();
+    _shape.clear();//图形类型集合，用于撤回功能
+    _brush.clear();
+    isInRect = 0;
+    isInEllipse = 0;
+    isInPolygon = 0;
+    isInFill = 0;
+    //初始化MAP
+    initMAP();
+    update();
+}
 void MyPaint::createBrushWindow() {
     emit sendPen(&_pen);
     setBrushWindow->show();
 }
 void MyPaint::createLightWindow(){
+    setLightWindow = new lightWindow();
     setLightWindow->show();
 }
 
