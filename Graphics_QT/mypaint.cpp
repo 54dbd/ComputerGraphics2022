@@ -1,6 +1,5 @@
 #include "mypaint.h"
-#include "Line.h"
-#include "Circle.h"
+
 #include "Arc.h"
 #include "Polygon.h"
 #include "Bezier.h"
@@ -12,7 +11,8 @@
 #include <QStatusBar>
 #include "configwindow.h"
 #include "utils.h"
-
+#include "Line.h"
+#include "Circle.h"
 using namespace std;
 vector<vector<pointData>> MAP;
 
@@ -125,6 +125,10 @@ MyPaint::MyPaint(QWidget *parent) :
     QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
     tbar->addAction(clipAction);
 
+
+    QAction *openLight = new QAction(tr("&基本光照"), this);
+    tbar->addAction(openLight);
+
     QAction *clipPolygon = new QAction(tr("&裁切多边形"), this);//裁切多边形
     tbar->addAction(clipPolygon);
 
@@ -151,9 +155,12 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(clipAction, SIGNAL(triggered()), this, SLOT(Clip()));
     connect(clipPolygon, SIGNAL(triggered()), this, SLOT(ClipPolygon()));
 
-    connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
     connect(transAction, SIGNAL(triggered()), this, SLOT(startTrans()));
     connect(fillAction, SIGNAL(triggered()), this, SLOT(startFill()));
+    //新建界面
+    connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
+    connect(openLight, SIGNAL(triggered()), this, SLOT(createLightWindow()));
+
     //设置界面传参
     connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
@@ -1082,7 +1089,9 @@ void MyPaint::createBrushWindow() {
     emit sendPen(&_pen);
     setBrushWindow->show();
 }
-
+void MyPaint::createLightWindow(){
+    setLightWindow->show();
+}
 
 void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
 {
