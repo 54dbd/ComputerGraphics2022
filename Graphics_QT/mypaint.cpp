@@ -175,6 +175,9 @@ void MyPaint::paintEvent(QPaintEvent *) {
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
+    QPen pen;
+    Brush b(1,p,pen);
+    b.drawPixel(100,100);
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
 

@@ -1,7 +1,9 @@
 #ifndef LIGHTWINDOW_H
 #define LIGHTWINDOW_H
-
-#include <QWidget>
+#include "Circle.h"
+#include "Line.h"
+#include "Brush.h"
+#include <QMainWindow>
 
 namespace Ui {
 class lightWindow;

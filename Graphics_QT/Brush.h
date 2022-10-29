@@ -1,5 +1,6 @@
 #ifndef BRUSH_H
 #define BRUSH_H
+#include "point.h"
 #include <vector>
 #include <QColor>
 #include <QPainter>
