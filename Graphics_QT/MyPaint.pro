@@ -2,9 +2,10 @@ QT +=core gui
 greaterThan(QT_MAJOR_VERSION,4):QT+=widgets
 CONFIG += c++17
 SOURCES += \
+    lightwindow.cpp \
     main.cpp \
     mypaint.cpp \
-    newwindow.cpp
+    configwindow.cpp
 
 HEADERS += \
     Arc.h \
@@ -13,8 +14,9 @@ HEADERS += \
     Fill.h \
     Line.h \
     TransMatrix.h \
+    lightwindow.h \
     mypaint.h \
-    newwindow.h \
+    configwindow.h \
     Polygon.h \
     point.h
 
@@ -26,4 +28,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
-    newwindow.ui
+    configwindow.ui \
+    lightwindow.ui

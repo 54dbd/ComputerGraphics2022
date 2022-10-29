@@ -22,13 +22,14 @@ add_executable(Graphics images.qrc
         Line.h
         mypaint.cpp
         mypaint.h
-        newwindow.cpp
-        newwindow.h
-        newwindow.ui
+        configwindow.cpp
+        configwindow.h
+        configwindow.ui
         Polygon.h
         Bezier.h
         point.h
-        Fill.h utils.h)
+        Fill.h utils.h
+        lightwindow.cpp lightwindow.h lightwindow.ui light.cpp light.h)
 target_link_libraries(Graphics
         Qt::Core
         Qt::Gui
