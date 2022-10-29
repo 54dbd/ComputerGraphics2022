@@ -29,7 +29,7 @@ add_executable(Graphics images.qrc
         Bezier.h
         point.h
         Fill.h utils.h
-        light.cpp light.h)
+        light.cpp light.h Phong.cpp Phong.h)
 target_link_libraries(Graphics
         Qt::Core
         Qt::Gui
