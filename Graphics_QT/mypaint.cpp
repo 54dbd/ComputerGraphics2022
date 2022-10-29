@@ -126,6 +126,10 @@ MyPaint::MyPaint(QWidget *parent) :
     QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
     tbar->addAction(clipAction);
 
+
+    QAction *openLight = new QAction(tr("&基本光照"), this);
+    tbar->addAction(openLight);
+
     //创建底部状态栏
     statusBarLabel = new QLabel("当前坐标：", this);
     statusBarLabel->setMinimumWidth(250);
@@ -148,9 +152,12 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(bsplineAction, SIGNAL(triggered()), this, SLOT(Bspline()));
     connect(clipAction, SIGNAL(triggered()), this, SLOT(Clip()));
 
-    connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
     connect(transAction, SIGNAL(triggered()), this, SLOT(startTrans()));
     connect(fillAction, SIGNAL(triggered()), this, SLOT(startFill()));
+    //新建界面
+    connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
+    connect(openLight, SIGNAL(triggered()), this, SLOT(createLightWindow()));
+
     //设置界面传参
     connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
@@ -1066,7 +1073,9 @@ void MyPaint::createBrushWindow() {
     emit sendPen(&_pen);
     setBrushWindow->show();
 }
-
+void MyPaint::createLightWindow(){
+    setLightWindow->show();
+}
 
 void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
 {

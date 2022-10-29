@@ -20,6 +20,7 @@
 #include <QLabel>
 #include "TransMatrix.h"
 #include "Brush.h"
+#include "lightwindow.h"
 
 
 using namespace std;
@@ -82,6 +83,7 @@ private:
     QVector<QPoint> tempTransPolygon;
     int _drag;
     configWindow *setBrushWindow = new configWindow();//设置窗口
+    lightWindow *setLightWindow = new lightWindow();//光照窗口
 
     transMatrix trans;
 
@@ -144,7 +146,7 @@ public slots:
     void startFill();
 
     void createBrushWindow();
-
+    void createLightWindow();
     void setDashLine(Qt::PenStyle style);
 
 
