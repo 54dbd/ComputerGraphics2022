@@ -287,40 +287,29 @@ bool outsideOneEdgeOfPolygon(QVector<QPoint> polygon, QPoint p, int x) {
 
 QVector<QPoint> cropPolygon(const QVector<QPoint>& polygon, const QVector<QPoint>& cropPolygon) {
     QVector<QPoint> result, originalPolygon = polygon;
-    qDebug() << "Original Polygon:" << originalPolygon;
-    qDebug() << "Crop Polygon:" << cropPolygon;
     for (int i = 0; i < cropPolygon.length(); ++i) {
         result.clear();
         for (int j = 0; j < originalPolygon.length(); ++j) {
             QPoint p1 = originalPolygon[j];
             QPoint p2 = originalPolygon[(j + 1) % int(originalPolygon.length())];
-            qDebug() << "p1:" << p1 << "p2:" << p2;
             bool p1_inPolygonEdge = outsideOneEdgeOfPolygon(cropPolygon, p1, i);
             bool p2_inPolygonEdge = outsideOneEdgeOfPolygon(cropPolygon, p2, i);
-            qDebug() << "p1:" << p1_inPolygonEdge << "p2:" << p2_inPolygonEdge;
             if (p1_inPolygonEdge && p2_inPolygonEdge) {
-                qDebug() << "Appending p2:" << p2;
                 result.append(p2);
             } else if (p1_inPolygonEdge || p2_inPolygonEdge) {
                 QPoint k1 = cropPolygon[i];
                 QPoint k2 = cropPolygon[(i + 1) % int(cropPolygon.length())];
                 QPoint temp = intersection(p1, p2, k1, k2);
                 if (temp.x() != -1 && temp.y() != -1) {
-                    qDebug() << "Adding inersection point: " << temp;
                     result.append(temp);
                 }
             }
             if (!p1_inPolygonEdge && p2_inPolygonEdge) {
-                qDebug() << "Appending p2:" << p2;
                 result.append(p2);
             }
-            qDebug() << "result: " << result;
-            qDebug() << "Checking next edge....";
         }
         originalPolygon = result;
-        qDebug() << "originalPolygon: " << originalPolygon;
     }
-    qDebug() << "Final result" << result;
     return result;
 }
 
