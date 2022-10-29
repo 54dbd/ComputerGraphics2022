@@ -314,6 +314,7 @@ QVector<QPoint> cropPolygon(const QVector<QPoint>& polygon, const QVector<QPoint
     }
     return result;
 }
+
 void initMAP(){
     for (int i = 0; i < 600; i++) {
         vector<pointData> row;
@@ -324,5 +325,47 @@ void initMAP(){
             MAP[i].push_back(point);
         }
     }
+}
+void MyPaint::cleanScreen(){
+    _lpress = false;//初始鼠标左键未按下
+    _newPolygon = true;//代表多边形可以新建
+    _drag = 0;//默认非拖拽模式
+    _drawType = 0;//初始为什么都不画
+    _begin = pos();//拖拽的参考坐标，方便计算位移
+    _openflag = 0;//初始不打开图片
+    _transFlag = NOTRANS;
+    _lines.clear();
+    _rects.clear();//矩形集合
+    _ellipse.clear();//椭圆集合
+    _line.clear();//直线集合
+    _arc.clear();//圆弧集合
+    _transRect.clear();  //旋转矩形集合
+    _arcCenter.clear();
+    _polygon.clear();//多边形集合
+    _fill.clear();
+    _cropPolygon.clear();// 裁切多边形
+    k_steps.clear();
+    _shape.clear();//图形类型集合，用于撤回功能
+    _brush.clear();
+    isInRect = 0;
+    isInEllipse = 0;
+    isInPolygon = 0;
+    isInFill = 0;
+    //初始化MAP
+    initMAP();
+    update();
+}
+
+
+void MyPaint::switchLightMode() {
+    tbar->hide();
+    subTbar->show();
+    cleanScreen();
+}
+void MyPaint::switchPaintMode() {
+    subTbar->hide();
+    tbar->show();
+    cleanScreen();
+
 }
 #endif //GRAPHICS_UTILS_H

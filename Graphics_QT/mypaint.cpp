@@ -33,9 +33,19 @@ MyPaint::MyPaint(QWidget *parent) :
     //初始化MAP
     initMAP();
 
+    //创建光照界面工具栏
+    subTbar = addToolBar(tr("工具栏"));
+    subTbar->setMovable(false);//工具栏不可移动
+    subTbar->setIconSize(QSize(16, 16));//设置动作图标的尺寸
+    subTbar->setStyleSheet("background-color:white");//背景色
+    QAction *returnAction = new QAction(tr("&返回"), this);
+    subTbar->addAction(returnAction);
 
+    QAction *phongAction = new QAction(tr("&phong"),this);
+    subTbar->addAction(phongAction);
+    subTbar->hide();
     //创建工具栏
-    QToolBar *tbar = addToolBar(tr("工具栏"));
+    tbar = addToolBar(tr("工具栏"));
     tbar->setMovable(false);//工具栏不可移动
     tbar->setIconSize(QSize(16, 16));//设置动作图标的尺寸
     tbar->setStyleSheet("background-color:white");//背景色
@@ -152,13 +162,15 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(clean, SIGNAL(triggered()), this, SLOT(cleanScreen()));
 
 
-
     connect(transAction, SIGNAL(triggered()), this, SLOT(startTrans()));
     connect(fillAction, SIGNAL(triggered()), this, SLOT(startFill()));
     //新建界面
     connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
-    connect(openLight, SIGNAL(triggered()), this, SLOT(createLightWindow()));
-
+    //切换界面
+    connect(openLight, SIGNAL(triggered()), this, SLOT(switchLightMode()));
+    //光照模式返回键
+    connect(returnAction, SIGNAL(triggered()),this, SLOT(switchPaintMode()));
+    connect(phongAction, SIGNAL(triggered()), this, SLOT(Phong()));
     //设置界面传参
     connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
@@ -173,9 +185,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
-    QPen pen;
-    Brush b(1,p,pen);
-    b.drawPixel(100,100);
+
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
 
@@ -466,6 +476,13 @@ void MyPaint::paintEvent(QPaintEvent *) {
                 l3.dashLineNoMap();
                 l4.dashLineNoMap();
             }
+        }else if( tbar->isHidden())//显示phong
+        {
+            QPoint center(300,200);
+            int R = 50;
+            Circle C(center.x(), center.y(), 0, 1, p, pen);
+            C.SetR(R);
+            C.DrawCircle();
         }
     }
     if (!_currentBezierCurve.empty() || !_currentBsplineCurve.empty()) {
@@ -1058,6 +1075,10 @@ void MyPaint::Clip() {
     _drawType = 12;
     _drag = 0;
 }
+void MyPaint::Phong(){
+    _drawType=20;
+    _drag = 0;
+}
 
 void MyPaint::SavePic() {
     //弹出文件保存对话框
@@ -1086,42 +1107,11 @@ void MyPaint::OpenPic() {
     }
 }
 
-void MyPaint::cleanScreen(){
-    _lpress = false;//初始鼠标左键未按下
-    _newPolygon = true;//代表多边形可以新建
-    _drag = 0;//默认非拖拽模式
-    _drawType = 0;//初始为什么都不画
-    _begin = pos();//拖拽的参考坐标，方便计算位移
-    _openflag = 0;//初始不打开图片
-    _transFlag = NOTRANS;
-    _lines.clear();
-    _rects.clear();//矩形集合
-    _ellipse.clear();//椭圆集合
-    _line.clear();//直线集合
-    _arc.clear();//圆弧集合
-    _transRect.clear();  //旋转矩形集合
-    _arcCenter.clear();
-    _polygon.clear();//多边形集合
-    _fill.clear();
-    _cropPolygon.clear();// 裁切多边形
-    k_steps.clear();
-    _shape.clear();//图形类型集合，用于撤回功能
-    _brush.clear();
-    isInRect = 0;
-    isInEllipse = 0;
-    isInPolygon = 0;
-    isInFill = 0;
-    //初始化MAP
-    initMAP();
-    update();
-}
+
+
 void MyPaint::createBrushWindow() {
     emit sendPen(&_pen);
     setBrushWindow->show();
-}
-void MyPaint::createLightWindow(){
-    setLightWindow = new lightWindow();
-    setLightWindow->show();
 }
 
 void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件

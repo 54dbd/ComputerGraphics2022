@@ -2,7 +2,6 @@ QT +=core gui
 greaterThan(QT_MAJOR_VERSION,4):QT+=widgets
 CONFIG += c++17
 SOURCES += \
-    lightwindow.cpp \
     main.cpp \
     mypaint.cpp \
     configwindow.cpp
@@ -14,7 +13,6 @@ HEADERS += \
     Fill.h \
     Line.h \
     TransMatrix.h \
-    lightwindow.h \
     mypaint.h \
     configwindow.h \
     Polygon.h \
@@ -29,4 +27,3 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 FORMS += \
     configwindow.ui \
-    lightwindow.ui

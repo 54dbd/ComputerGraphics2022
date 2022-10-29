@@ -20,7 +20,6 @@
 #include <QLabel>
 #include "TransMatrix.h"
 #include "Brush.h"
-#include "lightwindow.h"
 
 
 using namespace std;
@@ -71,7 +70,8 @@ private:
     QPixmap _pixmap;//画布图片
     QPen _pen;
     QLabel *statusBarLabel;
-
+    QToolBar *tbar;
+    QToolBar * subTbar;
     QPoint referancePoint;          //变换时由用户设置的参照点
     QRect tempTransRect;
     QVector<QPoint> tempTransPoly;
@@ -85,7 +85,6 @@ private:
     QVector<QPoint> tempTransPolygon;
     int _drag;
     configWindow *setBrushWindow = new configWindow();//设置窗口
-    lightWindow *setLightWindow = new lightWindow();//光照窗口
 
     transMatrix trans;
 
@@ -150,21 +149,18 @@ public slots:
     void Polygon();//画多边形
     void Bezier(); // 画贝塞尔曲线
     void Bspline();
-
     void Clip(); // 裁切线段
     void ClipPolygon(); // 裁切多边形
     //void SecondaryCircle();
     void OpenPic();//打开图片
     void startTrans();//开始移动物体
     void startFill();
-
-    void createBrushWindow();
-
-    void createLightWindow();
-
     void setDashLine(Qt::PenStyle style);
     void cleanScreen();
-
+    void createBrushWindow();
+    void switchLightMode();
+    void switchPaintMode();
+    void Phong();
 };
 
 void Drag();
