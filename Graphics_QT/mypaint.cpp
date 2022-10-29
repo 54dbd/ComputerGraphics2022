@@ -11,38 +11,35 @@
 #include <QLabel>
 #include <QStatusBar>
 #include "newwindow.h"
-#define LEFT 1
-#define RIGHT 2
-#define BOTTOM 4
-#define TOP 8
+#include "utils.h"
+
 using namespace std;
 vector<vector<pointData>> MAP;
 
 MyPaint::MyPaint(QWidget *parent) :
-    QMainWindow(parent)
-{
-     _lpress = false;//初始鼠标左键未按下
-     _newPolygon = true;//代表多边形可以新建
-     _drag = 0;//默认非拖拽模式
-     _drawType = 0;//初始为什么都不画
-     _begin = pos();//拖拽的参考坐标，方便计算位移
-     _openflag = 0;//初始不打开图片
-     _transFlag = NOTRANS;
+        QMainWindow(parent) {
+    _lpress = false;//初始鼠标左键未按下
+    _newPolygon = true;//代表多边形可以新建
+    _drag = 0;//默认非拖拽模式
+    _drawType = 0;//初始为什么都不画
+    _begin = pos();//拖拽的参考坐标，方便计算位移
+    _openflag = 0;//初始不打开图片
+    _transFlag = NOTRANS;
 
-     this->setGeometry(350,200,600,400);//设置窗体大小、位置
-     this->setFixedSize(600,400);
-     setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
-     this->setStyleSheet("background-color:white;");
-     //初始化MAP
-     for(int i=0;i<600;i++){
-         vector<pointData> row;
-         MAP.push_back(row);
-         for(int j=0;j<400;j++){
-             //对每一行中的每一列进行添加点
-             pointData point(QPoint(i,j), Qt::white);
-             MAP[i].push_back(point);
-         }
-     }
+    this->setGeometry(350, 200, 600, 400);//设置窗体大小、位置
+    this->setFixedSize(600, 400);
+    setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
+    this->setStyleSheet("background-color:white;");
+    //初始化MAP
+    for (int i = 0; i < 600; i++) {
+        vector<pointData> row;
+        MAP.push_back(row);
+        for (int j = 0; j < 400; j++) {
+            //对每一行中的每一列进行添加点
+            pointData point(QPoint(i, j), Qt::white);
+            MAP[i].push_back(point);
+        }
+    }
 
 
     //创建工具栏
@@ -130,11 +127,11 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(clipAction);
 
     //创建底部状态栏
-    statusBarLabel = new QLabel("当前坐标：",this);
+    statusBarLabel = new QLabel("当前坐标：", this);
     statusBarLabel->setMinimumWidth(250);
-    QStatusBar* statusBar = new QStatusBar(this);
-    statusBar ->addWidget(statusBarLabel);
-    statusBar->setGeometry(0,380,600,20);
+    QStatusBar *statusBar = new QStatusBar(this);
+    statusBar->addWidget(statusBarLabel);
+    statusBar->setGeometry(0, 380, 600, 20);
     statusBar->setStyleSheet("border: solid black 2px;");
 
     //连接信号与槽函数
@@ -151,17 +148,16 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(bsplineAction, SIGNAL(triggered()), this, SLOT(Bspline()));
     connect(clipAction, SIGNAL(triggered()), this, SLOT(Clip()));
 
-    connect(setBrush, SIGNAL(triggered()),this,SLOT(createBrushWindow()));
-    connect(transAction,SIGNAL(triggered()),this,SLOT(startTrans()));
-    connect(fillAction,SIGNAL(triggered()),this,SLOT(startFill()));
+    connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
+    connect(transAction, SIGNAL(triggered()), this, SLOT(startTrans()));
+    connect(fillAction, SIGNAL(triggered()), this, SLOT(startFill()));
     //设置界面传参
-    connect(this,SIGNAL(sendPen(QPen*)),setBrushWindow,SLOT(getPen(QPen*)));
-    connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)),this, SLOT(setDashLine(Qt::PenStyle)));
+    connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
+    connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
 }
 
-void MyPaint::paintEvent(QPaintEvent *)
-{
-    if(_openflag == 0)//不是打开图片的，每一次新建一个空白的画布
+void MyPaint::paintEvent(QPaintEvent *) {
+    if (_openflag == 0)//不是打开图片的，每一次新建一个空白的画布
     {
         _pixmap = QPixmap(size());//新建pixmap
         _pixmap.fill(Qt::white);//背景色填充为白色
@@ -169,14 +165,14 @@ void MyPaint::paintEvent(QPaintEvent *)
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
-    int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11=0, i13 = 0;//各种图形的索引
+    int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
 
 
 
-    if(_drawType==10 ) {  //绘制标志矩形与自定义参考点
+    if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
-        QPoint start,end;
+        QPoint start, end;
         start = transRectTag->topLeft();
         end = transRectTag->bottomRight();
         int x_s = start.x();
@@ -185,51 +181,50 @@ void MyPaint::paintEvent(QPaintEvent *)
         int y_e = end.y();
         QPen pen;
         //创建直线
-        class Line l1(x_s,y_s,x_e,y_s,1,p,pen);
-        class Line l2(x_s,y_s,x_s,y_e,1,p,pen);
-        class Line l3(x_e,y_e,x_s,y_e,1,p,pen);
-        class Line l4(x_e,y_e,x_e,y_s,1,p,pen);
+        class Line l1(x_s, y_s, x_e, y_s, 1, p, pen);
+        class Line l2(x_s, y_s, x_s, y_e, 1, p, pen);
+        class Line l3(x_e, y_e, x_s, y_e, 1, p, pen);
+        class Line l4(x_e, y_e, x_e, y_s, 1, p, pen);
         l1.MidPoint();
         l2.MidPoint();
         l3.MidPoint();
         l4.MidPoint();
 
-        if(isSpecificRefer){
-            for (int i = referancePoint.x()-3; i < referancePoint.x()+4 ; ++i) {
-                Brush b(1,p,pen);
-                b.drawPixel(i,referancePoint.y());
+        if (isSpecificRefer) {
+            for (int i = referancePoint.x() - 3; i < referancePoint.x() + 4; ++i) {
+                Brush b(1, p, pen);
+                b.drawPixel(i, referancePoint.y());
             }
-            for (int i = referancePoint.y()-3; i < referancePoint.y()+4 ; ++i) {
-                Brush b(1,p,pen);
-                b.drawPixel(referancePoint.x(),i);
+            for (int i = referancePoint.y() - 3; i < referancePoint.y() + 4; ++i) {
+                Brush b(1, p, pen);
+                b.drawPixel(referancePoint.x(), i);
             }
         }
     }
 
-    for(int c = 0;c<_shape.size();++c)//控制用户当前所绘图形总数
+    for (int c = 0; c < _shape.size(); ++c)//控制用户当前所绘图形总数
     {
         // 获取对应的笔刷颜色，并设置
         QPen pen = _brush.at(c);
         p.setPen(pen);
-        if(_shape.at(c) == 1)//线条
+        if (_shape.at(c) == 1)//线条
         {
-              const QVector<QPoint>& line = _lines.at(i1++);//取出一条线条
-              for(int j=0; j<line.size()-1; ++j)//将线条的所有线段描绘出
-              {
-                  int x_s = line.at(j).x();
-                  int x_e = line.at(j+1).x();
-                  int y_s = line.at(j).y();
-                  int y_e = line.at(j+1).y();
-                  class Line l(x_s,y_s,x_e,y_e,1,p, pen);
-                  if(pen.style()==Qt::DashLine)
+            const QVector<QPoint> &line = _lines.at(i1++);//取出一条线条
+            for (int j = 0; j < line.size() - 1; ++j)//将线条的所有线段描绘出
+            {
+                int x_s = line.at(j).x();
+                int x_e = line.at(j + 1).x();
+                int y_s = line.at(j).y();
+                int y_e = line.at(j + 1).y();
+                class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
+                if (pen.style() == Qt::DashLine)
                     l.DashLine();
-                  else
+                else
                     l.MidPoint();
-              }
-        }
-        else if(_shape.at(c) == 2)//矩形
+            }
+        } else if (_shape.at(c) == 2)//矩形
         {
-            QPoint start,end;
+            QPoint start, end;
             start = _rects.at(i2).topLeft();
             end = _rects.at(i2).bottomRight();
             int x_s = start.x();
@@ -237,30 +232,30 @@ void MyPaint::paintEvent(QPaintEvent *)
             int y_s = start.y();
             int y_e = end.y();
             //创建直线
-            class Line l1(x_s,y_s,x_e,y_s,1,p, pen);
-            class Line l2(x_s,y_s,x_s,y_e,1,p, pen);
-            class Line l3(x_e,y_e,x_s,y_e,1,p, pen);
-            class Line l4(x_e,y_e,x_e,y_s,1,p, pen);
-            if(!_lpress){//松开时
-                if(pen.style()==Qt::DashLine){
+            class Line l1(x_s, y_s, x_e, y_s, 1, p, pen);
+            class Line l2(x_s, y_s, x_s, y_e, 1, p, pen);
+            class Line l3(x_e, y_e, x_s, y_e, 1, p, pen);
+            class Line l4(x_e, y_e, x_e, y_s, 1, p, pen);
+            if (!_lpress) {//松开时
+                if (pen.style() == Qt::DashLine) {
                     l1.DashLine();
                     l2.DashLine();
                     l3.DashLine();
                     l4.DashLine();
-                }else{
+                } else {
                     l1.MidPoint();
                     l2.MidPoint();
                     l3.MidPoint();
                     l4.MidPoint();
                 }
 
-            }else{//按住时
-                if(pen.style()==Qt::DashLine){
+            } else {//按住时
+                if (pen.style() == Qt::DashLine) {
                     l1.dashLineNoMap();
                     l2.dashLineNoMap();
                     l3.dashLineNoMap();
                     l4.dashLineNoMap();
-                }else{
+                } else {
                     l1.MidPointNoMap();
                     l2.MidPointNoMap();
                     l3.MidPointNoMap();
@@ -270,27 +265,24 @@ void MyPaint::paintEvent(QPaintEvent *)
             }
 
 
-
             i2++;
-        }
-        else if(_shape.at(c) == 3)//正圆
+        } else if (_shape.at(c) == 3)//正圆
         {
             QPoint center;
             center = _ellipse.at(i3).center();
             int R = abs(center.y() - _ellipse.at(i3).bottom());
 
             //画圆
-            Circle C(center.x(),center.y(),0,1,p, pen);
+            Circle C(center.x(), center.y(), 0, 1, p, pen);
             C.SetR(R);
-            if(pen.style()==Qt::DashLine)
+            if (pen.style() == Qt::DashLine)
                 C.DrawDashLIneCircle();
             else
                 C.DrawCircle();
             i3++;
-        }
-        else if(_shape.at(c) == 4)//直线
+        } else if (_shape.at(c) == 4)//直线
         {
-            QPoint start,end;
+            QPoint start, end;
             start = _line.at(i4).topLeft();
             end = _line.at(i4).bottomRight();
             int x_s = start.x();
@@ -298,20 +290,18 @@ void MyPaint::paintEvent(QPaintEvent *)
             int y_s = start.y();
             int y_e = end.y();
             //创建直线
-            class Line l(x_s,y_s,x_e,y_e,1,p, pen);
-            if (pen.style()==Qt::DashLine)
+            class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
+            if (pen.style() == Qt::DashLine)
                 l.DashLine();
             else
                 l.MidPoint();
             i4++;
 
-        }
-        else if(_shape.at(c) == 5)
-        {
+        } else if (_shape.at(c) == 5) {
 
             //画圆弧
             //_secCircle=0;
-            QPoint start,end;
+            QPoint start, end;
             struct arcCenter center;
             start = _arc.at(i5).topLeft();
             end = _arc.at(i5).bottomRight();
@@ -320,7 +310,7 @@ void MyPaint::paintEvent(QPaintEvent *)
 
 
             center = _arcCenter.at(i5);
-            center.R = sqrt((x_s-center.x)*(x_s-center.x)+(y_s-center.y)*(y_s-center.y));
+            center.R = sqrt((x_s - center.x) * (x_s - center.x) + (y_s - center.y) * (y_s - center.y));
             //圆弧圆心
 
             //使圆心不受笔刷大小影响
@@ -328,29 +318,26 @@ void MyPaint::paintEvent(QPaintEvent *)
             pen.setWidth(1);
             p.setPen(pen);
 
-            Brush b(3,p,pen);
-            if(i5==_arcCenter.length()-1)//只保留最后一个
-                b.drawPixel(center.x,center.y);
+            Brush b(3, p, pen);
+            if (i5 == _arcCenter.length() - 1)//只保留最后一个
+                b.drawPixel(center.x, center.y);
 
             //恢复笔刷大小
             pen = temp;
             p.setPen(pen);
 
-            class Arc a(center.x,center.y,center.R, 1, p, pen);
-            a.DrawArc(start.x(),start.y(),end.x(),end.y());
+            class Arc a(center.x, center.y, center.R, 1, p, pen);
+            a.DrawArc(start.x(), start.y(), end.x(), end.y());
 
             i5++;
 
 
+        } else if (_shape.at(c) == 6) {
 
-        }
-        else if(_shape.at(c) == 6){
-
-        }
-        else if (_shape.at(c) == 7) { // 绘制多边形
-            const QVector<QPoint>& polygon = _polygon.at(i7++);//取出一个多边形
+        } else if (_shape.at(c) == 7) { // 绘制多边形
+            const QVector<QPoint> &polygon = _polygon.at(i7++);//取出一个多边形
             class Polygon poly(1, p, this->screen()->size().height(), pen);
-            for(int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
+            for (int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
             {
                 int temp = (j + 1) % polygon.size();
                 int x_s = polygon.at(j).x();
@@ -361,13 +348,11 @@ void MyPaint::paintEvent(QPaintEvent *)
                 poly.addEdgeToET(e);
             }
             poly.drawPolygon();
-        }
-        else if(_shape.at(c) == 8){
+        } else if (_shape.at(c) == 8) {
 
 
-        }
-        else if (_shape.at(c) == 9){ // bezier
-            const vector<QPoint>& bezierCurve = _bezierCurve.at(i9++);
+        } else if (_shape.at(c) == 9) { // bezier
+            const vector<QPoint> &bezierCurve = _bezierCurve.at(i9++);
 
             //使控制点不受笔刷大小影响
             QPen temp = pen;
@@ -377,24 +362,23 @@ void MyPaint::paintEvent(QPaintEvent *)
             Brush t_brush(3, p, pen);
 
             // 画控制点
-            for (auto i : bezierCurve) {
-                Circle C(i.x(),i.y(),4,1,p, pen);
+            for (auto i: bezierCurve) {
+                Circle C(i.x(), i.y(), 4, 1, p, pen);
                 C.DrawCircle();
             }
             class Bezier b(1, p, bezierCurve, pen);
             b.drawBezier();
 
-            for (auto & i : _currentBezierCurve) {
-                Circle C(i.x(),i.y(),4,1,p, pen);
+            for (auto &i: _currentBezierCurve) {
+                Circle C(i.x(), i.y(), 4, 1, p, pen);
                 C.DrawCircle();
             }
 
             //恢复笔刷大小
             pen = temp;
             p.setPen(pen);
-        }
-        else if (_shape.at(c) == 13){ // bspline
-            const vector<QPoint>& bsplineCurve = _bsplineCurve.at(i13++);
+        } else if (_shape.at(c) == 13) { // bspline
+            const vector<QPoint> &bsplineCurve = _bsplineCurve.at(i13++);
 
             //使控制点不受笔刷大小影响
             QPen temp = pen;
@@ -404,8 +388,8 @@ void MyPaint::paintEvent(QPaintEvent *)
             Brush t_brush(3, p, pen);
 
             // 画控制点
-            for (auto i : bsplineCurve) {
-                Circle C(i.x(),i.y(),4,1,p, pen);
+            for (auto i: bsplineCurve) {
+                Circle C(i.x(), i.y(), 4, 1, p, pen);
                 C.DrawCircle();
             }
             // 需要交互设置k阶 目前设置为3
@@ -413,26 +397,24 @@ void MyPaint::paintEvent(QPaintEvent *)
             class Bspline b(1, p, bsplineCurve, temp_k, pen);
             b.drawBspline();
 
-            for (auto & i : _currentBsplineCurve) {
-                Circle C(i.x(),i.y(),4,1,p, pen);
+            for (auto &i: _currentBsplineCurve) {
+                Circle C(i.x(), i.y(), 4, 1, p, pen);
                 C.DrawCircle();
             }
 
             //恢复笔刷大小
             pen = temp;
             p.setPen(pen);
-        }
-
-        else if(_shape.at(c) == 11){//fill
-            class Fill f(pix,p,pen);
+        } else if (_shape.at(c) == 11) {//fill
+            class Fill f(pix, p, pen);
 //            f.fillColor(Qt::blue);
             //f.fillRect(*nowRect);
             //DEBUG: test rect for all the shape
             //
 //            QPoint p;
-            qDebug()<<"[paintEvent]filling i11[ "<<i11<<" ]";
+            qDebug() << "[paintEvent]filling i11[ " << i11 << " ]";
             f.getColorMap();
-            f.fillShape(_fill.at(i11),pen.color());
+            f.fillShape(_fill.at(i11), pen.color());
             i11++;
 //            f.restoreColor();
 //            if(isInRect){
@@ -444,10 +426,9 @@ void MyPaint::paintEvent(QPaintEvent *)
 
 //            }
 
-        }
-        else if(_shape.at(c) == 12)//显示裁切矩形
+        } else if (_shape.at(c) == 12)//显示裁切矩形
         {
-            QPoint start,end;
+            QPoint start, end;
             start = _crop.topLeft();
             end = _crop.bottomRight();
             int x_s = start.x();
@@ -455,11 +436,11 @@ void MyPaint::paintEvent(QPaintEvent *)
             int y_s = start.y();
             int y_e = end.y();
             //创建直线
-            class Line l1(x_s,y_s,x_e,y_s,1,p, pen);
-            class Line l2(x_s,y_s,x_s,y_e,1,p, pen);
-            class Line l3(x_e,y_e,x_s,y_e,1,p, pen);
-            class Line l4(x_e,y_e,x_e,y_s,1,p, pen);
-            if(_lpress){ //按住时
+            class Line l1(x_s, y_s, x_e, y_s, 1, p, pen);
+            class Line l2(x_s, y_s, x_s, y_e, 1, p, pen);
+            class Line l3(x_e, y_e, x_s, y_e, 1, p, pen);
+            class Line l4(x_e, y_e, x_e, y_s, 1, p, pen);
+            if (_lpress) { //按住时
                 l1.dashLineNoMap();
                 l2.dashLineNoMap();
                 l3.dashLineNoMap();
@@ -467,8 +448,7 @@ void MyPaint::paintEvent(QPaintEvent *)
             }
         }
     }
-    if(!_currentBezierCurve.empty() || !_currentBsplineCurve.empty())
-    {
+    if (!_currentBezierCurve.empty() || !_currentBsplineCurve.empty()) {
         QPen pen = _pen;
         p.setPen(pen);
         QPen temp = pen;
@@ -476,12 +456,12 @@ void MyPaint::paintEvent(QPaintEvent *)
         p.setPen(pen);
         Brush t_brush(3, p, pen);
         // 画控制点
-        for (auto & i : _currentBezierCurve) {
-            Circle C(i.x(),i.y(),4,1,p, pen);
+        for (auto &i: _currentBezierCurve) {
+            Circle C(i.x(), i.y(), 4, 1, p, pen);
             C.DrawCircle();
         }
-        for (auto & i : _currentBsplineCurve) {
-            Circle C(i.x(),i.y(),4,1,p, pen);
+        for (auto &i: _currentBsplineCurve) {
+            Circle C(i.x(), i.y(), 4, 1, p, pen);
             C.DrawCircle();
         }
         //恢复笔刷大小
@@ -491,142 +471,134 @@ void MyPaint::paintEvent(QPaintEvent *)
 
     p.end();
     p.begin(this);//将当前窗体作为画布
-    p.drawPixmap(0,0, pix);//将pixmap画到窗体
+    p.drawPixmap(0, 0, pix);//将pixmap画到窗体
 }
 
-void MyPaint::mousePressEvent(QMouseEvent *e)
-{
+void MyPaint::mousePressEvent(QMouseEvent *e) {
 
-    if(e->button() == Qt::MiddleButton){
-        if(_drawType == 10){
+    if (e->button() == Qt::MiddleButton) {
+        if (_drawType == 10) {
             referancePoint = e->pos();
             isSpecificRefer = true;
             update();
         }
     }
 
-    if(e->button() == Qt::LeftButton)//当鼠标左键按下
+    if (e->button() == Qt::LeftButton)//当鼠标左键按下
     {
-        qDebug()<<"_brushSize:"<<_brush.length();
-        qDebug()<<"_shapeSize:"<<_shape.length();
+        qDebug() << "_brushSize:" << _brush.length();
+        qDebug() << "_shapeSize:" << _shape.length();
 
         _drag = 0;
         QPen tempPen(_pen);
-        if(_drawType == 10){//移动
+        if (_drawType == 10) {//移动
             update();
             _drag = 1;
-            qDebug()<<"drag:"<<_drag;
+            qDebug() << "drag:" << _drag;
 
         }
         if (_drawType == 7)//多边形处理笔刷
         {
-            qDebug()<<"drawing polygon";
+            qDebug() << "drawing polygon";
             tempPen.setWidth(1);
         }
-        // 防止Bezier/spline或者移动操作 每新建一个点，就会添加一个笔刷，造成笔刷数组中存在大量的多余笔刷，导致修改颜色失效
-        else if(_drawType == 0 || _drawType == 9 || _drawType == 13 || _drawType == 10) { // Bezier & move
-            qDebug()<<"drawing bezier";
-            qDebug()<<"drawing bspline";
-            qDebug()<<"moving shape";
-        }
-        else{
+            // 防止Bezier/spline或者移动操作 每新建一个点，就会添加一个笔刷，造成笔刷数组中存在大量的多余笔刷，导致修改颜色失效
+        else if (_drawType == 0 || _drawType == 9 || _drawType == 13 || _drawType == 10) { // Bezier & move
+            qDebug() << "drawing bezier";
+            qDebug() << "drawing bspline";
+            qDebug() << "moving shape";
+        } else {
             _brush.append(tempPen);//将当前笔刷颜色加入到笔刷颜色列表中
 
         }
 
-        if(_drawType == 1)//线条(铅笔)
+        if (_drawType == 1)//线条(铅笔)
         {
             _lpress = true;//左键按下标志
             QVector<QPoint> line;//鼠标按下，新的线条开始
             _lines.append(line);//将新线条添加到线条集合
-            QVector<QPoint>& lastLine = _lines.last();//拿到新线条
+            QVector<QPoint> &lastLine = _lines.last();//拿到新线条
             lastLine.append(e->pos());//记录鼠标的坐标(新线条的开始坐标)
             _shape.append(1);
-        }
-        else if(_drawType == 2||(_drawType == 10&& isInRect))//矩形
+        } else if (_drawType == 2 || (_drawType == 10 && isInRect))//矩形
         {
             _lpress = true;//左键按下标志
 
-            if(!_drag){
-                qDebug()<<"new rect";
+            if (!_drag) {
+                qDebug() << "new rect";
                 QRect rect;//鼠标按下，矩形开始
                 _rects.append(rect);//将新矩形添加到矩形集合
-                QRect& lastRect = _rects.last();//拿到新矩形
+                QRect &lastRect = _rects.last();//拿到新矩形
                 lastRect.setTopLeft(e->pos());//记录鼠标的坐标(新矩形的左上角坐标)
-                 _shape.append(2);
-            }else{
+                _shape.append(2);
+            } else {
                 //寻找当前是哪个图形
-                if(isInRect){
+                if (isInRect) {
                     _begin = e->pos();
-                    qDebug()<<"found the rect";
+                    qDebug() << "found the rect";
                 }
             }
-        }
-        else if(_drawType == 3||(_drawType == 10&& isInEllipse))//椭圆
+        } else if (_drawType == 3 || (_drawType == 10 && isInEllipse))//椭圆
         {
             _lpress = true;//左键按下标志
 
-            if(!_drag){
+            if (!_drag) {
                 QRect rect;//鼠标按下，椭圆开始
-                qDebug()<<"new ellipse";
+                qDebug() << "new ellipse";
                 _ellipse.append(rect);//将新椭圆添加到椭圆集合
-                QRect& lastEllipse = _ellipse.last();//拿到新椭圆
+                QRect &lastEllipse = _ellipse.last();//拿到新椭圆
                 lastEllipse.setTopLeft(e->pos());//记录鼠标的坐标(新椭圆的左上角坐标)
-                 _shape.append(3);
-            }else{
-                qDebug()<<"isInEllipse"<<isInEllipse;
-                if(isInEllipse){
+                _shape.append(3);
+            } else {
+                qDebug() << "isInEllipse" << isInEllipse;
+                if (isInEllipse) {
                     _begin = e->pos();
-                    qDebug()<<"found the ellipse";
+                    qDebug() << "found the ellipse";
 
                 }
             }
 
 
-        }
-        else if(_drawType == 4)//直线
+        } else if (_drawType == 4)//直线
         {
             _lpress = true;//左键按下标志
             QRect rect;//鼠标按下，直线一端开始
             _line.append(rect);//将新直线添加到直线集合
-            QRect& lastLine = _line.last();//拿到新直线
+            QRect &lastLine = _line.last();//拿到新直线
             lastLine.setTopLeft(e->pos());//记录鼠标的坐标(新直线开始一端坐标)
             _shape.append(4);
-        }
-        else if(_drawType == 5)//圆弧
+        } else if (_drawType == 5)//圆弧
         {
-            if(_arcCenter.length()==0)
+            if (_arcCenter.length() == 0)
                 return;
             _lpress = true;//左键按下标志
             QRect rect;//鼠标按下，正圆开始
 
             qDebug("_arc.appending...");
             _arc.append(rect);//将新正圆添加到椭圆集合
-            QRect& lastArc = _arc.last();//拿到新圆弧
+            QRect &lastArc = _arc.last();//拿到新圆弧
             lastArc.setTopLeft(e->pos());//记录鼠标的坐标(新椭圆的左上角坐标)
-            if(_arcCenter.length()<_arc.length()){//如果出现了在一个圆心上重复画弧的情况，就复制一个最后一个圆弧心
+            if (_arcCenter.length() < _arc.length()) {//如果出现了在一个圆心上重复画弧的情况，就复制一个最后一个圆弧心
                 struct arcCenter center;
-                center.x=_arcCenter.last().x;
-                center.y=_arcCenter.last().y;
+                center.x = _arcCenter.last().x;
+                center.y = _arcCenter.last().y;
                 _arcCenter.append(center);
             }
 
             _shape.append(5);
-        }
-        else if(_drawType == 6){//圆弧圆心
+        } else if (_drawType == 6) {//圆弧圆心
             struct arcCenter center;
-            center.x=e->pos().x();
-            center.y=e->pos().y();
+            center.x = e->pos().x();
+            center.y = e->pos().y();
             _arcCenter.append(center);
-            qDebug()<<"center at"<<center.x<<","<<center.y;
-        }
-        else if (_drawType == 7||(_drawType == 10&& isInPolygon)) { // 绘制多边形
+            qDebug() << "center at" << center.x << "," << center.y;
+        } else if (_drawType == 7 || (_drawType == 10 && isInPolygon)) { // 绘制多边形
             _lpress = true;//左键按下标志
-            if(!_drag){
+            if (!_drag) {
                 if (_newPolygon == true) {
                     // 创建一个新的多边形
                     QVector<QPoint> polygon;
-    //                QPen tempPen(_pen);
+                    //                QPen tempPen(_pen);
                     //强制改变多边形画笔粗细
                     tempPen.setWidth(1);
                     _brush.append(tempPen);
@@ -635,7 +607,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
                     _newPolygon = false;
                 }
                 // 拿到最后一个多边形的数组
-                QVector<QPoint>& lastPolygon = _polygon.last();
+                QVector<QPoint> &lastPolygon = _polygon.last();
                 // 创建点
                 QPoint a;
                 a.setX(e->pos().x());
@@ -643,22 +615,19 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
                 qDebug() << "x:" << a.x() << "y:" << a.y();
                 // 将新的点添加到多边形集合
                 lastPolygon.append(a);
-            }else{
-                qDebug()<<"isInPolygon"<<isInPolygon;
-                if(isInPolygon){
+            } else {
+                qDebug() << "isInPolygon" << isInPolygon;
+                if (isInPolygon) {
                     _begin = e->pos();
-                    qDebug()<<"found the polygon";
+                    qDebug() << "found the polygon";
                 }
             }
-        }
-        else if(_drawType == 8){
+        } else if (_drawType == 8) {
 
 
-        }
-        else if (_drawType == 9 || (_drawType == 10)){// beizer的绘制和bezier/bspline的控制点定位
+        } else if (_drawType == 9 || (_drawType == 10)) {// beizer的绘制和bezier/bspline的控制点定位
             _lpress = true;
-            if (!_drag)
-            {
+            if (!_drag) {
                 QPoint p(e->pos().x(), e->pos().y());
                 _currentBezierCurve.push_back(p);
                 qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
@@ -666,8 +635,8 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             for (int i = 0; i < _bezierCurve.size(); ++i) {
                 for (int j = 0; j < _bezierCurve[i].size(); ++j) {
                     // 判断当前点是否在控制点的圆内
-                    if (e->pos().x() <= _bezierCurve[i][j].x() + 10 && e->pos().x() >= _bezierCurve[i][j].x() - 10 && e->pos().y() <= _bezierCurve[i][j].y() + 10 && e->pos().y() >= _bezierCurve[i][j].y() - 10)
-                    {
+                    if (e->pos().x() <= _bezierCurve[i][j].x() + 10 && e->pos().x() >= _bezierCurve[i][j].x() - 10 &&
+                        e->pos().y() <= _bezierCurve[i][j].y() + 10 && e->pos().y() >= _bezierCurve[i][j].y() - 10) {
                         nowControlPoint = &_bezierCurve[i][j];
                     }
                 }
@@ -675,30 +644,26 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
             for (int i = 0; i < _bsplineCurve.size(); ++i) {
                 for (int j = 0; j < _bsplineCurve[i].size(); ++j) {
                     // 判断当前点是否在控制点的圆内
-                    if (e->pos().x() <= _bsplineCurve[i][j].x() + 10 && e->pos().x() >= _bsplineCurve[i][j].x() - 10 && e->pos().y() <= _bsplineCurve[i][j].y() + 10 && e->pos().y() >= _bsplineCurve[i][j].y() - 10)
-                    {
+                    if (e->pos().x() <= _bsplineCurve[i][j].x() + 10 && e->pos().x() >= _bsplineCurve[i][j].x() - 10 &&
+                        e->pos().y() <= _bsplineCurve[i][j].y() + 10 && e->pos().y() >= _bsplineCurve[i][j].y() - 10) {
                         nowControlPoint = &_bsplineCurve[i][j];
                     }
                 }
             }
-        }
-        else if (_drawType == 13){// bspline
+        } else if (_drawType == 13) {// bspline
             _lpress = true;
-            if (!_drag)
-            {
+            if (!_drag) {
                 QPoint p(e->pos().x(), e->pos().y());
                 _currentBsplineCurve.push_back(p);
                 qDebug() << "x:" << e->pos().x() << "y:" << e->pos().y();
             }
-        }
-        else if(_drawType == 11){//fill
+        } else if (_drawType == 11) {//fill
             _lpress = true;
             QPoint pos = e->pos();
             _fill.append(pos);
-            qDebug()<<"start fill at"<<pos.x()<<", "<<pos.y();
+            qDebug() << "start fill at" << pos.x() << ", " << pos.y();
             _shape.append(11);
-        }
-        else if(_drawType == 12) {
+        } else if (_drawType == 12) {
             _lpress = true;//左键按下标志
             _crop.setTopLeft(e->pos());//记录鼠标的坐标(新直线开始一端坐标)
             _shape.append(12);
@@ -709,19 +674,16 @@ void MyPaint::mousePressEvent(QMouseEvent *e)
 }
 
 
-
-void MyPaint::mouseMoveEvent(QMouseEvent *e)
-{
+void MyPaint::mouseMoveEvent(QMouseEvent *e) {
 
     isInFill = 0;
     isInTagRect = false;
     int isArrow = 1;
     //定位鼠标指到的图形
-    updateCoordiante(e->pos().x(),e->pos().y());
-    if(_rects.length()>0 ){
-        for(int i=0;i<_rects.length();i++ ){
-            if(_rects.at(i).contains(e->pos()))
-            {
+    updateCoordiante(e->pos().x(), e->pos().y());
+    if (_rects.length() > 0) {
+        for (int i = 0; i < _rects.length(); i++) {
+            if (_rects.at(i).contains(e->pos())) {
                 removeRectIndex = i;
                 nowRect = &_rects[i];
                 isInRect = 1;
@@ -738,11 +700,10 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             }
         }
     }
-    if(_ellipse.length()>0){
-        for(int i=0;i<_ellipse.length();i++ ){
-            if(_ellipse.at(i).contains(e->pos()))
-            {
-                nowEllipse =&_ellipse[i];
+    if (_ellipse.length() > 0) {
+        for (int i = 0; i < _ellipse.length(); i++) {
+            if (_ellipse.at(i).contains(e->pos())) {
+                nowEllipse = &_ellipse[i];
                 isInEllipse = 1;
                 isInPolygon = 0;
                 isInRect = 0;
@@ -757,17 +718,16 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             }
         }
     }
-    if(_polygon.length()>0){
-        for(int i=0;i<_polygon.length();i++ ){
-            if(polyContains(_polygon[i],e->pos()))
-            {
-                nowPolygon =&_polygon[i];
+    if (_polygon.length() > 0) {
+        for (int i = 0; i < _polygon.length(); i++) {
+            if (polyContains(_polygon[i], e->pos())) {
+                nowPolygon = &_polygon[i];
                 isInPolygon = 1;
                 isInEllipse = 0;
                 isInRect = 0;
                 isArrow = 0;
                 for (int j = 0; j < _fill.length(); j++) {
-                    if (polyContains(_polygon[i],_fill.at(j))) {
+                    if (polyContains(_polygon[i], _fill.at(j))) {
                         nowFill = &_fill[j];
                         isInFill = 1;
                     }
@@ -776,14 +736,13 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             }
         }
     }
-    if (!_bezierCurve.empty())
-    {
+    if (!_bezierCurve.empty()) {
         for (int i = 0; i < _bezierCurve.size(); ++i) {
             for (int j = 0; j < _bezierCurve[i].size(); ++j) {
                 // 判断当前点是否在控制点的圆内
                 // if (e->pos().x() == _bezierCurve[i][j].x() && e->pos().y() == _bezierCurve[i][j].y())
-                if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 && e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4)
-                {
+                if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 &&
+                    e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4) {
                     isOnPoint1 = 1;
                     isOnPoint2 = 0;
                     isInEllipse = 0;
@@ -794,14 +753,13 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
             }
         }
     }
-    if (!_bsplineCurve.empty())
-    {
+    if (!_bsplineCurve.empty()) {
         for (int i = 0; i < _bsplineCurve.size(); ++i) {
             for (int j = 0; j < _bsplineCurve[i].size(); ++j) {
                 // 判断当前点是否在控制点的圆内
                 // if (e->pos().x() == _bezierCurve[i][j].x() && e->pos().y() == _bezierCurve[i][j].y())
-                if (e->pos().x() <= _bsplineCurve[i][j].x() + 4 && e->pos().x() >= _bsplineCurve[i][j].x() - 4 && e->pos().y() <= _bsplineCurve[i][j].y() + 4 && e->pos().y() >= _bsplineCurve[i][j].y() - 4)
-                {
+                if (e->pos().x() <= _bsplineCurve[i][j].x() + 4 && e->pos().x() >= _bsplineCurve[i][j].x() - 4 &&
+                    e->pos().y() <= _bsplineCurve[i][j].y() + 4 && e->pos().y() >= _bsplineCurve[i][j].y() - 4) {
                     isOnPoint1 = 0;
                     isOnPoint2 = 1;
                     isInEllipse = 0;
@@ -813,27 +771,25 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
         }
     }
 
-    if(transRectTag->contains(e->pos())) {
+    if (transRectTag->contains(e->pos())) {
         isInTagRect = true;
         isArrow = 0;
     }
 
-    if(_drawType == 10 ){
-        if(isInRect) {
+    if (_drawType == 10) {
+        if (isInRect) {
             transMatrix trM;
             trM.setMoveTrans(nowRect->bottomRight() - transRectTag->center());
             transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
             transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
-        }
-        else if(isInPolygon){
+        } else if (isInPolygon) {
             transMatrix trM;
             trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center());
             transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
             transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
-        }
-        else if(isInEllipse){
+        } else if (isInEllipse) {
             transMatrix trM;
-            trM.setMoveTrans(nowEllipse->bottomRight()- transRectTag->center());
+            trM.setMoveTrans(nowEllipse->bottomRight() - transRectTag->center());
             transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
             transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
         }
@@ -841,86 +797,69 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
     }
 
 
-    if(!isArrow && _drag && _drawType == 10)
-    {
+    if (!isArrow && _drag && _drawType == 10) {
         setCursor(Qt::SizeAllCursor);//拖拽模式下，并且在拖拽图形中，将光标形状改为十字
-        if(_lpress)
+        if (_lpress)
             Transform(e);
-    }else{
+    } else {
         setCursor(Qt::ArrowCursor);//恢复原始光标形状
         //_drag = 0;
     }
 //    qDebug()<<"pressed:"<<_lpress;
 
-    if(_lpress)
-    {
-        qDebug()<<"isInEllipse"<<isInEllipse;
-        qDebug()<<"isInPolygon"<<isInPolygon;
-        qDebug()<<"isInRect"<<isInRect;
-        qDebug()<<"[move] _drawtype:"<<_drawType;
-        if(_drawType == 1)//铅笔画线
+    if (_lpress) {
+        qDebug() << "isInEllipse" << isInEllipse;
+        qDebug() << "isInPolygon" << isInPolygon;
+        qDebug() << "isInRect" << isInRect;
+        qDebug() << "[move] _drawtype:" << _drawType;
+        if (_drawType == 1)//铅笔画线
         {
-            if(_lines.size()<=0) return;//线条集合为空，不画线
-            QVector<QPoint>& lastLine = _lines.last();//最后添加的线条，就是最新画的
+            if (_lines.size() <= 0) return;//线条集合为空，不画线
+            QVector<QPoint> &lastLine = _lines.last();//最后添加的线条，就是最新画的
             lastLine.append(e->pos());//记录鼠标的坐标(线条的轨迹)
             update();//触发窗体重绘
-        }
-        else if(_drawType == 2)
-        {
+        } else if (_drawType == 2) {
 //            qDebug()<<"drag:"<<_drag;
-            QRect& lastRect = _rects.last();//拿到新矩形
+            QRect &lastRect = _rects.last();//拿到新矩形
             lastRect.setBottomRight(e->pos());
 
             update();//触发窗体重绘
 
-        }
-        else if(_drawType == 3)
-        {
-            if(_drag == 0)//非拖拽
+        } else if (_drawType == 3) {
+            if (_drag == 0)//非拖拽
             {
-                QRect& lastEllipse = _ellipse.last();//拿到新椭圆
+                QRect &lastEllipse = _ellipse.last();//拿到新椭圆
                 lastEllipse.setBottomRight(e->pos());//更新椭圆的右下角坐标
             }
             update();//触发窗体重绘
-        }
-        else if(_drawType == 4 && _line.length() > 0)
-        {
-            QRect& lastLine = _line.last();//拿到新直线
+        } else if (_drawType == 4 && _line.length() > 0) {
+            QRect &lastLine = _line.last();//拿到新直线
             lastLine.setBottomRight(e->pos());//更新直线另一端)
-            qDebug()<<"update line";
+            qDebug() << "update line";
             update();//触发窗体重绘
-        }
-        else if(_drawType == 5 && _arc.length() > 0)
-        {
+        } else if (_drawType == 5 && _arc.length() > 0) {
 
-            QRect& lastArc = _arc.last();//拿到新圆弧
+            QRect &lastArc = _arc.last();//拿到新圆弧
             lastArc.setBottomRight(e->pos());//更新圆弧的右下角坐标)
             update();//触发窗体重绘
-        }
-        else if(_drawType == 6)
-        {
+        } else if (_drawType == 6) {
             update();//触发窗体重绘
-        }
-        else if(_drawType == 7){
-            qDebug()<<"not in polygon";
+        } else if (_drawType == 7) {
+            qDebug() << "not in polygon";
             update();//触发窗体重绘
-        }
-        else if (_drawType == 10){ // bezier/spline移动控制点
-            if (!_bezierCurve.empty() && isOnPoint1 && !isOnPoint2 &&  !isInEllipse && !isInPolygon && !isInRect)
-            {
+        } else if (_drawType == 10) { // bezier/spline移动控制点
+            if (!_bezierCurve.empty() && isOnPoint1 && !isOnPoint2 && !isInEllipse && !isInPolygon && !isInRect) {
                 *nowControlPoint = QPoint(e->pos().x(), e->pos().y());
                 _begin = e->pos();//刷新拖拽点起始坐标
             }
             isOnPoint1 = 0;
-            if (!_bsplineCurve.empty() && !isOnPoint1 && isOnPoint2 && !isInEllipse && !isInPolygon && !isInRect)
-            {
+            if (!_bsplineCurve.empty() && !isOnPoint1 && isOnPoint2 && !isInEllipse && !isInPolygon && !isInRect) {
                 *nowControlPoint = QPoint(e->pos().x(), e->pos().y());
                 _begin = e->pos();//刷新拖拽点起始坐标
             }
             isOnPoint2 = 0;
             update();
-        }
-        else if(_drawType == 12) {
+        } else if (_drawType == 12) {
             _crop.setBottomRight(e->pos());//更新直线另一端)
             update();//触发窗体重绘
         }
@@ -928,84 +867,61 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e)
 }
 
 
-void MyPaint::mouseReleaseEvent(QMouseEvent *e)
-{
-    if(_lpress)
-    {
-        if(_drawType == 1)
-        {
-            QVector<QPoint>& lastLine = _lines.last();//最后添加的线条，就是最新画的
+void MyPaint::mouseReleaseEvent(QMouseEvent *e) {
+    if (_lpress) {
+        if (_drawType == 1) {
+            QVector<QPoint> &lastLine = _lines.last();//最后添加的线条，就是最新画的
             lastLine.append(e->pos());//记录线条的结束坐标
             _lpress = false;//标志左键释放
-        }
-        else if(_drawType == 2)
-        {
-            QRect& lastRect = _rects.last();//拿到新矩形
-            if(!_drag)
-            {
+        } else if (_drawType == 2) {
+            QRect &lastRect = _rects.last();//拿到新矩形
+            if (!_drag) {
                 lastRect.setBottomRight(e->pos());//不是拖拽时，更新矩形的右下角坐标)
             }
 
             _lpress = false;
 
-        }
-        else if(_drawType == 3)
-        {
-            QRect& lastEllipse = _ellipse.last();//拿到新椭圆
-            if(!_drag)
-            {
+        } else if (_drawType == 3) {
+            QRect &lastEllipse = _ellipse.last();//拿到新椭圆
+            if (!_drag) {
                 lastEllipse.setBottomRight(e->pos());//不是拖拽时，更新椭圆的右下角坐标)
             }
             _lpress = false;
             update();
-        }
-        else if(_drawType == 4)
-        {
-            QRect& lastLine = _line.last();//拿到新直线
-            if(!_drag)
-            {
+        } else if (_drawType == 4) {
+            QRect &lastLine = _line.last();//拿到新直线
+            if (!_drag) {
                 lastLine.setBottomRight(e->pos());//更新矩形的右下角坐标)
             }
             _lpress = false;
-        }
-        else if(_drawType == 5)
-        {
-            cout <<"closing secCircle"<<endl;
-            QRect& last = _arc.last();//拿到新圆弧
+        } else if (_drawType == 5) {
+            cout << "closing secCircle" << endl;
+            QRect &last = _arc.last();//拿到新圆弧
             last.setBottomRight(e->pos());//不是拖拽时，更新椭圆的右下角坐标)
             _lpress = false;
-        }
-        else if(_drawType == 6)
-        {
+        } else if (_drawType == 6) {
             _arcCenter.pop_back();
             _lpress = false;
-        }
-        else if (_drawType == 7) {
+        } else if (_drawType == 7) {
             //多边形创建过程中会多次松开
 //            _lpress = false;//标志左键释放
             update();
-        }
-        else if(_drawType == 8){
+        } else if (_drawType == 8) {
             _lpress = false;//标志左键释放
             update();
-        }
-        else if (_drawType == 9){
+        } else if (_drawType == 9) {
             _lpress = false;
             update();
-        }
-        else if (_drawType == 13){
+        } else if (_drawType == 13) {
             _lpress = false;
             update();
-        }
-        else if (_drawType == 10){
+        } else if (_drawType == 10) {
             _lpress = false;
             iscomfirm = true;
-        }
-        else if (_drawType == 11){
+        } else if (_drawType == 11) {
             _lpress = false;
             update();
-        }
-        else if (_drawType == 12){
+        } else if (_drawType == 12) {
             _lpress = false;
             int XL = _crop.topLeft().x() < _crop.bottomRight().x() ? _crop.topLeft().x() : _crop.bottomRight().x();
             int XR = _crop.topLeft().x() > _crop.bottomRight().x() ? _crop.topLeft().x() : _crop.bottomRight().x();
@@ -1016,11 +932,11 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             vector<int> deleteNo;
             int k = 0;
             for (int i = 0; i < _shape.length(); i++) {
-                if(_shape.at(i) == 4) {
+                if (_shape.at(i) == 4) {
                     QPen pen = _brush.at(i);
                     QRect line = _line.at(k++);
                     QRect newline = MidPoint_ClipLine(line, XL, XR, YB, YT);
-                    if (newline.topLeft().x() != -1){//如果不是完全剪切整条线段
+                    if (newline.topLeft().x() != -1) {//如果不是完全剪切整条线段
                         newLine.append(newline);
                         newBrush.append(pen);
                     }
@@ -1029,12 +945,12 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
             }
             sort(deleteNo.rbegin(), deleteNo.rend());
             for (int i = 0; i < deleteNo.size(); ++i) {
-                _line.remove(deleteNo.size()-i-1);
+                _line.remove(deleteNo.size() - i - 1);
                 _shape.remove(deleteNo[i]);
                 _brush.remove(deleteNo[i]);
             }
             for (int i = 0; i < _shape.length(); i++) {
-                if(_shape.at(i) == 12) {
+                if (_shape.at(i) == 12) {
                     _shape.remove(i);
                     _brush.remove(i);
                 }
@@ -1049,40 +965,34 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e)
     }
 }
 
-void MyPaint::Lines()
-{
+void MyPaint::Lines() {
     _drawType = 1;//铅笔
     _drag = 0;
 }
 
-void MyPaint::Line()
-{
+void MyPaint::Line() {
     _drawType = 4;//直线
     _drag = 0;
 }
 
-void MyPaint::Rects()
-{
+void MyPaint::Rects() {
     _drawType = 2;//矩形
     _drag = 0;
 
 }
 
-void MyPaint::Ellipses()
-{
+void MyPaint::Ellipses() {
     _drawType = 3;//椭圆
     _drag = 0;
 }
 
-void MyPaint::Arc()
-{
+void MyPaint::Arc() {
     _drawType = 5;//圆弧
     _drag = 0;
 }
 
 
-void MyPaint::ArcCenter()
-{
+void MyPaint::ArcCenter() {
     _drawType = 6;//圆弧圆心
     _drag = 0;
 }
@@ -1092,7 +1002,7 @@ void MyPaint::Polygon() {
     _drag = 0;
 }
 
-void MyPaint::Fill(){
+void MyPaint::Fill() {
     _drawType = 8;
     _drag = 0;
 
@@ -1108,14 +1018,14 @@ void MyPaint::Bspline() {
     _drag = 0;
 }
 
-void MyPaint::startTrans(){
+void MyPaint::startTrans() {
     if (_shape.length() != 0) {
         _drawType = 10;
         _drag = 0;
     }
 }
 
-void MyPaint::startFill(){
+void MyPaint::startFill() {
     _drawType = 11;
     _drag = 0;
 }
@@ -1125,41 +1035,37 @@ void MyPaint::Clip() {
     _drag = 0;
 }
 
-void MyPaint::SavePic()
-{
+void MyPaint::SavePic() {
     //弹出文件保存对话框
     QString fileName = QFileDialog::getSaveFileName(this, tr("保存"), "new.jpg", "Image (*.jpg *.png *.bmp)");
 
-    if (fileName.length() > 0)
-    {
+    if (fileName.length() > 0) {
         QPixmap pixmap(size());//新建窗体大小的pixmap
         QPainter painter(&pixmap);//将pixmap作为画布
         painter.fillRect(QRect(0, 0, size().width(), size().height()), Qt::white);//设置绘画区域、画布颜色
         this->render(&painter);//将窗体渲染到painter，再由painter画到画布
-        pixmap.copy(QRect(0,30,size().width(),size().height()-30)).save(fileName);//不包含工具栏
+        pixmap.copy(QRect(0, 30, size().width(), size().height() - 30)).save(fileName);//不包含工具栏
     }
 }
 
-void MyPaint::OpenPic()
-{
+void MyPaint::OpenPic() {
     //弹出文件打开对话框
-    QString picPath = QFileDialog::getOpenFileName(this,tr("打开"),"","Image Files(*.jpg *.png)");
-    if(!picPath.isEmpty())//用户选择了文件
+    QString picPath = QFileDialog::getOpenFileName(this, tr("打开"), "", "Image Files(*.jpg *.png)");
+    if (!picPath.isEmpty())//用户选择了文件
     {
         QPixmap pix;
         pix.load(picPath);//加载图片
         QPainter p(&_pixmap);
-        p.drawPixmap(0,30,pix);//添加工具栏的空间
+        p.drawPixmap(0, 30, pix);//添加工具栏的空间
         _openflag = 1;//设置文件打开标志
         update();//触发窗体重绘，将图片画到窗体
     }
 }
 
-void MyPaint::createBrushWindow(){
+void MyPaint::createBrushWindow() {
     emit sendPen(&_pen);
     setBrushWindow->show();
 }
-
 
 
 void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
@@ -1169,129 +1075,97 @@ void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
 
 void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
-     //Ctrl+Z撤销
-     if (e->key() == Qt::Key_Z && e->modifiers() == Qt::ControlModifier)
-     {
-         if(_shape.size()>0)
-         {
-             switch(_shape.last())
-             {
-                 case 1: _lines.pop_back();
-                         break;
-                 case 2: _rects.pop_back();
-                         break;
-                 case 3: _ellipse.pop_back();
-                         break;
-                 case 4: _line.pop_back();
-                         break;
-                 case 5: _arc.pop_back();
-                         break;
-                 case 6: _arcCenter.pop_back();
-                         break;
-             }
-             _shape.pop_back();
-             _drag = 0;//设置为非拖拽模式
-             update();
-         }
-     }
-     else if (e->key() == Qt::Key_S && e->modifiers() == Qt::ControlModifier)//保存
-     {
+    //Ctrl+Z撤销
+    if (e->key() == Qt::Key_Z && e->modifiers() == Qt::ControlModifier) {
+        if (_shape.size() > 0) {
+            switch (_shape.last()) {
+                case 1:
+                    _lines.pop_back();
+                    break;
+                case 2:
+                    _rects.pop_back();
+                    break;
+                case 3:
+                    _ellipse.pop_back();
+                    break;
+                case 4:
+                    _line.pop_back();
+                    break;
+                case 5:
+                    _arc.pop_back();
+                    break;
+                case 6:
+                    _arcCenter.pop_back();
+                    break;
+            }
+            _shape.pop_back();
+            _drag = 0;//设置为非拖拽模式
+            update();
+        }
+    } else if (e->key() == Qt::Key_S && e->modifiers() == Qt::ControlModifier)//保存
+    {
         SavePic();//Ctrl+S保存
-     }
-    else if (e->key() == Qt::Key_Escape) {
-        if (_drawType == 7){
+    } else if (e->key() == Qt::Key_Escape) {
+        if (_drawType == 7) {
             update();
             _lpress = false;
             _newPolygon = true;
         }
-        if (_drawType == 9){ // bezier控制点绘制结束
+        if (_drawType == 9) { // bezier控制点绘制结束
             _brush.append(_pen);
             _shape.append(9);
             _bezierCurve.push_back(_currentBezierCurve);
-            vector <QPoint>().swap(_currentBezierCurve);
+            vector<QPoint>().swap(_currentBezierCurve);
             update();
         }
-        if (_drawType == 13){ // bspline控制点绘制结束
+        if (_drawType == 13) { // bspline控制点绘制结束
             _brush.append(_pen);
             _shape.append(13);
             _bsplineCurve.push_back(_currentBsplineCurve);
-            vector <QPoint>().swap(_currentBsplineCurve);
+            vector<QPoint>().swap(_currentBsplineCurve);
             update();
         }
-     }
-     else if(e->key() == Qt::Key_M && _drawType == 10){
+    } else if (e->key() == Qt::Key_M && _drawType == 10) {
 
-         _transFlag = MOVE;
-     }
-     else if(e->key() == Qt::Key_Z && _drawType == 10){
+        _transFlag = MOVE;
+    } else if (e->key() == Qt::Key_Z && _drawType == 10) {
 
-         _transFlag = ZOOM;
-     }
-     else if(e->key() == Qt::Key_R && _drawType == 10){
-         _transFlag = ROTATE;
-     }
-     else if(e->key() == Qt::Key_S&& _drawType == 10){
-         isSpecificRefer = false;
-         update();
-     }
-
-}
-
-int crossProduct(QPoint A, QPoint B, QPoint C){
-    return (B.x() - A.x()) * (C.y() - A.y()) - (C.x() - A.x()) * (B.y() - A.y());
-}
-
-//判断点Q是否在P1和P2的线段上
-bool OnSegment(QPoint P1,QPoint P2,QPoint Q)
-{
-    //前一个判断点Q在P1P2直线上 后一个判断在P1P2范围上
-    //QP1 X QP2
-    return crossProduct(Q,P1,P2)==0 && QPoint::dotProduct(P1-Q,P2-Q)<=0;
-}
-bool MyPaint::polyContains(QVector<QPoint> polygon, QPoint P){
-    bool flag = false; //相当于计数
-    QPoint P1,P2; //多边形一条边的两个顶点
-    for(int i=0,j=polygon.length()-1;i<polygon.length();j=i++)
-    {
-        //polygon[]是给出多边形的顶点
-        P1 = polygon[i];
-        P2 = polygon[j];
-        if(OnSegment(P1,P2,P)) return true; //点在多边形一条边上
-        //前一个判断min(P1.y,P2.y)<P.y<=max(P1.y,P2.y)
-        //这个判断代码我觉得写的很精妙 我网上看的 应该是大神模版
-        //后一个判断被测点 在 射线与边交点 的左边
-        if( ((P1.y()-P.y())>0 != (P2.y()-P.y())>0) && (P.x() - (P.y()-P1.y())*(P1.x()-P2.x())/(P1.y()-P2.y())-P1.x())<0)
-            flag = !flag;
+        _transFlag = ZOOM;
+    } else if (e->key() == Qt::Key_R && _drawType == 10) {
+        _transFlag = ROTATE;
+    } else if (e->key() == Qt::Key_S && _drawType == 10) {
+        isSpecificRefer = false;
+        update();
     }
-//    qDebug()<<"is in poly?"<<flag;
-    return flag;
 
 }
+
+
+
 
 /**变换函数**/
 void MyPaint::Transform(QMouseEvent *e) {
-    if(isInRect)
+    if (isInRect)
         rectTrans(e);
-    else if(isInEllipse)
+    else if (isInEllipse)
         circleTrans(e);
-    else if(isInPolygon)
+    else if (isInPolygon)
         polygonTrans(e);
 }
 
 void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
     transMatrix trM;
-    double zoomPropor_X,zoomPropor_Y;  //进行缩放的比例
+    double zoomPropor_X, zoomPropor_Y;  //进行缩放的比例
     QPoint moveVector;              //进行移动的向量
     double angle;
 
-    if (iscomfirm){
-       tempTransRect = *nowRect;
-       iscomfirm = false;
+    if (iscomfirm) {
+        tempTransRect = *nowRect;
+        iscomfirm = false;
     }
     if (isSpecificRefer) {
         trM.setReference(referancePoint);  //是否有用户设定的参考点，有则设为该点
-    }
-    else {
+    } else {
         referancePoint = nowRect->center();
         trM.setReference(referancePoint);   //没有则设为矩形中心
     }
@@ -1310,55 +1184,56 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
             trM.setMoveTrans(moveVector);
             nowRect->setTopLeft(trM * nowRect->topLeft());
             nowRect->setBottomRight(trM * nowRect->bottomRight());
-            if(isInFill){
+            if (isInFill) {
                 trM.setMoveTrans(nowRect->center() - *nowFill);
-                (*nowFill) = trM*(*nowFill);
+                (*nowFill) = trM * (*nowFill);
             }
             _begin = e->pos();
             update();
 
             break;
         case ZOOM:
-            if(isInTagRect){
+            if (isInTagRect) {
                 //计算缩放比例，直接来说就是计算怎么让标志矩形中心点移动到现在的点
-                zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(tempTransRect.bottomRight().x() - referancePoint.x());
-                zoomPropor_Y = abs(e->pos().y()-referancePoint.y())*1.0/abs(tempTransRect.bottomRight().y() - referancePoint.y());
-                trM.setZoomTrans(zoomPropor_X,zoomPropor_Y); //生成缩放变换矩阵
-                nowRect->setTopLeft(trM*tempTransRect.topLeft());
-                nowRect->setBottomRight(trM*tempTransRect.bottomRight());  //对目标矩形的两个点同步变换
-                if(isInFill){
+                zoomPropor_X = abs(e->pos().x() - referancePoint.x()) * 1.0 /
+                               abs(tempTransRect.bottomRight().x() - referancePoint.x());
+                zoomPropor_Y = abs(e->pos().y() - referancePoint.y()) * 1.0 /
+                               abs(tempTransRect.bottomRight().y() - referancePoint.y());
+                trM.setZoomTrans(zoomPropor_X, zoomPropor_Y); //生成缩放变换矩阵
+                nowRect->setTopLeft(trM * tempTransRect.topLeft());
+                nowRect->setBottomRight(trM * tempTransRect.bottomRight());  //对目标矩形的两个点同步变换
+                if (isInFill) {
                     trM.setMoveTrans(nowRect->center() - *nowFill);
-                    (*nowFill) = trM*(*nowFill);
+                    (*nowFill) = trM * (*nowFill);
                 }
-                trM.setMoveTrans(nowRect->bottomRight()-transRectTag->center()); //让标志矩形中心点跟随移动到新点
-                transRectTag->setTopLeft(trM*(transRectTag->topLeft()));
-                transRectTag->setBottomRight(trM*(transRectTag->bottomRight()));
+                trM.setMoveTrans(nowRect->bottomRight() - transRectTag->center()); //让标志矩形中心点跟随移动到新点
+                transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+                transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
             }
             _begin = e->pos();
             update();
             break;
         case ROTATE:
-            if(isInTagRect){
+            if (isInTagRect) {
 
             }
-
 
 
     }
 }
 
-void MyPaint::polygonTrans(QMouseEvent *e){
+void MyPaint::polygonTrans(QMouseEvent *e) {
     transMatrix trM;
-    double zoomPropor_X,zoomPropor_Y;  //进行缩放的比例
+    double zoomPropor_X, zoomPropor_Y;  //进行缩放的比例
     QPoint moveVector;              //进行移动的向量
     double angle;
 
-    if (iscomfirm){
+    if (iscomfirm) {
         tempTransPoly = *nowPolygon;
         iscomfirm = false;
     }
 
-    if(isSpecificRefer)
+    if (isSpecificRefer)
         trM.setReference(referancePoint);
     else {
         referancePoint = getPolyCenter(*nowPolygon);
@@ -1370,29 +1245,31 @@ void MyPaint::polygonTrans(QMouseEvent *e){
             moveVector = e->pos() - _begin;    //计算移动向量，终点减起点
             trM.setMoveTrans(moveVector);
             for (int i = 0; i < nowPolygon->size(); ++i) {
-                (*nowPolygon)[i] = trM*((*nowPolygon)[i]);
+                (*nowPolygon)[i] = trM * ((*nowPolygon)[i]);
             }
-            if(isInFill){
+            if (isInFill) {
                 trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
-                (*nowFill) = trM*(*nowFill);
+                (*nowFill) = trM * (*nowFill);
             }
             _begin = e->pos();
             update();
             break;
         case ZOOM:
-            if(isInTagRect) {
+            if (isInTagRect) {
                 //zoomPropor_X = abs(e->pos().x() - referancePoint.x())*1.0/abs(_begin.x() - referancePoint.x());
                 //zoomPropor_Y = abs(e->pos().y() - referancePoint.y())*1.0/abs(_begin.y() - referancePoint.y());
-                zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(tempTransPoly[0].x() - referancePoint.x());
-                zoomPropor_Y = abs(e->pos().y()-referancePoint.y())*1.0/abs(tempTransPoly[0].y() - referancePoint.y());
+                zoomPropor_X =
+                        abs(e->pos().x() - referancePoint.x()) * 1.0 / abs(tempTransPoly[0].x() - referancePoint.x());
+                zoomPropor_Y =
+                        abs(e->pos().y() - referancePoint.y()) * 1.0 / abs(tempTransPoly[0].y() - referancePoint.y());
                 trM.setZoomTrans(zoomPropor_X, zoomPropor_Y); //生成缩放变换矩阵
                 for (int i = 0; i < nowPolygon->size(); ++i) {
                     (*nowPolygon)[i] = trM * tempTransPoly[i];
                 }
-            if(isInFill){
-                trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
-                (*nowFill) = trM*(*nowFill);
-            }
+                if (isInFill) {
+                    trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
+                    (*nowFill) = trM * (*nowFill);
+                }
                 trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center()); //让标志矩形中心点跟随移动到新点
                 transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
                 transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
@@ -1401,17 +1278,17 @@ void MyPaint::polygonTrans(QMouseEvent *e){
             }
             break;
         case ROTATE:
-            if(isInTagRect) {
+            if (isInTagRect) {
                 angle = getAngle(referancePoint, tempTransPoly[0], e->pos());
                 trM.setRotateTrans(angle);
-                if(angle>30||angle<-30)   /**旋转时连续旋转超过60多度时会出现bug，目前原因尚不明确，处理方法为每次超过30度时更新暂存多边形，则下次的角度从零计算**/
+                if (angle > 30 || angle < -30)   /**旋转时连续旋转超过60多度时会出现bug，目前原因尚不明确，处理方法为每次超过30度时更新暂存多边形，则下次的角度从零计算**/
                     iscomfirm = true;     /**切勿删除！！！！！！！！！！！！**/
                 for (int i = 0; i < nowPolygon->size(); ++i) {
                     (*nowPolygon)[i] = trM * tempTransPoly[i];
                 }
-                if(isInFill){
+                if (isInFill) {
                     trM.setMoveTrans(getPolyCenter(*nowPolygon) - *nowFill);
-                    (*nowFill) = trM*(*nowFill);
+                    (*nowFill) = trM * (*nowFill);
                 }
                 trM.setMoveTrans((*nowPolygon)[0] - transRectTag->center()); //让标志矩形中心点跟随移动到新点
                 transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
@@ -1453,37 +1330,38 @@ void MyPaint::circleTrans(QMouseEvent *e) {
             _begin = e->pos();
             update();
         case ZOOM:
-            if(isInTagRect){
+            if (isInTagRect) {
                 //计算缩放比例，直接来说就是计算怎么让标志矩形中心点移动到现在的点
-                zoomPropor_X = abs(e->pos().x()-referancePoint.x())*1.0/abs(tempTransRect.bottomRight().x() - referancePoint.x());
-                trM.setZoomTrans(zoomPropor_X,zoomPropor_X); //生成缩放变换矩阵
-                nowEllipse->setTopLeft(trM*tempTransRect.topLeft());
-                nowEllipse->setBottomRight(trM*tempTransRect.bottomRight());  //对目标圆外接矩形的两个点同步变换
-                if(isInFill){
+                zoomPropor_X = abs(e->pos().x() - referancePoint.x()) * 1.0 /
+                               abs(tempTransRect.bottomRight().x() - referancePoint.x());
+                trM.setZoomTrans(zoomPropor_X, zoomPropor_X); //生成缩放变换矩阵
+                nowEllipse->setTopLeft(trM * tempTransRect.topLeft());
+                nowEllipse->setBottomRight(trM * tempTransRect.bottomRight());  //对目标圆外接矩形的两个点同步变换
+                if (isInFill) {
                     trM.setMoveTrans(nowRect->center() - *nowFill);
-                    (*nowFill) = trM*(*nowFill);
+                    (*nowFill) = trM * (*nowFill);
                 }
-                trM.setMoveTrans(nowEllipse->bottomRight()-transRectTag->center()); //让标志矩形中心点跟随移动到新点
-                transRectTag->setTopLeft(trM*(transRectTag->topLeft()));
-                transRectTag->setBottomRight(trM*(transRectTag->bottomRight()));
+                trM.setMoveTrans(nowEllipse->bottomRight() - transRectTag->center()); //让标志矩形中心点跟随移动到新点
+                transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
+                transRectTag->setBottomRight(trM * (transRectTag->bottomRight()));
             }
             _begin = e->pos();
             update();
             break;
         case ROTATE:
-            if(isInTagRect) {
+            if (isInTagRect) {
                 angle = getAngle(referancePoint, tempTransRect.bottomRight(), e->pos());
                 trM.setRotateTrans(angle);
-                if(angle>30||angle<-30)   /**旋转时连续旋转超过60多度时会出现bug，目前原因尚不明确，处理方法为每次超过30度时更新暂存多边形，则下次的角度从零计算**/
+                if (angle > 30 || angle < -30)   /**旋转时连续旋转超过60多度时会出现bug，目前原因尚不明确，处理方法为每次超过30度时更新暂存多边形，则下次的角度从零计算**/
                     iscomfirm = true;     /**切勿删除！！！！！！！！！！！！**/
 
                 R = tempTransRect.width();
-                nowEllipse->setBottomRight(trM*tempTransRect.bottomRight());
-                nowEllipse->setTopLeft(QPoint(nowEllipse->bottomRight().x()-R,nowEllipse->bottomRight().y()+R));
+                nowEllipse->setBottomRight(trM * tempTransRect.bottomRight());
+                nowEllipse->setTopLeft(QPoint(nowEllipse->bottomRight().x() - R, nowEllipse->bottomRight().y() + R));
 
-                if(isInFill){
+                if (isInFill) {
                     trM.setMoveTrans(nowEllipse->center() - *nowFill);
-                    (*nowFill) = trM*(*nowFill);
+                    (*nowFill) = trM * (*nowFill);
                 }
                 trM.setMoveTrans(nowEllipse->bottomRight() - transRectTag->center()); //让标志矩形中心点跟随移动到新点
                 transRectTag->setTopLeft(trM * (transRectTag->topLeft()));
@@ -1496,212 +1374,6 @@ void MyPaint::circleTrans(QMouseEvent *e) {
 
 }
 
-double Area(QPoint p0, QPoint p1, QPoint p2)
-{
-    double area = 0;
-    area = p0.x()*p1.y() + p1.x()*p2.y() + p2.x()*p0.y() - p1.x()*p0.y() - p2.x()*p1.y() - p0.x()*p2.y();
-    return area / 2;
-}
 
-QPoint getPolyCenter(QVector<QPoint> Poly)
-{
-    QPoint p0 = Poly[0];
-    QPoint p1 = Poly[1];
-    QPoint p2;
-    int Center_X,Center_Y;
-    double sumarea = 0, sumx = 0, sumy = 0;
-    double area;
-    for (int i = 2; i < Poly.size(); i++)
-    {
-        p2 = Poly[i];
-        area = Area(p0,p1,p2);
-        sumarea += area;
-        sumx += (p0.x() + p1.x() + p2.x())*area; //求∑cx[i] * s[i]和∑cy[i] * s[i]
-        sumy += (p0.y() + p1.y() + p2.y())*area;
-        p1 = p2;//求总面积
-    }
-    Center_X = (int)(sumx / sumarea / 3.0 );
-    Center_Y = (int)(sumy / sumarea / 3.0 );
-    qDebug()<<Center_X;
-    qDebug()<<Center_Y;
-    return QPoint(Center_X,Center_Y);
-
-    /*double Cx = 0,Cy = 0;
-    for(QPoint q :Poly){
-        Cx += q.x();
-        Cy += q.y();
-    }
-    Cx /= Poly.size();
-    Cy /= Poly.size();
-    return QPoint((int)Cx,(int)Cy);*/
-}
-
-
-
-double getAngle(QPoint origin,QPoint p1,QPoint p2)
-{
-    int x1 = p1.x(),y1 = p1.y(),x2 = p2.x(), y2 = p2.y(),x3 = origin.x(),y3 = origin.y();
-    double theta = atan2(x1 - x3, y1 - y3) - atan2(x2 - x3, y2 - y3);
-
-    if (theta > M_PI)
-        theta -= 2 * M_PI;
-    if (theta < -M_PI)
-        theta += 2 * M_PI;
-
-    theta = abs(theta * 180.0 / M_PI);
-    if((x2-x3)*(y2-y1)-(y2-y3)*(x2-x1)<0)
-        theta *= -1;
-    return theta;
-}
-
-int encode(int x, int y, int XL, int XR, int YB, int YT) {
-    int c = 0;
-    if (x < XL) c |= LEFT; // 置位CL
-    if (x > XR) c |= RIGHT; // 置位CR
-    if (y > YB) c |= BOTTOM; // 置位CB
-    if (y < YT) c |= TOP; // 置位CT
-    return c;
-}
-
-QRect MyPaint::CS_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
-    int x1 = line.topLeft().x();
-    int x2 = line.bottomRight().x();
-    int y1 = line.topLeft().y();
-    int y2 = line.bottomRight().y();
-
-    int x, y;
-    int code1, code2, code;
-    // 端点坐标编码
-    code1 = encode(x1, y1, XL, XR, YB, YT);
-    code2 = encode(x2, y2, XL, XR, YB, YT);
-    // 直到”完全可见”为止
-    while (code1 != 0 || code2 != 0) {
-        // 排除”显然不可见”情况
-        if ((code1 & code2) != 0)
-            return QRect(-1,-1,-1,-1);
-        code = code1;
-        // 求得在窗口外的点
-        if (code1 == 0)
-            code = code2;
-        // 按顺序检测到端点的编码不为0，才把线段与对应的窗口边界求交。
-        if ((LEFT & code) != 0) { // 线段与窗口左边延长线相交
-            x = XL;
-            y = y1 + (y2 - y1) * (XL - x1) / (x2 - x1);
-        } else if ((RIGHT & code) != 0) { // 线段与窗口右边延长线相交
-            x = XR;
-            y = y1 + (y2 - y1) * (XR - x1) / (x2 - x1);
-        } else if ((BOTTOM & code) != 0) { // 线段与窗口下边延长线相交
-            y = YB;
-            x = x1 + (x2 - x1) * (YB - y1) / (y2 - y1);
-        } else if ((TOP & code) != 0) { // 线段与窗口上边延长线相交
-            y = YT;
-            x = x1 + (x2 - x1) * (YT - y1) / (y2 - y1);
-        }
-        if (code == code1) { //裁去P1到交点
-            x1 = x;
-            y1 = y;
-            code1 = encode(x1, y1, XL, XR, YB, YT);
-        } else {  //裁去P2到交点
-            x2 = x;
-            y2 = y;
-            code2 = encode(x2, y2, XL, XR, YB, YT);
-        }
-    }
-    QPoint topLeft(x1, y1), bottomRight(x2, y2);
-    QRect rect;//鼠标按下，直线一端开始
-    rect.setTopLeft(topLeft);
-    rect.setBottomRight(bottomRight);
-    return rect;
-}
-
-QRect MyPaint::MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
-    int x1 = line.topLeft().x();
-    int x2 = line.bottomRight().x();
-    int y1 = line.topLeft().y();
-    int y2 = line.bottomRight().y();
-
-    int xa = x1, ya = y1, xb = x2, yb = y2;
-    int code1, code2, code_m;
-    // 端点坐标编码
-    code1 = encode(x1, y1, XL, XR, YB, YT);
-    code2 = encode(x2, y2, XL, XR, YB, YT);
-
-    // 两个点都在窗口内，显然可见，直接返回直线
-    if (code1 == 0 && code2 == 0) {
-        return line;
-    }
-    // 两个点都在窗口外，显然不可见，直接返回空
-    else if ((code1 & code2) != 0) {
-        return QRect(-1,-1,-1,-1);
-    }
-    // 对于剩下的情况，需要使用中点算法
-    // 首先先求P1点最近的窗口边界点Pa点
-    if(code1 != 0){
-        int x_0 = x1, y_0 = y1, x_1 = x2, y_1 = y2;
-        int code_0 = encode(x_0, y_0, XL, XR, YB, YT);
-        int code_1 = encode(x_1, y_1, XL, XR, YB, YT);
-        while(true){
-            int xm = (x_0 + x_1) / 2;
-            int ym = (y_0 + y_1) / 2;
-            int distance;
-            code_m = encode(xm, ym, XL, XR, YB, YT);
-            if((code_0 & code_m) == 0) {
-                x_1 = xm;
-                y_1 = ym;
-                code_1 = code_m;
-            } else {
-                x_0 = xm;
-                y_0 = ym;
-                code_0 = code_m;
-            }
-            if ((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0)<= 4) {
-                xa = xm;
-                ya = ym;
-                break;
-            }
-        }
-    }
-    // 随后求P2点最近的窗口边界点Pb点
-    if(code2 != 0){
-        int x_0 = x1, y_0 = y1, x_1 = x2, y_1 = y2;
-        int code_0 = encode(x_0, y_0, XL, XR, YB, YT);
-        int code_1 = encode(x_1, y_1, XL, XR, YB, YT);
-        while(true){
-            int xm = (x_0 + x_1) / 2;
-            int ym = (y_0 + y_1) / 2;
-            code_m = encode(xm, ym, XL, XR, YB, YT);
-            if((code_1 & code_m) == 0) {
-                x_0 = xm;
-                y_0 = ym;
-                code_0 = code_m;
-            } else {
-                x_1 = xm;
-                y_1 = ym;
-                code_1 = code_m;
-            }
-            if ((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0) <= 4) {
-                xb = xm;
-                yb = ym;
-                break;
-            }
-        }
-    }
-    QPoint topLeft(xa, ya), bottomRight(xb, yb);
-    return QRect(topLeft, bottomRight);
-}
-
-void MyPaint::setDashLine(Qt::PenStyle style){//设置虚线变量
-    qDebug()<<"style:"<<style;
-    if(style == Qt::DashLine){
-        isDashLine = true;
-    }else{
-        isDashLine = false;
-    }
-}
-
-void MyPaint::updateCoordiante(int x, int y){
-    QString output = "当前坐标("+QString::number(x,10)+", "+QString::number(y,10)+")";
-    statusBarLabel->setText(output);
-}
 
 

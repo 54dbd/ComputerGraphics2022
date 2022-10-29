@@ -28,7 +28,7 @@ add_executable(Graphics images.qrc
         Polygon.h
         Bezier.h
         point.h
-        Fill.h)
+        Fill.h utils.h)
 target_link_libraries(Graphics
         Qt::Core
         Qt::Gui
