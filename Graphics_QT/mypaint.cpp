@@ -1,6 +1,5 @@
 #include "mypaint.h"
-#include "Line.h"
-#include "Circle.h"
+
 #include "Arc.h"
 #include "Polygon.h"
 #include "Bezier.h"
@@ -12,7 +11,8 @@
 #include <QStatusBar>
 #include "configwindow.h"
 #include "utils.h"
-
+#include "Line.h"
+#include "Circle.h"
 using namespace std;
 vector<vector<pointData>> MAP;
 
