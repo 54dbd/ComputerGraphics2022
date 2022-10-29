@@ -224,6 +224,7 @@ void MyPaint::updateCoordiante(int x, int y) {
     QString output = "当前坐标(" + QString::number(x, 10) + ", " + QString::number(y, 10) + ")";
     statusBarLabel->setText(output);
 }
+
 bool polyContains(QVector<QPoint> polygon, QPoint P) {
     bool flag = false; //相当于计数
     QPoint P1, P2; //多边形一条边的两个顶点
@@ -242,4 +243,85 @@ bool polyContains(QVector<QPoint> polygon, QPoint P) {
 //    qDebug()<<"is in poly?"<<flag;
     return flag;
 }
+
+QPoint intersection(QPoint p1, QPoint p2, QPoint p3, QPoint p4) {
+    QPoint p;
+    double a1, b1, c1, a2, b2, c2, x, y;
+    a1 = p2.y() - p1.y();
+    b1 = p1.x() - p2.x();
+    c1 = p2.x() * p1.y() - p1.x() * p2.y();
+    a2 = p4.y() - p3.y();
+    b2 = p3.x() - p4.x();
+    c2 = p4.x() * p3.y() - p3.x() * p4.y();
+    x = int((b1 * c2 - b2 * c1) / (a1 * b2 - a2 * b1));
+    y = int((a2 * c1 - a1 * c2) / (a1 * b2 - a2 * b1));
+    if ((x <= max(p1.x(), p2.x()) && x >= min(p1.x(), p2.x()))) {
+        p.setX(x);
+        p.setY(y);
+        return p;
+    } else {
+        return QPoint(-1, -1);
+    }
+}
+
+bool outsideOneEdgeOfPolygon(QVector<QPoint> polygon, QPoint p, int x) {
+    QPoint p1 = polygon[x];
+    QPoint p2 = polygon[(x + 1) % int(polygon.length())];
+    QPoint p3 = polygon[(x + 2) % int(polygon.length())];
+    int a = p2.y() - p1.y();
+    int b = p1.x() - p2.x();
+    int c = p2.x() * p1.y() - p1.x() * p2.y();
+    if (a < 0) {
+        a = -a;
+        b = -b;
+        c = -c;
+    }
+    int pointD = a * p.x() + b * p.y() + c;
+    int polyNextPointD  = a * p3.x() + b * p3.y() + c;
+    if (pointD * polyNextPointD >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+QVector<QPoint> cropPolygon(const QVector<QPoint>& polygon, const QVector<QPoint>& cropPolygon) {
+    QVector<QPoint> result, originalPolygon = polygon;
+    qDebug() << "Original Polygon:" << originalPolygon;
+    qDebug() << "Crop Polygon:" << cropPolygon;
+    for (int i = 0; i < cropPolygon.length(); ++i) {
+        result.clear();
+        for (int j = 0; j < originalPolygon.length(); ++j) {
+            QPoint p1 = originalPolygon[j];
+            QPoint p2 = originalPolygon[(j + 1) % int(originalPolygon.length())];
+            qDebug() << "p1:" << p1 << "p2:" << p2;
+            bool p1_inPolygonEdge = outsideOneEdgeOfPolygon(cropPolygon, p1, i);
+            bool p2_inPolygonEdge = outsideOneEdgeOfPolygon(cropPolygon, p2, i);
+            qDebug() << "p1:" << p1_inPolygonEdge << "p2:" << p2_inPolygonEdge;
+            if (p1_inPolygonEdge && p2_inPolygonEdge) {
+                qDebug() << "Appending p2:" << p2;
+                result.append(p2);
+            } else if (p1_inPolygonEdge || p2_inPolygonEdge) {
+                QPoint k1 = cropPolygon[i];
+                QPoint k2 = cropPolygon[(i + 1) % int(cropPolygon.length())];
+                QPoint temp = intersection(p1, p2, k1, k2);
+                if (temp.x() != -1 && temp.y() != -1) {
+                    qDebug() << "Adding inersection point: " << temp;
+                    result.append(temp);
+                }
+            }
+            if (!p1_inPolygonEdge && p2_inPolygonEdge) {
+                qDebug() << "Appending p2:" << p2;
+                result.append(p2);
+            }
+            qDebug() << "result: " << result;
+            qDebug() << "Checking next edge....";
+        }
+        originalPolygon = result;
+        qDebug() << "originalPolygon: " << originalPolygon;
+    }
+    qDebug() << "Final result" << result;
+    return result;
+}
+
 #endif //GRAPHICS_UTILS_H

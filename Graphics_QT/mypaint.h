@@ -97,6 +97,7 @@ public:
     QVector<QVector<QPoint>> _polygon;//多边形集合
     QVector<QPoint> _fill;
     QRect _crop;// 裁剪的矩形
+    QVector<QPoint> _cropPolygon;// 裁切多边形
 
     vector<vector<QPoint>> _bezierCurve; // 若干条曲线
     vector<QPoint> _currentBezierCurve; // 当前控制点容器
@@ -134,10 +135,10 @@ public slots:
     void Arc();//画圆弧
     void ArcCenter();//画圆弧圆心
     void Polygon();//画多边形
-    void Fill();//填充图形
     void Bezier(); // 画贝塞尔曲线
     void Bspline();
     void Clip(); // 裁切线段
+    void ClipPolygon(); // 裁切多边形
     //void SecondaryCircle();
     void OpenPic();//打开图片
     void startTrans();//开始移动物体
