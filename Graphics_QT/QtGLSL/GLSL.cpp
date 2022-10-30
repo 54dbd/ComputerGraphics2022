@@ -1,7 +1,7 @@
 #include "glslwidget.h"
 #include <QApplication>
 
-int GLSL(int argc, char *argv[])
+int runGLSL(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     GLSLWidget w;
