@@ -79,9 +79,9 @@ private:
     QVector<int> speed={1,0};
 
 public:
-    Player(int W, QPainter& P, QPen& Pen):Brush(W,P,Pen) {
-        pos.setX(100);
-        pos.setY(300);
+    Player(int W, QPainter& P, QPen& Pen, int x=100, int y=300):Brush(W,P,Pen) {
+        pos.setX(x);
+        pos.setY(y);
         scale = 2;
     }
     void generate(int num){
