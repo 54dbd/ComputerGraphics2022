@@ -31,19 +31,21 @@ MyPaint::MyPaint(QWidget *parent) :
     setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
     this->setStyleSheet("background-color:white;");
     //初始化MAP
-    for (int i = 0; i < 600; i++) {
-        vector<pointData> row;
-        MAP.push_back(row);
-        for (int j = 0; j < 400; j++) {
-            //对每一行中的每一列进行添加点
-            pointData point(QPoint(i, j), Qt::white);
-            MAP[i].push_back(point);
-        }
-    }
+    initMAP();
 
+    //创建光照界面工具栏
+    subTbar = addToolBar(tr("工具栏"));
+    subTbar->setMovable(false);//工具栏不可移动
+    subTbar->setIconSize(QSize(16, 16));//设置动作图标的尺寸
+    subTbar->setStyleSheet("background-color:white");//背景色
+    QAction *returnAction = new QAction(tr("&返回"), this);
+    subTbar->addAction(returnAction);
 
+    QAction *phongAction = new QAction(tr("&phong"),this);
+    subTbar->addAction(phongAction);
+    subTbar->hide();
     //创建工具栏
-    QToolBar *tbar = addToolBar(tr("工具栏"));
+    tbar = addToolBar(tr("工具栏"));
     tbar->setMovable(false);//工具栏不可移动
     tbar->setIconSize(QSize(16, 16));//设置动作图标的尺寸
     tbar->setStyleSheet("background-color:white");//背景色
@@ -56,6 +58,9 @@ MyPaint::MyPaint(QWidget *parent) :
     //笔刷颜色
     QAction *setBrush = new QAction(tr("&笔刷"), this);
     tbar->addAction(setBrush);
+
+    QAction *clean = new QAction(tr("&清除"), this);
+    tbar->addAction(clean);
 
     QAction *openAction = new QAction(tr("&打开"), this);//打开动作
     openAction->setIcon(QIcon(":/png/images/open.png"));//图标
@@ -112,7 +117,6 @@ MyPaint::MyPaint(QWidget *parent) :
 
     QAction *polygonAction = new QAction(tr("&多边形"), this);//多边形动作
     polygonAction->setIcon(QIcon(":/png/images/polygon.png"));//图标
-    polygonAction->setShortcut(QKeySequence(tr("Ctrl+P")));//热键
     tbar->addAction(polygonAction);
 
     QAction *bezierAction = new QAction(tr("&贝塞尔"), this);//贝塞尔
@@ -129,6 +133,9 @@ MyPaint::MyPaint(QWidget *parent) :
 
     QAction *openLight = new QAction(tr("&基本光照"), this);
     tbar->addAction(openLight);
+
+    QAction *clipPolygon = new QAction(tr("&裁切多边形"), this);//裁切多边形
+    tbar->addAction(clipPolygon);
 
     //创建底部状态栏
     statusBarLabel = new QLabel("当前坐标：", this);
@@ -151,13 +158,19 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(bezierAction, SIGNAL(triggered()), this, SLOT(Bezier()));
     connect(bsplineAction, SIGNAL(triggered()), this, SLOT(Bspline()));
     connect(clipAction, SIGNAL(triggered()), this, SLOT(Clip()));
+    connect(clipPolygon, SIGNAL(triggered()), this, SLOT(ClipPolygon()));
+    connect(clean, SIGNAL(triggered()), this, SLOT(cleanScreen()));
+
 
     connect(transAction, SIGNAL(triggered()), this, SLOT(startTrans()));
     connect(fillAction, SIGNAL(triggered()), this, SLOT(startFill()));
     //新建界面
     connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
-    connect(openLight, SIGNAL(triggered()), this, SLOT(createLightWindow()));
-
+    //切换界面
+    connect(openLight, SIGNAL(triggered()), this, SLOT(switchLightMode()));
+    //光照模式返回键
+    connect(returnAction, SIGNAL(triggered()),this, SLOT(switchPaintMode()));
+    connect(phongAction, SIGNAL(triggered()), this, SLOT(Phong()));
     //设置界面传参
     connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
@@ -172,6 +185,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
     //QPainter p=_pen;//将_pixmap作为画布
+
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
 
@@ -346,7 +360,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
             class Polygon poly(1, p, this->screen()->size().height(), pen);
             for (int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
             {
-                int temp = (j + 1) % polygon.size();
+                int temp = (j + 1) % int(polygon.size());
                 int x_s = polygon.at(j).x();
                 int x_e = polygon.at(temp).x();
                 int y_s = polygon.at(j).y();
@@ -356,8 +370,17 @@ void MyPaint::paintEvent(QPaintEvent *) {
             }
             poly.drawPolygon();
         } else if (_shape.at(c) == 8) {
-
-
+            // 绘制裁切多边形的窗口
+            for (int j = 0; j < _cropPolygon.size(); ++j)//将多边形的所有线段描绘出
+            {
+                int temp = (j + 1) % int(_cropPolygon.size());
+                int x_s = _cropPolygon.at(j).x();
+                int x_e = _cropPolygon.at(temp).x();
+                int y_s = _cropPolygon.at(j).y();
+                int y_e = _cropPolygon.at(temp).y();
+                class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
+                l.DashLine();
+            }
         } else if (_shape.at(c) == 9) { // bezier
             const vector<QPoint> &bezierCurve = _bezierCurve.at(i9++);
 
@@ -453,6 +476,13 @@ void MyPaint::paintEvent(QPaintEvent *) {
                 l3.dashLineNoMap();
                 l4.dashLineNoMap();
             }
+        }else if( tbar->isHidden())//显示phong
+        {
+            QPoint center(300,200);
+            int R = 50;
+            Circle C(center.x(), center.y(), 0, 1, p, pen);
+            C.SetR(R);
+            C.DrawCircle();
         }
     }
     if (!_currentBezierCurve.empty() || !_currentBsplineCurve.empty()) {
@@ -535,7 +565,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e) {
                 qDebug() << "new rect";
                 QRect rect;//鼠标按下，矩形开始
                 _rects.append(rect);//将新矩形添加到矩形集合
-                QRect &lastRect = _rects.last();//拿到新矩形
+                QRect & lastRect = _rects.last();//拿到新矩形
                 lastRect.setTopLeft(e->pos());//记录鼠标的坐标(新矩形的左上角坐标)
                 _shape.append(2);
             } else {
@@ -553,7 +583,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e) {
                 QRect rect;//鼠标按下，椭圆开始
                 qDebug() << "new ellipse";
                 _ellipse.append(rect);//将新椭圆添加到椭圆集合
-                QRect &lastEllipse = _ellipse.last();//拿到新椭圆
+                QRect & lastEllipse = _ellipse.last();//拿到新椭圆
                 lastEllipse.setTopLeft(e->pos());//记录鼠标的坐标(新椭圆的左上角坐标)
                 _shape.append(3);
             } else {
@@ -571,7 +601,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e) {
             _lpress = true;//左键按下标志
             QRect rect;//鼠标按下，直线一端开始
             _line.append(rect);//将新直线添加到直线集合
-            QRect &lastLine = _line.last();//拿到新直线
+            QRect & lastLine = _line.last();//拿到新直线
             lastLine.setTopLeft(e->pos());//记录鼠标的坐标(新直线开始一端坐标)
             _shape.append(4);
         } else if (_drawType == 5)//圆弧
@@ -583,7 +613,7 @@ void MyPaint::mousePressEvent(QMouseEvent *e) {
 
             qDebug("_arc.appending...");
             _arc.append(rect);//将新正圆添加到椭圆集合
-            QRect &lastArc = _arc.last();//拿到新圆弧
+            QRect & lastArc = _arc.last();//拿到新圆弧
             lastArc.setTopLeft(e->pos());//记录鼠标的坐标(新椭圆的左上角坐标)
             if (_arcCenter.length() < _arc.length()) {//如果出现了在一个圆心上重复画弧的情况，就复制一个最后一个圆弧心
                 struct arcCenter center;
@@ -630,8 +660,14 @@ void MyPaint::mousePressEvent(QMouseEvent *e) {
                 }
             }
         } else if (_drawType == 8) {
-
-
+            // 裁切多边形
+            QPoint a;
+            a.setX(e->pos().x());
+            a.setY(e->pos().y());
+            // 将点击的点添加到裁切多边形窗口的容器中
+            _cropPolygon.append(a);
+            _shape.append(8);
+            update();
         } else if (_drawType == 9 || (_drawType == 10)) {// beizer的绘制和bezier/bspline的控制点定位
             _lpress = true;
             if (!_drag) {
@@ -675,8 +711,6 @@ void MyPaint::mousePressEvent(QMouseEvent *e) {
             _crop.setTopLeft(e->pos());//记录鼠标的坐标(新直线开始一端坐标)
             _shape.append(12);
         }
-
-
     }
 }
 
@@ -827,7 +861,7 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
             update();//触发窗体重绘
         } else if (_drawType == 2) {
 //            qDebug()<<"drag:"<<_drag;
-            QRect &lastRect = _rects.last();//拿到新矩形
+            QRect & lastRect = _rects.last();//拿到新矩形
             lastRect.setBottomRight(e->pos());
 
             update();//触发窗体重绘
@@ -835,18 +869,18 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
         } else if (_drawType == 3) {
             if (_drag == 0)//非拖拽
             {
-                QRect &lastEllipse = _ellipse.last();//拿到新椭圆
+                QRect & lastEllipse = _ellipse.last();//拿到新椭圆
                 lastEllipse.setBottomRight(e->pos());//更新椭圆的右下角坐标
             }
             update();//触发窗体重绘
         } else if (_drawType == 4 && _line.length() > 0) {
-            QRect &lastLine = _line.last();//拿到新直线
+            QRect & lastLine = _line.last();//拿到新直线
             lastLine.setBottomRight(e->pos());//更新直线另一端)
             qDebug() << "update line";
             update();//触发窗体重绘
         } else if (_drawType == 5 && _arc.length() > 0) {
 
-            QRect &lastArc = _arc.last();//拿到新圆弧
+            QRect & lastArc = _arc.last();//拿到新圆弧
             lastArc.setBottomRight(e->pos());//更新圆弧的右下角坐标)
             update();//触发窗体重绘
         } else if (_drawType == 6) {
@@ -881,7 +915,7 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e) {
             lastLine.append(e->pos());//记录线条的结束坐标
             _lpress = false;//标志左键释放
         } else if (_drawType == 2) {
-            QRect &lastRect = _rects.last();//拿到新矩形
+            QRect & lastRect = _rects.last();//拿到新矩形
             if (!_drag) {
                 lastRect.setBottomRight(e->pos());//不是拖拽时，更新矩形的右下角坐标)
             }
@@ -889,21 +923,21 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e) {
             _lpress = false;
 
         } else if (_drawType == 3) {
-            QRect &lastEllipse = _ellipse.last();//拿到新椭圆
+            QRect & lastEllipse = _ellipse.last();//拿到新椭圆
             if (!_drag) {
                 lastEllipse.setBottomRight(e->pos());//不是拖拽时，更新椭圆的右下角坐标)
             }
             _lpress = false;
             update();
         } else if (_drawType == 4) {
-            QRect &lastLine = _line.last();//拿到新直线
+            QRect & lastLine = _line.last();//拿到新直线
             if (!_drag) {
                 lastLine.setBottomRight(e->pos());//更新矩形的右下角坐标)
             }
             _lpress = false;
         } else if (_drawType == 5) {
             cout << "closing secCircle" << endl;
-            QRect &last = _arc.last();//拿到新圆弧
+            QRect & last = _arc.last();//拿到新圆弧
             last.setBottomRight(e->pos());//不是拖拽时，更新椭圆的右下角坐标)
             _lpress = false;
         } else if (_drawType == 6) {
@@ -914,7 +948,8 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e) {
 //            _lpress = false;//标志左键释放
             update();
         } else if (_drawType == 8) {
-            _lpress = false;//标志左键释放
+            // 多边形窗口的裁切
+            _lpress = false;
             update();
         } else if (_drawType == 9) {
             _lpress = false;
@@ -1009,10 +1044,9 @@ void MyPaint::Polygon() {
     _drag = 0;
 }
 
-void MyPaint::Fill() {
-    _drawType = 8;
+void MyPaint::ClipPolygon() {
+    _drawType = 8; // 裁切多边形
     _drag = 0;
-
 }
 
 void MyPaint::Bezier() {
@@ -1039,6 +1073,10 @@ void MyPaint::startFill() {
 
 void MyPaint::Clip() {
     _drawType = 12;
+    _drag = 0;
+}
+void MyPaint::Phong(){
+    _drawType=20;
     _drag = 0;
 }
 
@@ -1069,12 +1107,11 @@ void MyPaint::OpenPic() {
     }
 }
 
+
+
 void MyPaint::createBrushWindow() {
     emit sendPen(&_pen);
     setBrushWindow->show();
-}
-void MyPaint::createLightWindow(){
-    setLightWindow->show();
 }
 
 void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
@@ -1134,11 +1171,49 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
             vector<QPoint>().swap(_currentBsplineCurve);
             update();
         }
+        if (_drawType == 8) { // 裁切多边形绘制结束
+            update();
+            QVector<QVector<QPoint>> newPolygon;
+            QVector<QPen> newBrush;
+            vector<int> deleteIndex;
+            int k = 0;
+            for (int i = 0; i < _shape.length(); i++) {
+                if (_shape.at(i) == 7) {
+                    QPen pen = _brush.at(i);
+                    QVector<QPoint> polygon = cropPolygon(_polygon.at(k++), _cropPolygon);
+                    if (polygon.length() >= 3) {
+                        // 如果返回的多边形的长度大于等于3，则说明裁切后的多边形不为空，将他们追加到新的多边形数组中
+                        newPolygon.append(polygon);
+                        newBrush.append(pen);
+                    }
+                    deleteIndex.push_back(i);
+                }
+            }
+            sort(deleteIndex.rbegin(), deleteIndex.rend());
+            for (int i = 0; i < deleteIndex.size(); ++i) {
+                _polygon.remove(deleteIndex.size() - i - 1);
+                _shape.remove(deleteIndex[i]);
+                _brush.remove(deleteIndex[i]);
+            }
+            // 找到裁切多边形，并删除它
+            for (int i = 0; i < _shape.length(); i++) {
+                if (_shape.at(i) == 8) {
+                    _shape.remove(i);
+                    _brush.remove(i);
+                }
+            }
+            _cropPolygon.clear();
+            for (int i = 0; i < newPolygon.length(); ++i) {
+                _polygon.append(newPolygon.at(i));
+                _brush.append(newBrush.at(i));
+                _shape.append(7);
+                update();
+            }
+        }
     } else if (e->key() == Qt::Key_M && _drawType == 10) {
 
         _transFlag = MOVE;
     } else if (e->key() == Qt::Key_Z && _drawType == 10) {
-
         _transFlag = ZOOM;
     } else if (e->key() == Qt::Key_R && _drawType == 10) {
         _transFlag = ROTATE;
@@ -1146,11 +1221,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
         isSpecificRefer = false;
         update();
     }
-
 }
-
-
-
 
 /**变换函数**/
 void MyPaint::Transform(QMouseEvent *e) {

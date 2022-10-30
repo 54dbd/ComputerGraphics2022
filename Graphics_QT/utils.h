@@ -12,6 +12,8 @@
 #define BOTTOM 4
 #define TOP 8
 
+extern vector<vector<pointData>> MAP;
+
 int encode(int x, int y, int XL, int XR, int YB, int YT) {
     int c = 0;
     if (x < XL) c |= LEFT; // 置位CL
@@ -224,6 +226,7 @@ void MyPaint::updateCoordiante(int x, int y) {
     QString output = "当前坐标(" + QString::number(x, 10) + ", " + QString::number(y, 10) + ")";
     statusBarLabel->setText(output);
 }
+
 bool polyContains(QVector<QPoint> polygon, QPoint P) {
     bool flag = false; //相当于计数
     QPoint P1, P2; //多边形一条边的两个顶点
@@ -241,5 +244,128 @@ bool polyContains(QVector<QPoint> polygon, QPoint P) {
     }
 //    qDebug()<<"is in poly?"<<flag;
     return flag;
+}
+
+QPoint intersection(QPoint p1, QPoint p2, QPoint p3, QPoint p4) {
+    QPoint p;
+    double a1, b1, c1, a2, b2, c2, x, y;
+    a1 = p2.y() - p1.y();
+    b1 = p1.x() - p2.x();
+    c1 = p2.x() * p1.y() - p1.x() * p2.y();
+    a2 = p4.y() - p3.y();
+    b2 = p3.x() - p4.x();
+    c2 = p4.x() * p3.y() - p3.x() * p4.y();
+    x = int((b1 * c2 - b2 * c1) / (a1 * b2 - a2 * b1));
+    y = int((a2 * c1 - a1 * c2) / (a1 * b2 - a2 * b1));
+    if ((x <= max(p1.x(), p2.x()) && x >= min(p1.x(), p2.x()))) {
+        p.setX(x);
+        p.setY(y);
+        return p;
+    } else {
+        return QPoint(-1, -1);
+    }
+}
+
+bool outsideOneEdgeOfPolygon(QVector<QPoint> polygon, QPoint p, int x) {
+    QPoint p1 = polygon[x];
+    QPoint p2 = polygon[(x + 1) % int(polygon.length())];
+    QPoint p3 = polygon[(x + 2) % int(polygon.length())];
+    int a = p2.y() - p1.y();
+    int b = p1.x() - p2.x();
+    int c = p2.x() * p1.y() - p1.x() * p2.y();
+    if (a < 0) {
+        a = -a;
+        b = -b;
+        c = -c;
+    }
+    int pointD = a * p.x() + b * p.y() + c;
+    int polyNextPointD  = a * p3.x() + b * p3.y() + c;
+    if (pointD * polyNextPointD >= 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+QVector<QPoint> cropPolygon(const QVector<QPoint>& polygon, const QVector<QPoint>& cropPolygon) {
+    QVector<QPoint> result, originalPolygon = polygon;
+    for (int i = 0; i < cropPolygon.length(); ++i) {
+        result.clear();
+        for (int j = 0; j < originalPolygon.length(); ++j) {
+            QPoint p1 = originalPolygon[j];
+            QPoint p2 = originalPolygon[(j + 1) % int(originalPolygon.length())];
+            bool p1_inPolygonEdge = outsideOneEdgeOfPolygon(cropPolygon, p1, i);
+            bool p2_inPolygonEdge = outsideOneEdgeOfPolygon(cropPolygon, p2, i);
+            if (p1_inPolygonEdge && p2_inPolygonEdge) {
+                result.append(p2);
+            } else if (p1_inPolygonEdge || p2_inPolygonEdge) {
+                QPoint k1 = cropPolygon[i];
+                QPoint k2 = cropPolygon[(i + 1) % int(cropPolygon.length())];
+                QPoint temp = intersection(p1, p2, k1, k2);
+                if (temp.x() != -1 && temp.y() != -1) {
+                    result.append(temp);
+                }
+            }
+            if (!p1_inPolygonEdge && p2_inPolygonEdge) {
+                result.append(p2);
+            }
+        }
+        originalPolygon = result;
+    }
+    return result;
+}
+
+void initMAP(){
+    for (int i = 0; i < 600; i++) {
+        vector<pointData> row;
+        MAP.push_back(row);
+        for (int j = 0; j < 400; j++) {
+            //对每一行中的每一列进行添加点
+            pointData point(QPoint(i, j), Qt::white);
+            MAP[i].push_back(point);
+        }
+    }
+}
+void MyPaint::cleanScreen(){
+    _lpress = false;//初始鼠标左键未按下
+    _newPolygon = true;//代表多边形可以新建
+    _drag = 0;//默认非拖拽模式
+    _drawType = 0;//初始为什么都不画
+    _begin = pos();//拖拽的参考坐标，方便计算位移
+    _openflag = 0;//初始不打开图片
+    _transFlag = NOTRANS;
+    _lines.clear();
+    _rects.clear();//矩形集合
+    _ellipse.clear();//椭圆集合
+    _line.clear();//直线集合
+    _arc.clear();//圆弧集合
+    _transRect.clear();  //旋转矩形集合
+    _arcCenter.clear();
+    _polygon.clear();//多边形集合
+    _fill.clear();
+    _cropPolygon.clear();// 裁切多边形
+    k_steps.clear();
+    _shape.clear();//图形类型集合，用于撤回功能
+    _brush.clear();
+    isInRect = 0;
+    isInEllipse = 0;
+    isInPolygon = 0;
+    isInFill = 0;
+    //初始化MAP
+    initMAP();
+    update();
+}
+
+
+void MyPaint::switchLightMode() {
+    tbar->hide();
+    subTbar->show();
+    cleanScreen();
+}
+void MyPaint::switchPaintMode() {
+    subTbar->hide();
+    tbar->show();
+    cleanScreen();
+
 }
 #endif //GRAPHICS_UTILS_H
