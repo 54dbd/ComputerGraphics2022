@@ -20,7 +20,7 @@
 #include <QLabel>
 #include "TransMatrix.h"
 #include "Brush.h"
-
+#include "Player.h"
 
 using namespace std;
 
@@ -69,6 +69,7 @@ private:
     int _openflag;//打开图片
     QPixmap _pixmap;//画布图片
     QPen _pen;
+    long _updateCount=0;
     QLabel *statusBarLabel;
     QToolBar *tbar;
     QToolBar * subTbar;
@@ -87,7 +88,9 @@ private:
     configWindow *setBrushWindow = new configWindow();//设置窗口
 
     transMatrix trans;
-
+    Player *_player;
+    int playerX=100;
+    int playerY=300;
 public:
     QVector<QVector<QPoint>> _lines;//线条集合(一条线条可包含多个线段)
     QVector<QRect> _rects;//矩形集合
@@ -158,7 +161,7 @@ public slots:
     void setDashLine(Qt::PenStyle style);
     void cleanScreen();
     void createBrushWindow();
-
+    void next_frame();
 };
 
 void Drag();

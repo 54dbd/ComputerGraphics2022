@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
-project(Graphics)
+project(GraphicsGame)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
@@ -15,7 +15,7 @@ find_package(Qt6 COMPONENTS
         OpenGLWidgets
         REQUIRED)
 
-add_executable(Graphics images.qrc
+add_executable(GraphicsGame images.qrc
         main.cpp
         Arc.h
         Brush.h
@@ -33,8 +33,8 @@ add_executable(Graphics images.qrc
         utils.h
         light.cpp
         light.h
-        ../Graphics_Game/Player.cpp ../Graphics_Game/Player.h)
-target_link_libraries(Graphics
+        )
+target_link_libraries(GraphicsGame
         Qt::Core
         Qt::Gui
         Qt::Widgets
