@@ -186,7 +186,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
 
     QPen pen;
     pen.setColor(Qt::black);
-    _player = new Player(1,p,pen);
+    _player = new Player(1,p,pen, playerX, playerY);
     _player->generate((_updateCount++/10)%4);
     qDebug()<<"count: "<<(_updateCount++/10)%4;
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
@@ -1111,7 +1111,8 @@ void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
 void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
     if(e->key() == Qt::Key_D){
-        _player->update(playerX++,playerY);
+        playerX += 5;
+        _player->update(playerX,playerY);
         update();
         qDebug()<<"pressed D";
     }
