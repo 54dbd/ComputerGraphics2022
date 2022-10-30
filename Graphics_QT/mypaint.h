@@ -158,9 +158,7 @@ public slots:
     void setDashLine(Qt::PenStyle style);
     void cleanScreen();
     void createBrushWindow();
-    void switchLightMode();
-    void switchPaintMode();
-    void Phong();
+
 };
 
 void Drag();

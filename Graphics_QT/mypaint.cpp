@@ -33,17 +33,6 @@ MyPaint::MyPaint(QWidget *parent) :
     //初始化MAP
     initMAP();
 
-    //创建光照界面工具栏
-    subTbar = addToolBar(tr("工具栏"));
-    subTbar->setMovable(false);//工具栏不可移动
-    subTbar->setIconSize(QSize(16, 16));//设置动作图标的尺寸
-    subTbar->setStyleSheet("background-color:white");//背景色
-    QAction *returnAction = new QAction(tr("&返回"), this);
-    subTbar->addAction(returnAction);
-
-    QAction *phongAction = new QAction(tr("&phong"),this);
-    subTbar->addAction(phongAction);
-    subTbar->hide();
     //创建工具栏
     tbar = addToolBar(tr("工具栏"));
     tbar->setMovable(false);//工具栏不可移动
@@ -131,8 +120,6 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(clipAction);
 
 
-    QAction *openLight = new QAction(tr("&基本光照"), this);
-    tbar->addAction(openLight);
 
     QAction *clipPolygon = new QAction(tr("&裁切多边形"), this);//裁切多边形
     tbar->addAction(clipPolygon);
@@ -166,11 +153,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(fillAction, SIGNAL(triggered()), this, SLOT(startFill()));
     //新建界面
     connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
-    //切换界面
-    connect(openLight, SIGNAL(triggered()), this, SLOT(switchLightMode()));
-    //光照模式返回键
-    connect(returnAction, SIGNAL(triggered()),this, SLOT(switchPaintMode()));
-    connect(phongAction, SIGNAL(triggered()), this, SLOT(Phong()));
+
     //设置界面传参
     connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
@@ -222,241 +205,230 @@ void MyPaint::paintEvent(QPaintEvent *) {
             }
         }
     }
-    if( tbar->isHidden())//显示phong
+
+    for (int c = 0; c < _shape.size(); ++c)//控制用户当前所绘图形总数
     {
-        QPen pen;
-        pen.setColor(Qt::black);
+        // 获取对应的笔刷颜色，并设置
+        QPen pen = _brush.at(c);
         p.setPen(pen);
-        QPoint center(300,200);
-        int R = 50;
-        Circle C(center.x(), center.y(), 0, 1, p, pen);
-        C.SetR(R);
-        C.DrawCircle();
-
-    }else{
-        for (int c = 0; c < _shape.size(); ++c)//控制用户当前所绘图形总数
+        if (_shape.at(c) == 1)//线条
         {
-            // 获取对应的笔刷颜色，并设置
-            QPen pen = _brush.at(c);
-            p.setPen(pen);
-            if (_shape.at(c) == 1)//线条
+            const QVector<QPoint> &line = _lines.at(i1++);//取出一条线条
+            for (int j = 0; j < line.size() - 1; ++j)//将线条的所有线段描绘出
             {
-                const QVector<QPoint> &line = _lines.at(i1++);//取出一条线条
-                for (int j = 0; j < line.size() - 1; ++j)//将线条的所有线段描绘出
-                {
-                    int x_s = line.at(j).x();
-                    int x_e = line.at(j + 1).x();
-                    int y_s = line.at(j).y();
-                    int y_e = line.at(j + 1).y();
-                    class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
-                    if (pen.style() == Qt::DashLine)
-                        l.DashLine();
-                    else
-                        l.MidPoint();
-                }
-            } else if (_shape.at(c) == 2)//矩形
-            {
-                QPoint start, end;
-                start = _rects.at(i2).topLeft();
-                end = _rects.at(i2).bottomRight();
-                int x_s = start.x();
-                int x_e = end.x();
-                int y_s = start.y();
-                int y_e = end.y();
-                //创建直线
-                class Line l1(x_s, y_s, x_e, y_s, 1, p, pen);
-                class Line l2(x_s, y_s, x_s, y_e, 1, p, pen);
-                class Line l3(x_e, y_e, x_s, y_e, 1, p, pen);
-                class Line l4(x_e, y_e, x_e, y_s, 1, p, pen);
-                if (!_lpress) {//松开时
-                    if (pen.style() == Qt::DashLine) {
-                        l1.DashLine();
-                        l2.DashLine();
-                        l3.DashLine();
-                        l4.DashLine();
-                    } else {
-                        l1.MidPoint();
-                        l2.MidPoint();
-                        l3.MidPoint();
-                        l4.MidPoint();
-                    }
-
-                } else {//按住时
-                    if (pen.style() == Qt::DashLine) {
-                        l1.dashLineNoMap();
-                        l2.dashLineNoMap();
-                        l3.dashLineNoMap();
-                        l4.dashLineNoMap();
-                    } else {
-                        l1.MidPointNoMap();
-                        l2.MidPointNoMap();
-                        l3.MidPointNoMap();
-                        l4.MidPointNoMap();
-                    }
-
-                }
-
-
-                i2++;
-            } else if (_shape.at(c) == 3)//正圆
-            {
-                QPoint center;
-                center = _ellipse.at(i3).center();
-                int R = abs(center.y() - _ellipse.at(i3).bottom());
-
-                //画圆
-                Circle C(center.x(), center.y(), 0, 1, p, pen);
-                C.SetR(R);
-                if (pen.style() == Qt::DashLine)
-                    C.DrawDashLIneCircle();
-                else
-                    C.DrawCircle();
-                i3++;
-            } else if (_shape.at(c) == 4)//直线
-            {
-                QPoint start, end;
-                start = _line.at(i4).topLeft();
-                end = _line.at(i4).bottomRight();
-                int x_s = start.x();
-                int x_e = end.x();
-                int y_s = start.y();
-                int y_e = end.y();
-                //创建直线
+                int x_s = line.at(j).x();
+                int x_e = line.at(j + 1).x();
+                int y_s = line.at(j).y();
+                int y_e = line.at(j + 1).y();
                 class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
                 if (pen.style() == Qt::DashLine)
                     l.DashLine();
                 else
                     l.MidPoint();
-                i4++;
-
-            } else if (_shape.at(c) == 5) {
-
-                //画圆弧
-                //_secCircle=0;
-                QPoint start, end;
-                struct arcCenter center;
-                start = _arc.at(i5).topLeft();
-                end = _arc.at(i5).bottomRight();
-                int x_s = start.x();
-                int y_s = start.y();
-
-
-                center = _arcCenter.at(i5);
-                center.R = sqrt((x_s - center.x) * (x_s - center.x) + (y_s - center.y) * (y_s - center.y));
-                //圆弧圆心
-
-                //使圆心不受笔刷大小影响
-                QPen temp = pen;
-                pen.setWidth(1);
-                p.setPen(pen);
-
-                Brush b(3, p, pen);
-                if (i5 == _arcCenter.length() - 1)//只保留最后一个
-                    b.drawPixel(center.x, center.y);
-
-                //恢复笔刷大小
-                pen = temp;
-                p.setPen(pen);
-
-                class Arc a(center.x, center.y, center.R, 1, p, pen);
-                a.DrawArc(start.x(), start.y(), end.x(), end.y());
-
-                i5++;
-
-
-            } else if (_shape.at(c) == 6) {
-
-            } else if (_shape.at(c) == 7) { // 绘制多边形
-                const QVector<QPoint> &polygon = _polygon.at(i7++);//取出一个多边形
-                class Polygon poly(1, p, this->screen()->size().height(), pen);
-                for (int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
-                {
-                    int temp = (j + 1) % int(polygon.size());
-                    int x_s = polygon.at(j).x();
-                    int x_e = polygon.at(temp).x();
-                    int y_s = polygon.at(j).y();
-                    int y_e = polygon.at(temp).y();
-                    Edge *e = new Edge(x_s, y_s, x_e, y_e);
-                    poly.addEdgeToET(e);
-                }
-                poly.drawPolygon();
-            } else if (_shape.at(c) == 8) {
-                // 绘制裁切多边形的窗口
-                for (int j = 0; j < _cropPolygon.size(); ++j)//将多边形的所有线段描绘出
-                {
-                    int temp = (j + 1) % int(_cropPolygon.size());
-                    int x_s = _cropPolygon.at(j).x();
-                    int x_e = _cropPolygon.at(temp).x();
-                    int y_s = _cropPolygon.at(j).y();
-                    int y_e = _cropPolygon.at(temp).y();
-                    class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
-                    l.DashLine();
-                }
-            } else if (_shape.at(c) == 9) { // bezier
-                const vector<QPoint> &bezierCurve = _bezierCurve.at(i9++);
-
-                //使控制点不受笔刷大小影响
-                QPen temp = pen;
-                pen.setWidth(1);
-                p.setPen(pen);
-
-                Brush t_brush(3, p, pen);
-
-                // 画控制点
-                for (auto i: bezierCurve) {
-                    Circle C(i.x(), i.y(), 4, 1, p, pen);
-                    C.DrawCircle();
-                }
-                class Bezier b(1, p, bezierCurve, pen);
-                b.drawBezier();
-
-                for (auto &i: _currentBezierCurve) {
-                    Circle C(i.x(), i.y(), 4, 1, p, pen);
-                    C.DrawCircle();
+            }
+        } else if (_shape.at(c) == 2)//矩形
+        {
+            QPoint start, end;
+            start = _rects.at(i2).topLeft();
+            end = _rects.at(i2).bottomRight();
+            int x_s = start.x();
+            int x_e = end.x();
+            int y_s = start.y();
+            int y_e = end.y();
+            //创建直线
+            class Line l1(x_s, y_s, x_e, y_s, 1, p, pen);
+            class Line l2(x_s, y_s, x_s, y_e, 1, p, pen);
+            class Line l3(x_e, y_e, x_s, y_e, 1, p, pen);
+            class Line l4(x_e, y_e, x_e, y_s, 1, p, pen);
+            if (!_lpress) {//松开时
+                if (pen.style() == Qt::DashLine) {
+                    l1.DashLine();
+                    l2.DashLine();
+                    l3.DashLine();
+                    l4.DashLine();
+                } else {
+                    l1.MidPoint();
+                    l2.MidPoint();
+                    l3.MidPoint();
+                    l4.MidPoint();
                 }
 
-                //恢复笔刷大小
-                pen = temp;
-                p.setPen(pen);
-            } else if (_shape.at(c) == 13) { // bspline
-                const vector<QPoint> &bsplineCurve = _bsplineCurve.at(i13++);
-
-                //使控制点不受笔刷大小影响
-                QPen temp = pen;
-                pen.setWidth(1);
-                p.setPen(pen);
-
-                Brush t_brush(3, p, pen);
-
-                // 画控制点
-                for (auto i: bsplineCurve) {
-                    Circle C(i.x(), i.y(), 4, 1, p, pen);
-                    C.DrawCircle();
-                }
-                // 需要交互设置k阶 目前设置为3
-                int temp_k = 3;
-                class Bspline b(1, p, bsplineCurve, temp_k, pen);
-                b.drawBspline();
-
-                for (auto &i: _currentBsplineCurve) {
-                    Circle C(i.x(), i.y(), 4, 1, p, pen);
-                    C.DrawCircle();
+            } else {//按住时
+                if (pen.style() == Qt::DashLine) {
+                    l1.dashLineNoMap();
+                    l2.dashLineNoMap();
+                    l3.dashLineNoMap();
+                    l4.dashLineNoMap();
+                } else {
+                    l1.MidPointNoMap();
+                    l2.MidPointNoMap();
+                    l3.MidPointNoMap();
+                    l4.MidPointNoMap();
                 }
 
-                //恢复笔刷大小
-                pen = temp;
-                p.setPen(pen);
-            } else if (_shape.at(c) == 11) {//fill
-                class Fill f(pix, p, pen);
+            }
+
+
+            i2++;
+        } else if (_shape.at(c) == 3)//正圆
+        {
+            QPoint center;
+            center = _ellipse.at(i3).center();
+            int R = abs(center.y() - _ellipse.at(i3).bottom());
+
+            //画圆
+            Circle C(center.x(), center.y(), 0, 1, p, pen);
+            C.SetR(R);
+            if (pen.style() == Qt::DashLine)
+                C.DrawDashLIneCircle();
+            else
+                C.DrawCircle();
+            i3++;
+        } else if (_shape.at(c) == 4)//直线
+        {
+            QPoint start, end;
+            start = _line.at(i4).topLeft();
+            end = _line.at(i4).bottomRight();
+            int x_s = start.x();
+            int x_e = end.x();
+            int y_s = start.y();
+            int y_e = end.y();
+            //创建直线
+            class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
+            if (pen.style() == Qt::DashLine)
+                l.DashLine();
+            else
+                l.MidPoint();
+            i4++;
+
+        } else if (_shape.at(c) == 5) {
+
+            //画圆弧
+            //_secCircle=0;
+            QPoint start, end;
+            struct arcCenter center;
+            start = _arc.at(i5).topLeft();
+            end = _arc.at(i5).bottomRight();
+            int x_s = start.x();
+            int y_s = start.y();
+
+
+            center = _arcCenter.at(i5);
+            center.R = sqrt((x_s - center.x) * (x_s - center.x) + (y_s - center.y) * (y_s - center.y));
+            //圆弧圆心
+
+            //使圆心不受笔刷大小影响
+            QPen temp = pen;
+            pen.setWidth(1);
+            p.setPen(pen);
+
+            Brush b(3, p, pen);
+            if (i5 == _arcCenter.length() - 1)//只保留最后一个
+                b.drawPixel(center.x, center.y);
+
+            //恢复笔刷大小
+            pen = temp;
+            p.setPen(pen);
+
+            class Arc a(center.x, center.y, center.R, 1, p, pen);
+            a.DrawArc(start.x(), start.y(), end.x(), end.y());
+
+            i5++;
+
+
+        } else if (_shape.at(c) == 6) {
+
+        } else if (_shape.at(c) == 7) { // 绘制多边形
+            const QVector<QPoint> &polygon = _polygon.at(i7++);//取出一个多边形
+            class Polygon poly(1, p, this->screen()->size().height(), pen);
+            for (int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
+            {
+                int temp = (j + 1) % int(polygon.size());
+                int x_s = polygon.at(j).x();
+                int x_e = polygon.at(temp).x();
+                int y_s = polygon.at(j).y();
+                int y_e = polygon.at(temp).y();
+                Edge *e = new Edge(x_s, y_s, x_e, y_e);
+                poly.addEdgeToET(e);
+            }
+            poly.drawPolygon();
+        } else if (_shape.at(c) == 8) {
+            // 绘制裁切多边形的窗口
+            for (int j = 0; j < _cropPolygon.size(); ++j)//将多边形的所有线段描绘出
+            {
+                int temp = (j + 1) % int(_cropPolygon.size());
+                int x_s = _cropPolygon.at(j).x();
+                int x_e = _cropPolygon.at(temp).x();
+                int y_s = _cropPolygon.at(j).y();
+                int y_e = _cropPolygon.at(temp).y();
+                class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
+                l.DashLine();
+            }
+        } else if (_shape.at(c) == 9) { // bezier
+            const vector<QPoint> &bezierCurve = _bezierCurve.at(i9++);
+
+            //使控制点不受笔刷大小影响
+            QPen temp = pen;
+            pen.setWidth(1);
+            p.setPen(pen);
+
+            Brush t_brush(3, p, pen);
+
+            // 画控制点
+            for (auto i: bezierCurve) {
+                Circle C(i.x(), i.y(), 4, 1, p, pen);
+                C.DrawCircle();
+            }
+            class Bezier b(1, p, bezierCurve, pen);
+            b.drawBezier();
+
+            for (auto &i: _currentBezierCurve) {
+                Circle C(i.x(), i.y(), 4, 1, p, pen);
+                C.DrawCircle();
+            }
+
+            //恢复笔刷大小
+            pen = temp;
+            p.setPen(pen);
+        } else if (_shape.at(c) == 13) { // bspline
+            const vector<QPoint> &bsplineCurve = _bsplineCurve.at(i13++);
+
+            //使控制点不受笔刷大小影响
+            QPen temp = pen;
+            pen.setWidth(1);
+            p.setPen(pen);
+
+            Brush t_brush(3, p, pen);
+
+            // 画控制点
+            for (auto i: bsplineCurve) {
+                Circle C(i.x(), i.y(), 4, 1, p, pen);
+                C.DrawCircle();
+            }
+            // 需要交互设置k阶 目前设置为3
+            int temp_k = 3;
+            class Bspline b(1, p, bsplineCurve, temp_k, pen);
+            b.drawBspline();
+
+            for (auto &i: _currentBsplineCurve) {
+                Circle C(i.x(), i.y(), 4, 1, p, pen);
+                C.DrawCircle();
+            }
+
+            //恢复笔刷大小
+            pen = temp;
+            p.setPen(pen);
+        } else if (_shape.at(c) == 11) {//fill
+            class Fill f(pix, p, pen);
 //            f.fillColor(Qt::blue);
-                //f.fillRect(*nowRect);
-                //DEBUG: test rect for all the shape
-                //
+            //f.fillRect(*nowRect);
+            //DEBUG: test rect for all the shape
+            //
 //            QPoint p;
-                qDebug() << "[paintEvent]filling i11[ " << i11 << " ]";
-                f.getColorMap();
-                f.fillShape(_fill.at(i11), pen.color());
-                i11++;
+            qDebug() << "[paintEvent]filling i11[ " << i11 << " ]";
+            f.getColorMap();
+            f.fillShape(_fill.at(i11), pen.color());
+            i11++;
 //            f.restoreColor();
 //            if(isInRect){
 //                //f.fillRect(*nowRect);
@@ -467,26 +439,25 @@ void MyPaint::paintEvent(QPaintEvent *) {
 
 //            }
 
-            } else if (_shape.at(c) == 12)//显示裁切矩形
-            {
-                QPoint start, end;
-                start = _crop.topLeft();
-                end = _crop.bottomRight();
-                int x_s = start.x();
-                int x_e = end.x();
-                int y_s = start.y();
-                int y_e = end.y();
-                //创建直线
-                class Line l1(x_s, y_s, x_e, y_s, 1, p, pen);
-                class Line l2(x_s, y_s, x_s, y_e, 1, p, pen);
-                class Line l3(x_e, y_e, x_s, y_e, 1, p, pen);
-                class Line l4(x_e, y_e, x_e, y_s, 1, p, pen);
-                if (_lpress) { //按住时
-                    l1.dashLineNoMap();
-                    l2.dashLineNoMap();
-                    l3.dashLineNoMap();
-                    l4.dashLineNoMap();
-                }
+        } else if (_shape.at(c) == 12)//显示裁切矩形
+        {
+            QPoint start, end;
+            start = _crop.topLeft();
+            end = _crop.bottomRight();
+            int x_s = start.x();
+            int x_e = end.x();
+            int y_s = start.y();
+            int y_e = end.y();
+            //创建直线
+            class Line l1(x_s, y_s, x_e, y_s, 1, p, pen);
+            class Line l2(x_s, y_s, x_s, y_e, 1, p, pen);
+            class Line l3(x_e, y_e, x_s, y_e, 1, p, pen);
+            class Line l4(x_e, y_e, x_e, y_s, 1, p, pen);
+            if (_lpress) { //按住时
+                l1.dashLineNoMap();
+                l2.dashLineNoMap();
+                l3.dashLineNoMap();
+                l4.dashLineNoMap();
             }
         }
     }
@@ -1081,10 +1052,7 @@ void MyPaint::Clip() {
     _drawType = 12;
     _drag = 0;
 }
-void MyPaint::Phong(){
-    _drawType=20;
-    _drag = 0;
-}
+
 
 void MyPaint::SavePic() {
     //弹出文件保存对话框

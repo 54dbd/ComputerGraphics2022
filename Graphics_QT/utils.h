@@ -6,7 +6,6 @@
 #define GRAPHICS_UTILS_H
 
 #include <QRect>
-#include "QtGLSL/GLSL.h"
 #define LEFT 1
 #define RIGHT 2
 #define BOTTOM 4
@@ -357,16 +356,4 @@ void MyPaint::cleanScreen(){
 }
 
 
-void MyPaint::switchLightMode() {
-    tbar->hide();
-    subTbar->show();
-    cleanScreen();
-    runGLSL(0, nullptr);
-}
-void MyPaint::switchPaintMode() {
-    subTbar->hide();
-    tbar->show();
-    cleanScreen();
-
-}
 #endif //GRAPHICS_UTILS_H

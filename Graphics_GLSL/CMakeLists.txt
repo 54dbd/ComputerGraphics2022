@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.23)
-project(Graphics)
+project(QtGLSL)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
@@ -7,38 +7,32 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_PREFIX_PATH "C:/Qt/6.3.2/mingw_64")
-link_directories(lib)
-find_package(Qt6 COMPONENTS
+include_directories (.)
+find_package(Qt6 REQUIRED COMPONENTS
         Core
         Gui
         Widgets
         OpenGLWidgets
-        REQUIRED)
-
-add_executable(Graphics images.qrc
-        main.cpp
-        Arc.h
-        Brush.h
-        Circle.h
-        Line.h
-        mypaint.cpp
-        mypaint.h
-        configwindow.cpp
-        configwindow.h
-        configwindow.ui
-        Polygon.h
-        Bezier.h
-        point.h
-        Fill.h
-        utils.h
-        light.cpp
-        light.h
         )
-target_link_libraries(Graphics
+add_executable(QtGLSL
+        glslwidget.cpp
+        glslwidget.h
+        main.cpp
+        openglwidget.cpp
+        openglwidget.h
+        vbotorus.cpp
+        vbotorus.h
+        glslwidget.ui
+        shader.qrc
+        )
+
+
+target_link_libraries(QtGLSL
+        Qt6::OpenGLWidgets
         Qt::Core
         Qt::Gui
         Qt::Widgets
-        Qt6::OpenGLWidgets
+
         )
 
 if (WIN32)
