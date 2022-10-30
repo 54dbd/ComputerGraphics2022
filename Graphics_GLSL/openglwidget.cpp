@@ -48,10 +48,12 @@ void OpenGLWidget::initializeGL()
 
     // uniform light/material property
     QVector4D worldLight = QVector4D(5.0f,5.0f,2.0f,1.0f);
-    program->setUniformValue("Material.Kd", 0.9f, 0.5f, 0.3f);
+    program->setUniformValue("Material.Kd", 0.3f, 0.7f, 0.9f);
+//    program->setUniformValue("Material.Kd", 0.9f, 0.5f, 0.3f);
     program->setUniformValue("Light.Ld", 1.0f, 1.0f, 1.0f);
     program->setUniformValue("Light.Position", view * worldLight );
-    program->setUniformValue("Material.Ka", 0.9f, 0.5f, 0.3f);
+//    program->setUniformValue("Material.Ka", 0.9f, 0.5f, 0.3f);
+    program->setUniformValue("Material.Ka", 0.3f, 0.7f, 0.9f);
     program->setUniformValue("Light.La", 0.4f, 0.4f, 0.4f);
     program->setUniformValue("Material.Ks", 0.8f, 0.8f, 0.8f);
     program->setUniformValue("Light.Ls", 1.0f, 1.0f, 1.0f);
