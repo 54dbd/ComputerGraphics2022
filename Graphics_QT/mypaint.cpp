@@ -232,7 +232,6 @@ void MyPaint::paintEvent(QPaintEvent *) {
         Circle C(center.x(), center.y(), 0, 1, p, pen);
         C.SetR(R);
         C.DrawCircle();
-        Fill f();
 
     }else{
         for (int c = 0; c < _shape.size(); ++c)//控制用户当前所绘图形总数

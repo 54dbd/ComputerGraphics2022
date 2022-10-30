@@ -7,7 +7,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_PREFIX_PATH "C:/Qt/6.3.2/mingw_64")
-
+link_directories(lib)
 find_package(Qt6 COMPONENTS
         Core
         Gui
@@ -29,19 +29,22 @@ add_executable(Graphics images.qrc
         Polygon.h
         Bezier.h
         point.h
-        Fill.h utils.h
-        light.cpp light.h Phong.cpp Phong.h
+        Fill.h
+        utils.h
+        light.cpp
+        light.h
+        Phong.cpp
+        Phong.h
         QtGLSL/glslwidget.cpp
         QtGLSL/glslwidget.h
-        QtGLSL/main.cpp
+        QtGLSL/GLSL.cpp
         QtGLSL/openglwidget.cpp
         QtGLSL/openglwidget.h
         QtGLSL/vbotorus.cpp
         QtGLSL/vbotorus.h
         QtGLSL/glslwidget.ui
-        QtGLSL/resource.qrc
         QtGLSL/shader.qrc
-        )
+        QtGLSL/GLSL.h)
 target_link_libraries(Graphics
         Qt::Core
         Qt::Gui
