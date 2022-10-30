@@ -14,6 +14,13 @@
 #define HEIGHT 16
 #define WIDTH 9
 
+enum moveState{
+    RUN_R,
+    RUN_L,
+    JUMP,
+    IDLE
+};
+
 class Player: public Brush {
 private:
     QVector<QVector<int>> run1 = {
@@ -84,8 +91,13 @@ public:
         pos.setY(y);
         scale = 2;
     }
-    void generate(int num){
-        QVector<QVector<int>> choice = sequence[num];
+    void generate(int num, moveState state){
+        QVector<QVector<int>> choice;
+        if(state == RUN_R){
+            choice = sequence[num];
+        }else{
+            choice = sequence[2];
+        }
         for (int i = 0; i < HEIGHT*scale; i++) {
             for (int j = 0; j < WIDTH*scale; j++) {
                 if (choice[i/2][j/2])

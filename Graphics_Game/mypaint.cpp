@@ -186,9 +186,14 @@ void MyPaint::paintEvent(QPaintEvent *) {
 
     QPen pen;
     pen.setColor(Qt::black);
+    //重力影响
+    playerY += 5;
+    if(playerY>300)
+        playerY = 300;
     _player = new Player(1,p,pen, playerX, playerY);
-    _player->generate((_updateCount++/10)%4);
+    _player->generate((_updateCount++/10)%4,state);
     qDebug()<<"count: "<<(_updateCount++/10)%4;
+    qDebug()<<"state:"<<state;
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
         QPoint start, end;
@@ -1108,13 +1113,32 @@ void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
     _Rmenu->exec(cursor().pos());//在光标位置弹出菜单
 }
 
+void MyPaint::keyReleaseEvent(QKeyEvent *e){
+    state = IDLE;
+}
+
 void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
-    if(e->key() == Qt::Key_D){
-        playerX += 5;
+
+    if(e->key() == Qt::Key_Space){
+        playerY -= 80;
+        state = JUMP;
         _player->update(playerX,playerY);
         update();
-        qDebug()<<"pressed D";
+    }
+    if(e->key() == Qt::Key_D){
+        playerX += 5;
+        state = RUN_R;
+        _player->update(playerX,playerY);
+        update();
+//        qDebug()<<"pressed D";
+    }
+    if(e->key() == Qt::Key_A){
+        playerX -= 5;
+        state = RUN_L;
+        _player->update(playerX,playerY);
+        update();
+//        qDebug()<<"pressed D";
     }
 
     //Ctrl+Z撤销
@@ -1147,7 +1171,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
     } else if (e->key() == Qt::Key_S && e->modifiers() == Qt::ControlModifier)//保存
     {
         SavePic();//Ctrl+S保存
-    } else if (e->key() == Qt::Key_Escape) {
+    } else if (e->key() == Qt::Key_Escape){
         if (_drawType == 7) {
             update();
             _lpress = false;
