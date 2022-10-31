@@ -13,6 +13,7 @@
 #include "utils.h"
 #include "Line.h"
 #include "Circle.h"
+#include <QTimer>
 using namespace std;
 vector<vector<pointData>> MAP;
 
@@ -132,6 +133,14 @@ MyPaint::MyPaint(QWidget *parent) :
     statusBar->setGeometry(0, 380, 600, 20);
     statusBar->setStyleSheet("border: solid black 2px;");
 
+
+
+    //创建一个计时器来更新每个fream
+    QTimer* timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(next_frame()));
+    timer->start(50);
+
+
     //连接信号与槽函数
     connect(linesAction, SIGNAL(triggered()), this, SLOT(Lines()));
     connect(rectAction, SIGNAL(triggered()), this, SLOT(Rects()));
@@ -159,6 +168,10 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
 }
 
+void MyPaint::next_frame(){
+    update();
+}
+
 void MyPaint::paintEvent(QPaintEvent *) {
     if (_openflag == 0)//不是打开图片的，每一次新建一个空白的画布
     {
@@ -171,11 +184,16 @@ void MyPaint::paintEvent(QPaintEvent *) {
 
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
-
-    /********DRAW CHARACTER************/
-
-    /**********************************/
-
+    QPen pen;
+    pen.setColor(Qt::black);
+    //重力影响
+    playerY += 5;
+    if(playerY>300)
+        playerY = 300;
+    _player = new Player(1,p,pen, playerX, playerY);
+    _player->generate((_updateCount++/10)%4,state);
+    qDebug()<<"count: "<<(_updateCount++/10)%4;
+    qDebug()<<"state:"<<state;
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
         QPoint start, end;
@@ -1095,8 +1113,34 @@ void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
     _Rmenu->exec(cursor().pos());//在光标位置弹出菜单
 }
 
+void MyPaint::keyReleaseEvent(QKeyEvent *e){
+    state = IDLE;
+}
+
 void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
+
+    if(e->key() == Qt::Key_Space){
+        playerY -= 80;
+        state = JUMP;
+        _player->update(playerX,playerY);
+        update();
+    }
+    if(e->key() == Qt::Key_D){
+        playerX += 5;
+        state = RUN_R;
+        _player->update(playerX,playerY);
+        update();
+//        qDebug()<<"pressed D";
+    }
+    if(e->key() == Qt::Key_A){
+        playerX -= 5;
+        state = RUN_L;
+        _player->update(playerX,playerY);
+        update();
+//        qDebug()<<"pressed D";
+    }
+
     //Ctrl+Z撤销
     if (e->key() == Qt::Key_Z && e->modifiers() == Qt::ControlModifier) {
         if (_shape.size() > 0) {
@@ -1127,7 +1171,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
     } else if (e->key() == Qt::Key_S && e->modifiers() == Qt::ControlModifier)//保存
     {
         SavePic();//Ctrl+S保存
-    } else if (e->key() == Qt::Key_Escape) {
+    } else if (e->key() == Qt::Key_Escape){
         if (_drawType == 7) {
             update();
             _lpress = false;

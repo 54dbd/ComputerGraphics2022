@@ -1,13 +1,13 @@
-#ifndef NEWWINDOW_H
-#define NEWWINDOW_H
+#ifndef CONFIGWINDOW_H
+#define CONFIGWINDOW_H
 
 #include <QWidget>
 
 namespace Ui {
-class newWindow;
+class configWindow;
 }
 
-class newWindow : public QWidget
+class configWindow : public QWidget
 {
     Q_OBJECT
 
@@ -18,8 +18,8 @@ public:
     int _width;
     QPen* pen;
 
-    explicit newWindow(QWidget *parent = nullptr);
-    ~newWindow();
+    explicit configWindow(QWidget *parent = nullptr);
+    ~configWindow();
 signals:
     void sendStyle(Qt::PenStyle style);
 private slots:
@@ -46,7 +46,7 @@ private slots:
     void on_dashLine_stateChanged(int arg1);
 
 private:
-    Ui::newWindow *ui;
+    Ui::configWindow *ui;
 };
 
-#endif // NEWWINDOW_H
+#endif // CONFIGWINDOW_H

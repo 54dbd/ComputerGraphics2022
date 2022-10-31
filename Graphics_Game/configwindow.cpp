@@ -1,28 +1,28 @@
-#include "newwindow.h"
-#include "ui_newwindow.h"
+#include "configwindow.h"
+#include "ui_configwindow.h"
 #include <QPen>
-newWindow::newWindow(QWidget *parent) :
+configWindow::configWindow(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::newWindow)
+    ui(new Ui::configWindow)
 {
     ui->setupUi(this);
 }
 
-newWindow::~newWindow()
+configWindow::~configWindow()
 {
     delete ui;
 }
 
-void newWindow::on_pushButton_clicked()
+void configWindow::on_pushButton_clicked()
 {
     close();
 }
-void newWindow::getPen(QPen* p){
+void configWindow::getPen(QPen* p){
     pen = p;
     qDebug()<<"setting pen";
 }
 
-void newWindow::on_horizontalSlider_sliderMoved(int position)//position: 1~20
+void configWindow::on_horizontalSlider_sliderMoved(int position)//position: 1~20
 {
     _width = position;
     QString output = QString::number(position)+"px";
@@ -31,54 +31,54 @@ void newWindow::on_horizontalSlider_sliderMoved(int position)//position: 1~20
 }
 
 
-void newWindow::on_red_clicked()
+void configWindow::on_red_clicked()
 {
     _color = Qt::red;
     (*pen).setColor(_color);
 }
 
 
-void newWindow::on_blue_clicked()
+void configWindow::on_blue_clicked()
 {
     _color = Qt::blue;
     (*pen).setColor(_color);
 }
 
 
-void newWindow::on_yellow_clicked()
+void configWindow::on_yellow_clicked()
 {
     _color = Qt::yellow;
     (*pen).setColor(_color);
 }
 
 
-void newWindow::on_green_clicked()
+void configWindow::on_green_clicked()
 {
     _color = Qt::green;
     (*pen).setColor(_color);
 }
 
 
-void newWindow::on_black_clicked()
+void configWindow::on_black_clicked()
 {
     _color = Qt::black;
     (*pen).setColor(_color);
 }
 
 
-void newWindow::on_horizontalSlider_actionTriggered(int action)
+void configWindow::on_horizontalSlider_actionTriggered(int action)
 {
 
 }
 
 
-void newWindow::on_horizontalSlider_sliderPressed()
+void configWindow::on_horizontalSlider_sliderPressed()
 {
 
 }
 
 
-void newWindow::on_horizontalSlider_valueChanged(int value)
+void configWindow::on_horizontalSlider_valueChanged(int value)
 {
     _width = value;
     QString output = QString::number(value)+"px";
@@ -88,7 +88,7 @@ void newWindow::on_horizontalSlider_valueChanged(int value)
 }
 
 
-void newWindow::on_dashLine_stateChanged(int arg1)
+void configWindow::on_dashLine_stateChanged(int arg1)
 {
     qDebug()<<arg1<<(*pen).style();
     if(arg1){

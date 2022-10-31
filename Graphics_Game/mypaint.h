@@ -20,7 +20,7 @@
 #include <QLabel>
 #include "TransMatrix.h"
 #include "Brush.h"
-
+#include "Player.h"
 
 using namespace std;
 
@@ -59,6 +59,7 @@ protected:
     void mouseMoveEvent(QMouseEvent *);//重写鼠标移动事件
     void contextMenuEvent(QContextMenuEvent *);//重写菜单事件
     void keyPressEvent(QKeyEvent *e); //重写按键事件
+    void keyReleaseEvent(QKeyEvent *e); //重写按键事件
 public:
 private:
     int _lpress;//左键按下标志
@@ -69,6 +70,7 @@ private:
     int _openflag;//打开图片
     QPixmap _pixmap;//画布图片
     QPen _pen;
+    long _updateCount=0;
     QLabel *statusBarLabel;
     QToolBar *tbar;
     QToolBar * subTbar;
@@ -87,6 +89,20 @@ private:
     configWindow *setBrushWindow = new configWindow();//设置窗口
 
     transMatrix trans;
+    Player *_player;
+    int playerX=100;
+    int playerY=300;
+
+    //顶点列表
+    QList<QVector3D> vertexList;
+    //当前按键按下的列表
+    //因为Qt按键事件只能判断出一个键值和辅助键值的组合，
+    //所以自己保存按下的按键
+    QSet<int> pressedKeys;
+    //刷新定时器
+    QTimer *updateTimer;
+    QVector<int> speed={0,5};
+    moveState state = IDLE;
 
 public:
     QVector<QVector<QPoint>> _lines;//线条集合(一条线条可包含多个线段)
@@ -158,7 +174,7 @@ public slots:
     void setDashLine(Qt::PenStyle style);
     void cleanScreen();
     void createBrushWindow();
-
+    void next_frame();
 };
 
 void Drag();
