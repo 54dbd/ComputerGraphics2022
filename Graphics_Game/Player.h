@@ -9,7 +9,7 @@
 
 #include <QRect>
 #include <QVector>
-
+#include <QDebug>
 
 #define HEIGHT 16
 #define WIDTH 9

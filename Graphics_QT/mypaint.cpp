@@ -176,6 +176,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
 
     /**********************************/
 
+
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
         QPoint start, end;
@@ -230,6 +231,14 @@ void MyPaint::paintEvent(QPaintEvent *) {
             }
         } else if (_shape.at(c) == 2)//矩形
         {
+            if(removeFlag&&(nowRect ==  &_rects.at(i2))){
+                _shape.removeAt(c);
+                _rects.removeAt(i2);
+                _brush.removeAt(c);
+                removeFlag = false;
+                continue;
+            }
+
             QPoint start, end;
             start = _rects.at(i2).topLeft();
             end = _rects.at(i2).bottomRight();
@@ -704,7 +713,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
     if (_rects.length() > 0) {
         for (int i = 0; i < _rects.length(); i++) {
             if (_rects.at(i).contains(e->pos())) {
-                removeRectIndex = i;
                 nowRect = &_rects[i];
                 isInRect = 1;
                 isInPolygon = 0;
@@ -1271,6 +1279,24 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
             break;
         case ROTATE:
             if (isInTagRect) {
+                QPen tempPen(_pen);
+                QVector<QPoint> polygon;
+                tempPen.setWidth(1);
+                _brush.append(tempPen);
+
+                polygon.append(nowRect->bottomRight());
+                polygon.append(nowRect->topRight());
+                polygon.append(nowRect->topLeft());
+                polygon.append(nowRect->bottomLeft());
+                _polygon.append(polygon);
+                _shape.append(7);
+
+                isInRect = 0;
+                isInPolygon = 1;
+                nowPolygon = &_polygon.last();
+                tempTransPoly = *nowPolygon;
+                removeFlag = true;
+                polygonTrans(e);
 
             }
 

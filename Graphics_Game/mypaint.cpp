@@ -1315,6 +1315,7 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
             break;
         case ROTATE:
             if (isInTagRect) {
+                QPen tempPen(_pen);
 
             }
 

@@ -79,7 +79,7 @@ private:
     bool isSpecificRefer = false;            //是否存在指定的参照点
     bool isInTagRect = false;
     bool isDashLine = false;
-    int removeRectIndex;
+    int removeFlag = false;
     enum transform _transFlag;      //变换标志位
     QRect *transRectTag = new QRect(100, 100, 20, 20);             //标签矩形
     QVector<QPoint> tempTransPolygon;
@@ -100,6 +100,7 @@ public:
     QVector<QVector<QPoint>> _polygon;//多边形集合
     QVector<QPoint> _fill;
     QRect _crop;// 裁剪的矩形
+
     QVector<QPoint> _cropPolygon;// 裁切多边形
 
     vector<vector<QPoint>> _bezierCurve; // 若干条曲线
