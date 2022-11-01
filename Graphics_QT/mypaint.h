@@ -20,7 +20,7 @@
 #include <QLabel>
 #include "TransMatrix.h"
 #include "Brush.h"
-
+#include <QPen>
 
 using namespace std;
 
@@ -79,12 +79,14 @@ private:
     bool isSpecificRefer = false;            //是否存在指定的参照点
     bool isInTagRect = false;
     bool isDashLine = false;
-    int removeRectIndex;
+    int removeFlag = false;
     enum transform _transFlag;      //变换标志位
     QRect *transRectTag = new QRect(100, 100, 20, 20);             //标签矩形
     QVector<QPoint> tempTransPolygon;
     int _drag;
     configWindow *setBrushWindow = new configWindow();//设置窗口
+    int _kValue;
+    settings setting;
 
     transMatrix trans;
 
@@ -100,6 +102,7 @@ public:
     QVector<QVector<QPoint>> _polygon;//多边形集合
     QVector<QPoint> _fill;
     QRect _crop;// 裁剪的矩形
+
     QVector<QPoint> _cropPolygon;// 裁切多边形
 
     vector<vector<QPoint>> _bezierCurve; // 若干条曲线
@@ -135,7 +138,7 @@ public:
 
 signals:
 
-    void sendPen(QPen *);
+    void sendPen(settings);
 
 public slots:
 
@@ -158,6 +161,7 @@ public slots:
     void setDashLine(Qt::PenStyle style);
     void cleanScreen();
     void createBrushWindow();
+
 
 };
 

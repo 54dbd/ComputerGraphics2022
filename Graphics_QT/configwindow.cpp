@@ -5,6 +5,7 @@ configWindow::configWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::configWindow)
 {
+
     ui->setupUi(this);
 }
 
@@ -17,8 +18,9 @@ void configWindow::on_pushButton_clicked()
 {
     close();
 }
-void configWindow::getPen(QPen* p){
-    pen = p;
+void configWindow::getPen(settings p){
+    pen = p.pen;
+    kValue=p.kValue;
     qDebug()<<"setting pen";
 }
 
@@ -101,6 +103,22 @@ void configWindow::on_dashLine_stateChanged(int arg1)
     }
     (*pen).setStyle(_style);
     qDebug()<<"penIsSolid:"<<(*pen).style();
+
+}
+
+
+void configWindow::on_horizontalSlider_2_rangeChanged(int min, int max)
+{
+
+}
+
+
+void configWindow::on_horizontalSlider_2_sliderMoved(int value)
+{
+    QString output = QString::number(value)+"px";
+    ui->kValue->setText(output);
+    qDebug()<<"[config]kValue:"<<value;
+    *kValue=value;
 
 }
 

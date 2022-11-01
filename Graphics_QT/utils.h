@@ -89,7 +89,7 @@ QRect MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
     if (code1 == 0 && code2 == 0) {
         return line;
     }
-        // 两个点都在窗口外，显然不可见，直接返回空
+    // 两个点都在窗口外，显然不可见，直接返回空
     else if ((code1 & code2) != 0) {
         return QRect(-1, -1, -1, -1);
     }
@@ -99,6 +99,7 @@ QRect MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
         int x_0 = x1, y_0 = y1, x_1 = x2, y_1 = y2;
         int code_0 = encode(x_0, y_0, XL, XR, YB, YT);
         int code_1 = encode(x_1, y_1, XL, XR, YB, YT);
+        int i = 0;
         while (true) {
             int xm = (x_0 + x_1) / 2;
             int ym = (y_0 + y_1) / 2;
@@ -113,10 +114,13 @@ QRect MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
                 y_0 = ym;
                 code_0 = code_m;
             }
-            if ((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0) <= 4) {
+            if (((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0) <= 4) && code_m == 0) {
                 xa = xm;
                 ya = ym;
                 break;
+            }
+            if (i++ == 20){
+                return QRect(-1, -1, -1, -1);
             }
         }
     }
@@ -125,6 +129,7 @@ QRect MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
         int x_0 = x1, y_0 = y1, x_1 = x2, y_1 = y2;
         int code_0 = encode(x_0, y_0, XL, XR, YB, YT);
         int code_1 = encode(x_1, y_1, XL, XR, YB, YT);
+        int i = 0;
         while (true) {
             int xm = (x_0 + x_1) / 2;
             int ym = (y_0 + y_1) / 2;
@@ -138,10 +143,13 @@ QRect MidPoint_ClipLine(QRect line, int XL, int XR, int YB, int YT) {
                 y_1 = ym;
                 code_1 = code_m;
             }
-            if ((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0) <= 4) {
+            if (((x_1 - x_0) * (x_1 - x_0) + (y_1 - y_0) * (y_1 - y_0) <= 4) && code_m == 0) {
                 xb = xm;
                 yb = ym;
                 break;
+            }
+            if (i++ == 20){
+                return QRect(-1, -1, -1, -1);
             }
         }
     }

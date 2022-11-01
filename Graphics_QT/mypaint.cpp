@@ -25,7 +25,7 @@ MyPaint::MyPaint(QWidget *parent) :
     _begin = pos();//拖拽的参考坐标，方便计算位移
     _openflag = 0;//初始不打开图片
     _transFlag = NOTRANS;
-
+    _kValue = 3;
     this->setGeometry(350, 200, 600, 400);//设置窗体大小、位置
     this->setFixedSize(600, 400);
     setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
@@ -49,6 +49,7 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(setBrush);
 
     QAction *clean = new QAction(tr("&清除"), this);
+    clean->setIcon(QIcon(":/png/images/erase.jpg"));//图标
     tbar->addAction(clean);
 
     QAction *openAction = new QAction(tr("&打开"), this);//打开动作
@@ -113,15 +114,17 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(bezierAction);
 
     QAction *bsplineAction = new QAction(tr("&B样条"), this);
-//    bsplineAction->setIcon(QIcon(":/png/images/bspline.png"));//图标
+    bsplineAction->setIcon(QIcon(":/png/images/bspline.jpg"));//图标
     tbar->addAction(bsplineAction);
 
     QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
+    clipAction->setIcon(QIcon(":/png/images/clipline.jpg"));//图标
     tbar->addAction(clipAction);
 
 
 
     QAction *clipPolygon = new QAction(tr("&裁切多边形"), this);//裁切多边形
+    clipPolygon->setIcon(QIcon(":/png/images/clippolygon.jpg"));//图标
     tbar->addAction(clipPolygon);
 
     //创建底部状态栏
@@ -155,7 +158,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
 
     //设置界面传参
-    connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
+    connect(this, SIGNAL(sendPen(settings )), setBrushWindow, SLOT(getPen(settings )));
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
 }
 
@@ -170,11 +173,8 @@ void MyPaint::paintEvent(QPaintEvent *) {
     //QPainter p=_pen;//将_pixmap作为画布
 
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
+//    qDebug()<<"[paintEvent]kValue:"<<_kValue;
 
-
-    /********DRAW CHARACTER************/
-
-    /**********************************/
 
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
@@ -230,6 +230,14 @@ void MyPaint::paintEvent(QPaintEvent *) {
             }
         } else if (_shape.at(c) == 2)//矩形
         {
+            if(removeFlag&&(nowRect ==  &_rects.at(i2))){
+                _shape.removeAt(c);
+                _rects.removeAt(i2);
+                _brush.removeAt(c);
+                removeFlag = false;
+                continue;
+            }
+
             QPoint start, end;
             start = _rects.at(i2).topLeft();
             end = _rects.at(i2).bottomRight();
@@ -704,7 +712,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
     if (_rects.length() > 0) {
         for (int i = 0; i < _rects.length(); i++) {
             if (_rects.at(i).contains(e->pos())) {
-                removeRectIndex = i;
                 nowRect = &_rects[i];
                 isInRect = 1;
                 isInPolygon = 0;
@@ -1086,7 +1093,8 @@ void MyPaint::OpenPic() {
 
 
 void MyPaint::createBrushWindow() {
-    emit sendPen(&_pen);
+    settings setting{&_pen, &_kValue};
+    emit sendPen(setting);
     setBrushWindow->show();
 }
 
@@ -1271,6 +1279,24 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
             break;
         case ROTATE:
             if (isInTagRect) {
+                QPen tempPen(_pen);
+                QVector<QPoint> polygon;
+                tempPen.setWidth(1);
+                _brush.append(tempPen);
+
+                polygon.append(nowRect->bottomRight());
+                polygon.append(nowRect->topRight());
+                polygon.append(nowRect->topLeft());
+                polygon.append(nowRect->bottomLeft());
+                _polygon.append(polygon);
+                _shape.append(7);
+
+                isInRect = 0;
+                isInPolygon = 1;
+                nowPolygon = &_polygon.last();
+                tempTransPoly = *nowPolygon;
+                removeFlag = true;
+                polygonTrans(e);
 
             }
 

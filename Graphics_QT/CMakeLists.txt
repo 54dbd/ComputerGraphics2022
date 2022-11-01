@@ -12,7 +12,6 @@ find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
-        OpenGLWidgets
         REQUIRED)
 
 add_executable(Graphics images.qrc
@@ -33,12 +32,11 @@ add_executable(Graphics images.qrc
         utils.h
         light.cpp
         light.h
-        ../Graphics_Game/Player.cpp ../Graphics_Game/Player.h)
+        )
 target_link_libraries(Graphics
         Qt::Core
         Qt::Gui
         Qt::Widgets
-        Qt6::OpenGLWidgets
         )
 
 if (WIN32)

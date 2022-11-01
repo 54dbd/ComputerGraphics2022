@@ -16,5 +16,9 @@
         <file>images/polygon.png</file>
         <file>images/move.png</file>
         <file>images/trans.png</file>
+        <file>images/bspline.jpg</file>
+        <file>images/clipline.jpg</file>
+        <file>images/clippolygon.jpg</file>
+        <file>images/erase.jpg</file>
     </qresource>
 </RCC>

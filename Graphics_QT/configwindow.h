@@ -3,6 +3,10 @@
 
 #include <QWidget>
 
+struct settings{
+    QPen* pen;
+    int* kValue;
+};
 namespace Ui {
 class configWindow;
 }
@@ -17,6 +21,7 @@ public:
     Qt::PenCapStyle _capStyle;
     int _width;
     QPen* pen;
+    int* kValue;
 
     explicit configWindow(QWidget *parent = nullptr);
     ~configWindow();
@@ -24,7 +29,7 @@ signals:
     void sendStyle(Qt::PenStyle style);
 private slots:
     void on_pushButton_clicked();
-    void getPen(QPen*);
+    void getPen(settings p);
     void on_horizontalSlider_sliderMoved(int position);
 
     void on_red_clicked();
@@ -44,6 +49,10 @@ private slots:
     void on_horizontalSlider_valueChanged(int value);
 
     void on_dashLine_stateChanged(int arg1);
+
+    void on_horizontalSlider_2_rangeChanged(int min, int max);
+
+    void on_horizontalSlider_2_sliderMoved(int position);
 
 private:
     Ui::configWindow *ui;
