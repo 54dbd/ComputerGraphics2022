@@ -25,7 +25,7 @@ MyPaint::MyPaint(QWidget *parent) :
     _begin = pos();//拖拽的参考坐标，方便计算位移
     _openflag = 0;//初始不打开图片
     _transFlag = NOTRANS;
-
+    _kValue = 3;
     this->setGeometry(350, 200, 600, 400);//设置窗体大小、位置
     this->setFixedSize(600, 400);
     setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
@@ -155,7 +155,7 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
 
     //设置界面传参
-    connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
+    connect(this, SIGNAL(sendPen(settings )), setBrushWindow, SLOT(getPen(settings )));
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
 }
 
@@ -170,11 +170,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     //QPainter p=_pen;//将_pixmap作为画布
 
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
-
-
-    /********DRAW CHARACTER************/
-
-    /**********************************/
+//    qDebug()<<"[paintEvent]kValue:"<<_kValue;
 
 
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
@@ -1094,7 +1090,8 @@ void MyPaint::OpenPic() {
 
 
 void MyPaint::createBrushWindow() {
-    emit sendPen(&_pen);
+    settings setting{&_pen, &_kValue};
+    emit sendPen(setting);
     setBrushWindow->show();
 }
 

@@ -20,7 +20,7 @@
 #include <QLabel>
 #include "TransMatrix.h"
 #include "Brush.h"
-
+#include <QPen>
 
 using namespace std;
 
@@ -85,6 +85,8 @@ private:
     QVector<QPoint> tempTransPolygon;
     int _drag;
     configWindow *setBrushWindow = new configWindow();//设置窗口
+    int _kValue;
+    settings setting;
 
     transMatrix trans;
 
@@ -136,7 +138,7 @@ public:
 
 signals:
 
-    void sendPen(QPen *);
+    void sendPen(settings);
 
 public slots:
 
@@ -159,6 +161,7 @@ public slots:
     void setDashLine(Qt::PenStyle style);
     void cleanScreen();
     void createBrushWindow();
+
 
 };
 
