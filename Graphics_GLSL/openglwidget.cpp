@@ -1,6 +1,7 @@
 #include "openglwidget.h"
 #include <QOpenGLShader>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLTexture>
 #include <QMouseEvent>
 #include <QWheelEvent>
 
@@ -42,6 +43,17 @@ void OpenGLWidget::initializeGL()
     // vertices array
     torus = new VBOTorus(1.0f,60, 60);
 
+    // texture
+    QImage image = QImage(":/shader/R.jpg").mirrored(false,true);
+    texture = new QOpenGLTexture(image, QOpenGLTexture::GenerateMipMaps);
+    // set the texture wrapping parameters
+    texture->setWrapMode(QOpenGLTexture::DirectionS, QOpenGLTexture::Repeat);
+    texture->setWrapMode(QOpenGLTexture::DirectionT, QOpenGLTexture::Repeat);
+    texture->setMinificationFilter(QOpenGLTexture::Linear);
+    texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    texture->setMinMagFilters(QOpenGLTexture::LinearMipMapLinear,QOpenGLTexture::Linear);
+
+
     // view matrix
     view.setToIdentity();
     view.lookAt(QVector3D(0.0f, 0.0f, 3.0f), QVector3D(0.0f,0.0f,0.0f), QVector3D(0.0f,1.0f,0.0f));
@@ -79,6 +91,8 @@ void OpenGLWidget::paintGL()
     program->setUniformValue("NormalMatrix",
                              mv.normalMatrix());
     program->setUniformValue("MVP", projection * mv);
+//    glActiveTexture(GL_TEXTURE0);
+    texture->bind();
 
     program->bind();
     // render the object

@@ -2,8 +2,10 @@
 
 layout (location = 0) in vec3 VertexPosition;
 layout (location = 1) in vec3 VertexNormal;
+layout (location = 2) in vec2 VertexTexcoords;
 
 out vec3 LightIntensity;
+out vec2 Texcoords;
 
 struct LightInfo {
   vec4 Position; // Light position in eye coords.
@@ -60,4 +62,5 @@ void main()
     LightIntensity = phongModel( eyePosition, eyeNorm );
 
     gl_Position = MVP * vec4(VertexPosition,1.0);
+    Texcoords = VertexTexcoords;
 }

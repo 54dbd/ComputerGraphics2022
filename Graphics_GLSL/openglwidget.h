@@ -2,6 +2,7 @@
 #define OPENGLWIDGET_H
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
+#include <QOpenGLTexture>>
 #include <QOpenGLBuffer>
 #include "vbotorus.h"
 #include <QMatrix4x4>
@@ -35,6 +36,8 @@ private:
     GLfloat xtrans, ytrans, ztrans; // translation on x,y,z-axis
     QVector2D mousePos;
     QQuaternion rotation;
+
+    QOpenGLTexture *texture;
 };
 
 #endif // OPENGLWIDGET_H

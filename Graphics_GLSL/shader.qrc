@@ -1,6 +1,7 @@
 <RCC>
-    <qresource prefix="/" lang="glsl">
+    <qresource lang="glsl" prefix="/">
         <file>shader/function.frag</file>
         <file>shader/function.vert</file>
+        <file>shader/R.jpg</file>
     </qresource>
 </RCC>
