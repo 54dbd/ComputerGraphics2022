@@ -3,11 +3,7 @@
         <file>images/lines.png</file>
         <file>images/rect.png</file>
         <file>images/ellipse.png</file>
-        <file>images/open.png</file>
-        <file>images/save.png</file>
-        <file>images/saveas.png</file>
         <file>images/line.png</file>
-        <file>images/texts.png</file>
         <file>images/1.png</file>
         <file>images/arc.png</file>
         <file>images/arcCenter.png</file>
@@ -16,9 +12,9 @@
         <file>images/polygon.png</file>
         <file>images/move.png</file>
         <file>images/trans.png</file>
-        <file>images/bspline.jpg</file>
-        <file>images/clipline.jpg</file>
-        <file>images/clippolygon.jpg</file>
-        <file>images/erase.jpg</file>
+        <file>images/bspline.png</file>
+        <file>images/clipline.png</file>
+        <file>images/clippolygon.png</file>
+        <file>images/erase.png</file>
     </qresource>
 </RCC>

@@ -29,7 +29,7 @@ MyPaint::MyPaint(QWidget *parent) :
     this->setGeometry(350, 200, 600, 400);//设置窗体大小、位置
     this->setFixedSize(600, 400);
     setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
-    this->setStyleSheet("background-color:white;");
+    this->setStyleSheet("background-color:rgb(243, 249, 255);");
     //初始化MAP
     initMAP();
 
@@ -37,10 +37,10 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar = addToolBar(tr("工具栏"));
     tbar->setMovable(false);//工具栏不可移动
     tbar->setIconSize(QSize(16, 16));//设置动作图标的尺寸
-    tbar->setStyleSheet("background-color:white");//背景色
+    tbar->setStyleSheet("background-color:rgb(243, 249, 255);");//背景色
 
     _Rmenu = new QMenu(this);//创建右键菜单
-    _Rmenu->addAction(tr("保存  \tCtrl+S"), this, SLOT(SavePic()));//添加菜单动作
+//    _Rmenu->addAction(tr("保存  \tCtrl+S"), this, SLOT(SavePic()));//添加菜单动作
     _Rmenu->addAction(tr("退出  \tALT+F4"), this, SLOT(close()));//添加菜单动作
     _Rmenu->setStyleSheet("background-color:white");//设置背景色
 
@@ -49,23 +49,23 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(setBrush);
 
     QAction *clean = new QAction(tr("&清除"), this);
-    clean->setIcon(QIcon(":/png/images/erase.jpg"));//图标
+    clean->setIcon(QIcon(":/png/images/erase.png"));//图标
     tbar->addAction(clean);
 
-    QAction *openAction = new QAction(tr("&打开"), this);//打开动作
-    openAction->setIcon(QIcon(":/png/images/open.png"));//图标
-    openAction->setShortcut(QKeySequence(tr("Ctrl+O")));//热键
-    tbar->addAction(openAction);//添加到工具栏
-
-    QAction *saveAction = new QAction(tr("&保存"), this);//保存动作
-    saveAction->setIcon(QIcon(":/png/images/save.png"));//图标
-    saveAction->setShortcut(QKeySequence(tr("Ctrl+S")));//热键
-    tbar->addAction(saveAction);//添加到工具栏
-
-    QAction *saveasAction = new QAction(tr("&另存为"), this);//保存动作
-    saveasAction->setIcon(QIcon(":/png/images/saveas.png"));//图标
-    saveasAction->setShortcut(QKeySequence(tr("Ctrl+ALT+S")));//热键
-    tbar->addAction(saveasAction);//添加到工具栏
+//    QAction *openAction = new QAction(tr("&打开"), this);//打开动作
+//    openAction->setIcon(QIcon(":/png/images/open.png"));//图标
+//    openAction->setShortcut(QKeySequence(tr("Ctrl+O")));//热键
+//    tbar->addAction(openAction);//添加到工具栏
+//
+//    QAction *saveAction = new QAction(tr("&保存"), this);//保存动作
+//    saveAction->setIcon(QIcon(":/png/images/save.png"));//图标
+//    saveAction->setShortcut(QKeySequence(tr("Ctrl+S")));//热键
+//    tbar->addAction(saveAction);//添加到工具栏
+//
+//    QAction *saveasAction = new QAction(tr("&另存为"), this);//保存动作
+//    saveasAction->setIcon(QIcon(":/png/images/saveas.png"));//图标
+//    saveasAction->setShortcut(QKeySequence(tr("Ctrl+ALT+S")));//热键
+//    tbar->addAction(saveasAction);//添加到工具栏
 
     QAction *transAction = new QAction(tr("&图形变换"), this); /**变换动作**/
     transAction->setIcon(QIcon(":/png/images/trans.png"));//图标
@@ -114,17 +114,17 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(bezierAction);
 
     QAction *bsplineAction = new QAction(tr("&B样条"), this);
-    bsplineAction->setIcon(QIcon(":/png/images/bspline.jpg"));//图标
+    bsplineAction->setIcon(QIcon(":/png/images/bspline.png"));//图标
     tbar->addAction(bsplineAction);
 
     QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
-    clipAction->setIcon(QIcon(":/png/images/clipline.jpg"));//图标
+    clipAction->setIcon(QIcon(":/png/images/clipline.png"));//图标
     tbar->addAction(clipAction);
 
 
 
     QAction *clipPolygon = new QAction(tr("&裁切多边形"), this);//裁切多边形
-    clipPolygon->setIcon(QIcon(":/png/images/clippolygon.jpg"));//图标
+    clipPolygon->setIcon(QIcon(":/png/images/clippolygon.png"));//图标
     tbar->addAction(clipPolygon);
 
     //创建底部状态栏
@@ -140,8 +140,8 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(rectAction, SIGNAL(triggered()), this, SLOT(Rects()));
     connect(ellipseAction, SIGNAL(triggered()), this, SLOT(Ellipses()));
     connect(lineAction, SIGNAL(triggered()), this, SLOT(Line()));
-    connect(saveAction, SIGNAL(triggered()), this, SLOT(SavePic()));
-    connect(openAction, SIGNAL(triggered()), this, SLOT(OpenPic()));
+//    connect(saveAction, SIGNAL(triggered()), this, SLOT(SavePic()));
+//    connect(openAction, SIGNAL(triggered()), this, SLOT(OpenPic()));
     connect(arcAction, SIGNAL(triggered()), this, SLOT(Arc()));
     connect(arcCenterAction, SIGNAL(triggered()), this, SLOT(ArcCenter()));
     connect(polygonAction, SIGNAL(triggered()), this, SLOT(Polygon()));
