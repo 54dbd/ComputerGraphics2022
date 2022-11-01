@@ -78,6 +78,24 @@ private:
             {0,0,0,1,1,0,0,0,0},
     };
     QVector<QVector<int>> run4 = run2;
+    QVector<QVector<int>> jump ={
+            {0,0,0,0,0,0,0,0,0},
+            {0,0,1,1,1,1,0,0,0},
+            {0,1,1,1,1,1,1,0,0},
+            {0,1,1,1,1,1,1,0,0},
+            {1,1,1,1,1,1,1,0,0},
+            {1,0,1,1,1,1,0,0,1},
+            {1,1,0,1,1,0,0,1,1},
+            {0,1,1,1,1,1,1,1,0},
+            {0,0,0,1,1,0,0,0,0},
+            {0,0,0,1,1,0,0,0,0},
+            {0,0,1,1,1,1,1,0,0},
+            {0,0,1,0,0,0,1,0,0},
+            {0,0,1,0,0,0,1,0,0},
+            {0,1,1,0,0,1,1,0,0},
+            {0,1,0,0,0,1,0,0,0},
+            {0,0,0,0,0,0,0,0,0},
+    };
     QVector<QVector<pointData>> figure;             //人物造型
     QVector<QVector<QVector<int>>> sequence={run1,run2,run3,run4};   //动画序列 存放多个人物造型
     QRect collideBox;
@@ -93,17 +111,47 @@ public:
     }
     void generate(int num, moveState state){
         QVector<QVector<int>> choice;
-        if(state == RUN_R){
-            choice = sequence[num];
-        }else{
-            choice = sequence[2];
+        switch (state) {
+            case RUN_R:
+                choice = sequence[num];
+                for (int i = 0; i < HEIGHT*scale; i++) {
+                    for (int j = 0; j < WIDTH*scale; j++) {
+                        if (choice[i/2][j/2])
+                            painter.drawPoint(pos.x() + j, pos.y() + i);
+                    }
+                }
+                break;
+            case RUN_L:
+                choice = sequence[num];
+                for (int i = 0; i < HEIGHT*scale; i++) {
+                    for (int j = 0; j < WIDTH*scale; j++) {
+                        if (choice[i / scale][j/scale])
+                            painter.drawPoint(pos.x() + WIDTH - j, pos.y() + i);
+                    }
+                }
+                break;
+            case JUMP:
+                choice = jump;
+                for (int i = 0; i < HEIGHT * scale; i++) {
+                    for (int j = 0; j < WIDTH * scale; j++) {
+                        if (choice[i / scale][j / scale])
+                            painter.drawPoint(pos.x() + j, pos.y() + i);
+                    }
+                }
+                break;
+            case IDLE:
+                choice = sequence[2];
+                for (int i = 0; i < HEIGHT * scale; i++) {
+                    for (int j = 0; j < WIDTH * scale; j++) {
+                        if (choice[i / scale][j / scale])
+                            painter.drawPoint(pos.x() + j, pos.y() + i);
+                    }
+                }
+                break;
+            default:
+                break;
         }
-        for (int i = 0; i < HEIGHT*scale; i++) {
-            for (int j = 0; j < WIDTH*scale; j++) {
-                if (choice[i/2][j/2])
-                    painter.drawPoint(pos.x() + j, pos.y() + i);
-            }
-        }
+
     }
     void setSpeed(int speedX,int speedY){
         speed[0]=speedX;
