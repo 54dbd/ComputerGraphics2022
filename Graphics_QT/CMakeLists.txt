@@ -6,13 +6,12 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_PREFIX_PATH "D:/soft/qt1/6.3.2/mingw_64")
+set(CMAKE_PREFIX_PATH "C:/Qt/6.3.2/mingw_64")
 link_directories(lib)
 find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
-        OpenGLWidgets
         REQUIRED)
 
 add_executable(Graphics images.qrc
@@ -33,13 +32,11 @@ add_executable(Graphics images.qrc
         utils.h
         light.cpp
         light.h
-        ../Graphics_Game/Player.cpp
-        ../Graphics_Game/Player.h)
+        )
 target_link_libraries(Graphics
         Qt::Core
         Qt::Gui
         Qt::Widgets
-        Qt6::OpenGLWidgets
         )
 
 if (WIN32)
