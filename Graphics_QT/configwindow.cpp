@@ -115,7 +115,7 @@ void configWindow::on_horizontalSlider_2_rangeChanged(int min, int max)
 
 void configWindow::on_horizontalSlider_2_sliderMoved(int value)
 {
-    QString output = QString::number(value)+"px";
+    QString output = QString::number(value);
     ui->kValue->setText(output);
     qDebug()<<"[config]kValue:"<<value;
     *kValue=value;
