@@ -49,6 +49,7 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(setBrush);
 
     QAction *clean = new QAction(tr("&清除"), this);
+    clean->setIcon(QIcon(":/png/images/erase.jpg"));//图标
     tbar->addAction(clean);
 
     QAction *openAction = new QAction(tr("&打开"), this);//打开动作
@@ -113,15 +114,17 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->addAction(bezierAction);
 
     QAction *bsplineAction = new QAction(tr("&B样条"), this);
-//    bsplineAction->setIcon(QIcon(":/png/images/bspline.png"));//图标
+    bsplineAction->setIcon(QIcon(":/png/images/bspline.jpg"));//图标
     tbar->addAction(bsplineAction);
 
     QAction *clipAction = new QAction(tr("&裁切线段"), this);//裁切线段
+    clipAction->setIcon(QIcon(":/png/images/clipline.jpg"));//图标
     tbar->addAction(clipAction);
 
 
 
     QAction *clipPolygon = new QAction(tr("&裁切多边形"), this);//裁切多边形
+    clipPolygon->setIcon(QIcon(":/png/images/clippolygon.jpg"));//图标
     tbar->addAction(clipPolygon);
 
     //创建底部状态栏
