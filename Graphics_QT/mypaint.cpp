@@ -401,6 +401,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
             pen = temp;
             p.setPen(pen);
         } else if (_shape.at(c) == 13) { // bspline
+            int temp_k = k_steps[i13];
             const vector<QPoint> &bsplineCurve = _bsplineCurve.at(i13++);
 
             //使控制点不受笔刷大小影响
@@ -415,8 +416,6 @@ void MyPaint::paintEvent(QPaintEvent *) {
                 Circle C(i.x(), i.y(), 4, 1, p, pen);
                 C.DrawCircle();
             }
-            // 需要交互设置k阶 目前设置为3
-            int temp_k = 3;
             class Bspline b(1, p, bsplineCurve, temp_k, pen);
             b.drawBspline();
 
@@ -1151,6 +1150,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
         if (_drawType == 13) { // bspline控制点绘制结束
             _brush.append(_pen);
             _shape.append(13);
+            k_steps.emplace_back(_kValue);
             _bsplineCurve.push_back(_currentBsplineCurve);
             vector<QPoint>().swap(_currentBsplineCurve);
             update();
