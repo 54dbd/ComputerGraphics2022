@@ -2,7 +2,7 @@
 #define OPENGLWIDGET_H
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
-#include <QOpenGLTexture>>
+#include <QOpenGLTexture>
 #include <QOpenGLBuffer>
 #include "vbotorus.h"
 #include <QMatrix4x4>
@@ -14,7 +14,7 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
     Q_OBJECT
 public:
-    OpenGLWidget(QWidget *parent = 0);
+    OpenGLWidget( int& N, double& KDKS, QWidget *parent = 0);
     ~OpenGLWidget();
 
 protected:
@@ -38,6 +38,9 @@ private:
     QQuaternion rotation;
 
     QOpenGLTexture *texture;
+
+    int &n;
+    double &kdks;
 };
 
 #endif // OPENGLWIDGET_H

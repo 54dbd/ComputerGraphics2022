@@ -24,16 +24,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
+    configwindow.cpp \
         glslwidget.cpp \
     openglwidget.cpp \
     vbotorus.cpp
 
 HEADERS  += glslwidget.h \
+    configwindow.h \
     openglwidget.h \
     vbotorus.h \
     vbotorus.h
 
-FORMS    += glslwidget.ui
+FORMS    += glslwidget.ui \
+    configwindow.ui
 
 RESOURCES += \
     shader.qrc

@@ -5,9 +5,10 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
-OpenGLWidget::OpenGLWidget(QWidget *parent)
+OpenGLWidget::OpenGLWidget( int &N, double &KDKS, QWidget *parent)
     :QOpenGLWidget(parent)
     ,xtrans(0),ytrans(0),ztrans(0.0)
+    ,n(N),kdks(KDKS)
 {
 
 }

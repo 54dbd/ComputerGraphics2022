@@ -20,6 +20,11 @@ public:
 private:
     Ui::GLSLWidget *ui;
     OpenGLWidget *glWidget;
+    int n = 100;
+    double kdks = 0.25;
+
+public slots:
+    void getValue(int k, double kdks);
 };
 
 #endif // GLSLWIDGET_H
