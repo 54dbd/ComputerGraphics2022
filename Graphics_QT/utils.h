@@ -351,6 +351,8 @@ void MyPaint::cleanScreen(){
     _polygon.clear();//多边形集合
     _fill.clear();
     _cropPolygon.clear();// 裁切多边形
+    _bezierCurve.clear();
+    _bsplineCurve.clear();
     k_steps.clear();
     _shape.clear();//图形类型集合，用于撤回功能
     _brush.clear();
