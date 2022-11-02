@@ -389,6 +389,16 @@ void MyPaint::paintEvent(QPaintEvent *) {
                 Circle C(i.x(), i.y(), 4, 1, p, pen);
                 C.DrawCircle();
             }
+
+            for (int j = 0; j < bezierCurve.size() - 1; ++j) {
+                int x_s = bezierCurve.at(j).x();
+                int y_s = bezierCurve.at(j).y();
+                int x_e = bezierCurve.at(j + 1).x();
+                int y_e = bezierCurve.at(j + 1).y();
+                class Line l1(x_s, y_s, x_e, y_e, 1, p, pen);
+                l1.DashLine();
+            }
+
             class Bezier b(1, p, bezierCurve, pen);
             b.drawBezier();
 
@@ -416,6 +426,16 @@ void MyPaint::paintEvent(QPaintEvent *) {
                 Circle C(i.x(), i.y(), 4, 1, p, pen);
                 C.DrawCircle();
             }
+
+            for (int j = 0; j < bsplineCurve.size() - 1; ++j) {
+                int x_s = bsplineCurve.at(j).x();
+                int y_s = bsplineCurve.at(j).y();
+                int x_e = bsplineCurve.at(j + 1).x();
+                int y_e = bsplineCurve.at(j + 1).y();
+                class Line l1(x_s, y_s, x_e, y_e, 1, p, pen);
+                l1.DashLine();
+            }
+
             class Bspline b(1, p, bsplineCurve, temp_k, pen);
             b.drawBspline();
 
