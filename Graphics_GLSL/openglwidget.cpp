@@ -4,6 +4,7 @@
 #include <QOpenGLTexture>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QTimer>
 
 OpenGLWidget::OpenGLWidget( int &N, double &KDKS, QWidget *parent)
     :QOpenGLWidget(parent)
@@ -38,7 +39,7 @@ void OpenGLWidget::initializeGL()
     program->bind();
 
     // set color used to clear background
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
 
     // vertices array
@@ -61,16 +62,32 @@ void OpenGLWidget::initializeGL()
 
     // uniform light/material property
     QVector4D worldLight = QVector4D(5.0f,5.0f,2.0f,1.0f);
-    program->setUniformValue("Material.Kd", 0.3f, 0.7f, 0.9f);
+//    program->setUniformValue("Material.Kd", 0.3f, 0.7f, 0.9f);
 //    program->setUniformValue("Material.Kd", 0.9f, 0.5f, 0.3f);
+    program->setUniformValue("Material.Kd", 1.0f, 1.0f, 1.0f);
+
+
+
     program->setUniformValue("Light.Ld", 1.0f, 1.0f, 1.0f);
     program->setUniformValue("Light.Position", view * worldLight );
 //    program->setUniformValue("Material.Ka", 0.9f, 0.5f, 0.3f);
-    program->setUniformValue("Material.Ka", 0.3f, 0.7f, 0.9f);
+//    program->setUniformValue("Material.Ka", 0.3f, 0.7f, 0.9f);
+    program->setUniformValue("Material.Ka", 1.0f, 1.0f, 1.0f);
     program->setUniformValue("Light.La", 0.4f, 0.4f, 0.4f);
-    program->setUniformValue("Material.Ks", 0.8f, 0.8f, 0.8f);
+//    program->setUniformValue("Material.Ks", 0.8f, 0.8f, 0.8f);
+//    program->setUniformValue("Material.Ks", 0.4f, 0.4f, 0.4f);
+    float ks =  1.0f / kdks;
+    program->setUniformValue("Material.Ks", ks, ks, ks);
     program->setUniformValue("Light.Ls", 1.0f, 1.0f, 1.0f);
-    program->setUniformValue("Material.Shininess", 100.0f);
+//    program->setUniformValue("Material.Shininess", 1.0f);
+    program->setUniformValue("Material.Shininess", n*1.0f);
+
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()),this,SLOT(nextFrame()));
+    timer->start(50);
+
+
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
@@ -78,6 +95,10 @@ void OpenGLWidget::resizeGL(int w, int h)
     glViewport(0,0,w/2,h/2);
     projection.setToIdentity();
     projection.perspective(60.0f, (GLfloat)w/(GLfloat)h, 0.001f, 100.0f);
+}
+
+void OpenGLWidget::nextFrame(){
+    paintGL();
 }
 
 void OpenGLWidget::paintGL()
@@ -88,9 +109,15 @@ void OpenGLWidget::paintGL()
     model.translate(xtrans, ytrans, ztrans);
     model.rotate(rotation);
     QMatrix4x4 mv = view * model;
+    qDebug()<<"updating openGl";
     program->setUniformValue("ModelViewMatrix", mv);
     program->setUniformValue("NormalMatrix",
                              mv.normalMatrix());
+    program->setUniformValue("Material.Kd", 1.0f, 1.0f, 1.0f);
+    float ks =  1.0f / kdks;
+    program->setUniformValue("Material.Ks", ks, ks, ks);
+    program->setUniformValue("Material.Shininess", n*1.0f);
+
     program->setUniformValue("MVP", projection * mv);
 //    glActiveTexture(GL_TEXTURE0);
     texture->bind();

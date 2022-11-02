@@ -5,6 +5,7 @@ configWindow::configWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::configWindow)
 {
+    this->setGeometry(0,0,400,166);
     ui->setupUi(this);
 }
 
@@ -15,6 +16,7 @@ configWindow::~configWindow()
 
 void configWindow::on_horizontalSlider_2_valueChanged(int KDKS)
 {
+    //因为滑动条输入都是整数，这里将其转为小数。
     kdks = KDKS/100.0;
     QString output = QString::number(kdks);
     ui->kdks->setText(output);

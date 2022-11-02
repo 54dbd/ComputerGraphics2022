@@ -9,7 +9,7 @@ GLSLWidget::GLSLWidget(QWidget *parent) :
     ui(new Ui::GLSLWidget)
 {
     ui->setupUi(this);
-
+    this->setStyleSheet("background-color: black");
     QGridLayout *layout = new QGridLayout();
     glWidget = new OpenGLWidget(n,kdks);
     layout->addWidget(glWidget);

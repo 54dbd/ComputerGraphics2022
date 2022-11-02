@@ -22,8 +22,8 @@ private slots:
 
 private:
     Ui::configWindow *ui;
-    int n = 100;
-    double kdks = 0.25;
+    int n = 1;
+    double kdks = 2.5;
 signals:
     void sendValue(int n, double kdks);
 };

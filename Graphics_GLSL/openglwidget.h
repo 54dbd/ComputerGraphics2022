@@ -16,7 +16,8 @@ class OpenGLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 public:
     OpenGLWidget( int& N, double& KDKS, QWidget *parent = 0);
     ~OpenGLWidget();
-
+public slots:
+    void nextFrame();
 protected:
     void initializeGL();
     void resizeGL(int w, int h);
