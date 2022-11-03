@@ -93,11 +93,11 @@ private:
     Stage *_stage;
 
     int playerX = 100;
-    int playerY = 300;
+    int playerY = 250;
 
     //顶点列表
     QList<QVector3D> vertexList;
-    //当前按键按下的列表
+    //当前按键按下的列表+
     //因为Qt按键事件只能判断出一个键值和辅助键值的组合，
     //所以自己保存按下的按键
     QSet<int> pressedKeys;

@@ -138,7 +138,7 @@ MyPaint::MyPaint(QWidget *parent) :
     //创建一个计时器来更新每个fream
     QTimer* timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(next_frame()));
-    timer->start(50);
+    timer->start(10);
 
 
     //连接信号与槽函数
@@ -188,9 +188,10 @@ void MyPaint::paintEvent(QPaintEvent *) {
 
     QPen pen;
     pen.setColor(Qt::black);
+
     //重力影响
     if(canDrop(playerX,playerY)){
-        playerY+=2;
+        playerY+=1;
     }
     //创建关卡
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount);
@@ -202,8 +203,8 @@ void MyPaint::paintEvent(QPaintEvent *) {
     class Line l(0,300,600,300,1,p,pen);
     l.MidPoint();
 //    _stage->nextFrame();
-    qDebug()<<"count: "<<(_updateCount++/10)%4;
-    qDebug()<<"state:"<<state;
+    qDebug()<<"count: "<<(_updateCount++/20)%4;
+//    qDebug()<<"state:"<<state;
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
         QPoint start, end;
@@ -244,8 +245,10 @@ void MyPaint::paintEvent(QPaintEvent *) {
         if (_shape.at(c) == 1)//线条
         {
             const QVector<QPoint> &line = _lines.at(i1++);//取出一条线条
+            pen.setWidth(5);
             for (int j = 0; j < line.size() - 1; ++j)//将线条的所有线段描绘出
             {
+
                 int x_s = line.at(j).x();
                 int x_e = line.at(j + 1).x();
                 int y_s = line.at(j).y();
@@ -1131,7 +1134,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
 
     if(e->key() == Qt::Key_Space){
-        playerY-=80;
+        playerY-=40;
         state = JUMP;
         update();
     }

@@ -109,7 +109,7 @@ public:
         scale = 2;
     }
     int getNum(long updateCount){
-        return (updateCount/10)%4;
+        return (updateCount/20)%4;
     }
     void generate(long updateCount, moveState state){
         int num = getNum(updateCount);
@@ -163,7 +163,7 @@ public:
     void update(int x, int y){
         pos.setX(x);
         pos.setY(y);
-        qDebug()<<"pos:("<<pos.x()<<", "<<pos.y()<<")";
+//        qDebug()<<"pos:("<<pos.x()<<", "<<pos.y()<<")";
     }
 
 

@@ -337,7 +337,7 @@ bool canDrop(int playerX, int playerY){
     ||MAP[playerX+10][playerY+32].getColor()==Qt::black
     ||MAP[playerX+10][playerY+33].getColor()==Qt::black
     ){
-        qDebug()<<"ground at: "<<playerX+5<<","<<playerY+32;
+//        qDebug()<<"ground at: "<<playerX+5<<","<<playerY+32;
         return false;
     }
     return true;
