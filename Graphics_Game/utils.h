@@ -326,33 +326,71 @@ void initMAP(){
     }
 }
 bool canDrop(int playerX, int playerY){
-    //x,y从人物左上角开始算,人物高32（16*2）。脚底为x+5，y+32
+    //x,y从人物左上角开始算,人物高32（16*2）。脚底为x+9，y+32
 //    qDebug()<<"player at: "<<playerX<<","<<playerY;
 //    qDebug()<<"ground at: "<<playerX+5<<","<<playerY+32<<" COLOR:"<<MAP[playerX+5][playerY+32].getColor();
     //检测两格
-    if(MAP[playerX+5][playerY+32].getColor()==Qt::black||MAP[playerX+5][playerY+33].getColor()==Qt::black){
+    if(MAP[playerX+8][playerY+32].getColor()==Qt::black
+    ||MAP[playerX+8][playerY+33].getColor()==Qt::black
+    ||MAP[playerX+9][playerY+32].getColor()==Qt::black
+    ||MAP[playerX+9][playerY+33].getColor()==Qt::black
+    ||MAP[playerX+10][playerY+32].getColor()==Qt::black
+    ||MAP[playerX+10][playerY+33].getColor()==Qt::black
+    ){
         qDebug()<<"ground at: "<<playerX+5<<","<<playerY+32;
         return false;
     }
     return true;
 }
-bool canWalkRight(int playerX, int playerY){
-    if(MAP[playerX+10][playerY+28].getColor()==Qt::black
-    ||MAP[playerX+11][playerY+28].getColor()==Qt::black
-    ||MAP[playerX+12][playerY+28].getColor()==Qt::black
-    ||MAP[playerX+13][playerY+28].getColor()==Qt::black
-    ||MAP[playerX+14][playerY+28].getColor()==Qt::black){
+bool  canWalkRight(int playerX, int playerY){
+    if(MAP[playerX+10][playerY+30].getColor()==Qt::black
+      ||MAP[playerX+11][playerY+30].getColor()==Qt::black
+      ||MAP[playerX+12][playerY+30].getColor()==Qt::black
+      ||MAP[playerX+13][playerY+30].getColor()==Qt::black
+      ||MAP[playerX+14][playerY+30].getColor()==Qt::black
+      ||MAP[playerX+10][playerY+31].getColor()==Qt::black
+      ||MAP[playerX+11][playerY+31].getColor()==Qt::black
+      ||MAP[playerX+12][playerY+31].getColor()==Qt::black
+      ||MAP[playerX+13][playerY+31].getColor()==Qt::black
+      ||MAP[playerX+14][playerY+31].getColor()==Qt::black
+      ){
         return false;
     }
     return true;
 }
 
 bool canWalkLeft(int playerX, int playerY){
-    if(MAP[playerX][playerY+28].getColor()==Qt::black
-       ||MAP[playerX-1][playerY+28].getColor()==Qt::black
-       ||MAP[playerX-2][playerY+28].getColor()==Qt::black
-       ||MAP[playerX-3][playerY+28].getColor()==Qt::black
-       ||MAP[playerX-4][playerY+28].getColor()==Qt::black){
+    if(MAP[playerX+3][playerY+31].getColor()==Qt::black
+       ||MAP[playerX+4][playerY+31].getColor()==Qt::black
+       ||MAP[playerX+5][playerY+31].getColor()==Qt::black
+       ||MAP[playerX+6][playerY+31].getColor()==Qt::black
+       ||MAP[playerX+7][playerY+31].getColor()==Qt::black
+       ||MAP[playerX+3][playerY+30].getColor()==Qt::black
+       ||MAP[playerX+4][playerY+30].getColor()==Qt::black
+       ||MAP[playerX+5][playerY+30].getColor()==Qt::black
+       ||MAP[playerX+6][playerY+30].getColor()==Qt::black
+       ||MAP[playerX+7][playerY+30].getColor()==Qt::black){
+        return false;
+    }
+    return true;
+}
+
+bool noRightWall(int playerX, int playerY){
+    if(MAP[playerX+10][playerY+15].getColor()==Qt::black
+       ||MAP[playerX+11][playerY+15].getColor()==Qt::black
+       ||MAP[playerX+12][playerY+15].getColor()==Qt::black
+       ||MAP[playerX+13][playerY+15].getColor()==Qt::black
+       ||MAP[playerX+14][playerY+15].getColor()==Qt::black){
+        return false;
+    }
+    return true;
+}
+bool noLeftWall(int playerX, int playerY){
+    if(MAP[playerX+3][playerY+15].getColor()==Qt::black
+       ||MAP[playerX+4][playerY+15].getColor()==Qt::black
+       ||MAP[playerX+5][playerY+15].getColor()==Qt::black
+       ||MAP[playerX+6][playerY+15].getColor()==Qt::black
+       ||MAP[playerX+7][playerY+15].getColor()==Qt::black){
         return false;
     }
     return true;

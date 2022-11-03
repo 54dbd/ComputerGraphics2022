@@ -1136,18 +1136,40 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
         update();
     }
     if(e->key() == Qt::Key_D){
-
-        if(canWalkRight(playerX,playerY)){
+        if(playerX>=595){
+            return;
+        }
+        if(canWalkRight(playerX,playerY)){//走平地
             playerX+=5;
             state = RUN_R;
+        }else{
+            //磕到脚了，接下来看看能不能跨步往上走
+            if(noRightWall(playerX,playerY)){
+                playerX+=5;
+                playerY-=4;
+                state = RUN_R;
+            }
+
         }
+
         update();
 //        qDebug()<<"pressed D";
     }
     if(e->key() == Qt::Key_A){
+        if(playerX<=5){
+            return;
+        }
         if(canWalkLeft(playerX,playerY)){
             playerX-=5;
             state = RUN_L;
+        }else{
+            //磕到脚了，接下来看看能不能跨步往上走
+            if(noLeftWall(playerX,playerY)){
+                playerX-=5;
+                playerY-=4;
+                state = RUN_L;
+            }
+
         }
 
         update();
