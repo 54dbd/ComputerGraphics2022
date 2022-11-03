@@ -325,6 +325,23 @@ void initMAP(){
         }
     }
 }
+bool canDrop(QPixmap pix,int playerX, int playerY){
+    //x,y从人物左上角开始算,人物高32（16*2）。碰撞箱大小为10格高，10格宽。
+    QRect collideBox(QPoint(playerX+4,playerY+22),QPoint(playerX+14,playerY+32));
+    QImage image(pix.toImage());
+    bool dropFlag= true;
+    qDebug()<<"player at: "<<playerX<<","<<playerY;
+    qDebug()<<"ground at: "<<playerX+5<<","<<playerY+32<<" COLOR:"<<MAP[playerX+5][playerY+32].getColor();
+    //检测两格
+    if(MAP[playerX+5][playerY+32].getColor()==Qt::black||MAP[playerX+5][playerY+33].getColor()==Qt::black){
+        qDebug()<<"ground at: "<<playerX+5<<","<<playerY+32;
+        return false;
+    }
+    return true;
+}
+int canWalk(){
+
+}
 void MyPaint::cleanScreen(){
     _lpress = false;//初始鼠标左键未按下
     _newPolygon = true;//代表多边形可以新建

@@ -19,7 +19,7 @@ private:
 public:
     Stage(int W, QPainter& P, QPen& Pen,int playerX, int playerY, moveState &state,long CT):Brush(W,P,Pen),_updateCount(CT),_state(state),_painter(P),_pen(Pen){
         _updateCount++;
-        _player = new Player(1,_painter,_pen, pos.x(), pos.y());
+        _player = new Player(1,_painter,_pen, playerX, playerY);
         setPos(playerX,playerY);
         _player->generate(_updateCount,_state);
         _coin = new Coin(W,P,Pen,200,300);

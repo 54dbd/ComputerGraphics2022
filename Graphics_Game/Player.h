@@ -120,7 +120,7 @@ public:
                 for (int i = 0; i < HEIGHT*scale; i++) {
                     for (int j = 0; j < WIDTH*scale; j++) {
                         if (choice[i/scale][j/scale])
-                            painter.drawPoint(pos.x() + j, pos.y() + i);
+                            drawPixelNoMap(pos.x() + j, pos.y() + i);
                     }
                 }
                 break;
@@ -129,7 +129,7 @@ public:
                 for (int i = 0; i < HEIGHT*scale; i++) {
                     for (int j = 0; j < WIDTH*scale; j++) {
                         if (choice[i / scale][j/scale])
-                            painter.drawPoint(pos.x() + WIDTH - j, pos.y() + i);
+                            drawPixelNoMap(pos.x() + WIDTH - j, pos.y() + i);
                     }
                 }
                 break;
@@ -138,7 +138,7 @@ public:
                 for (int i = 0; i < HEIGHT * scale; i++) {
                     for (int j = 0; j < WIDTH * scale; j++) {
                         if (choice[i / scale][j / scale])
-                            painter.drawPoint(pos.x() + j, pos.y() + i);
+                            drawPixelNoMap(pos.x() + j, pos.y() + i);
                     }
                 }
                 break;
@@ -147,7 +147,7 @@ public:
                 for (int i = 0; i < HEIGHT * scale; i++) {
                     for (int j = 0; j < WIDTH * scale; j++) {
                         if (choice[i / scale][j / scale])
-                            painter.drawPoint(pos.x() + j, pos.y() + i);
+                            drawPixelNoMap(pos.x() + j, pos.y() + i);
                     }
                 }
                 break;

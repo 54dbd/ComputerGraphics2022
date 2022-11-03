@@ -189,12 +189,18 @@ void MyPaint::paintEvent(QPaintEvent *) {
     QPen pen;
     pen.setColor(Qt::black);
     //重力影响
-    playerY+=5;
+    if(canDrop(pix,playerX,playerY)){
+        playerY+=2;
+    }
     //创建关卡
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount);
 
     if(playerY>300)
         playerY=300;
+    pen.setColor(Qt::black);
+    pen.setWidth(5);
+    class Line l(0,300,600,300,1,p,pen);
+    l.MidPoint();
 //    _stage->nextFrame();
     qDebug()<<"count: "<<(_updateCount++/10)%4;
     qDebug()<<"state:"<<state;
