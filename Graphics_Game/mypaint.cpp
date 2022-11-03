@@ -189,7 +189,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     QPen pen;
     pen.setColor(Qt::black);
     //重力影响
-    if(canDrop(pix,playerX,playerY)){
+    if(canDrop(playerX,playerY)){
         playerY+=2;
     }
     //创建关卡
@@ -1136,14 +1136,20 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
         update();
     }
     if(e->key() == Qt::Key_D){
-        playerX+=5;
-        state = RUN_R;
+
+        if(canWalkRight(playerX,playerY)){
+            playerX+=5;
+            state = RUN_R;
+        }
         update();
 //        qDebug()<<"pressed D";
     }
     if(e->key() == Qt::Key_A){
-        playerX-=5;
-        state = RUN_L;
+        if(canWalkLeft(playerX,playerY)){
+            playerX-=5;
+            state = RUN_L;
+        }
+
         update();
 //        qDebug()<<"pressed D";
     }
