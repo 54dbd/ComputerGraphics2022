@@ -4,7 +4,8 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mypaint.cpp \
-    configwindow.cpp
+    configwindow.cpp \
+    startmenu.cpp
 
 HEADERS += \
     Arc.h \
@@ -16,7 +17,8 @@ HEADERS += \
     mypaint.h \
     configwindow.h \
     Polygon.h \
-    point.h
+    point.h \
+    startmenu.h
 
 RESOURCES += \
     images.qrc
@@ -27,3 +29,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 FORMS += \
     configwindow.ui \
+    startmenu.ui

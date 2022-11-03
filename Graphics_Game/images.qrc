@@ -16,5 +16,7 @@
         <file>images/polygon.png</file>
         <file>images/move.png</file>
         <file>images/trans.png</file>
+        <file>images/title.png</file>
+
     </qresource>
 </RCC>
