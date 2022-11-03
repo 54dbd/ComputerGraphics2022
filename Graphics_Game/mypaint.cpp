@@ -166,6 +166,8 @@ MyPaint::MyPaint(QWidget *parent) :
     //设置界面传参
     connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
     connect(setBrushWindow, SIGNAL(sendStyle(Qt::PenStyle)), this, SLOT(setDashLine(Qt::PenStyle)));
+
+
 }
 
 void MyPaint::next_frame(){
@@ -187,11 +189,13 @@ void MyPaint::paintEvent(QPaintEvent *) {
     QPen pen;
     pen.setColor(Qt::black);
     //重力影响
-    playerY += 5;
+    playerY+=5;
+    //创建关卡
+    _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount);
+
     if(playerY>300)
-        playerY = 300;
-    _player = new Player(1,p,pen, playerX, playerY);
-    _player->generate((_updateCount++/10)%4,state);
+        playerY=300;
+//    _stage->nextFrame();
     qDebug()<<"count: "<<(_updateCount++/10)%4;
     qDebug()<<"state:"<<state;
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
@@ -1121,22 +1125,19 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
 
     if(e->key() == Qt::Key_Space){
-        playerY -= 80;
+        playerY-=80;
         state = JUMP;
-        _player->update(playerX,playerY);
         update();
     }
     if(e->key() == Qt::Key_D){
-        playerX += 5;
+        playerX+=5;
         state = RUN_R;
-        _player->update(playerX,playerY);
         update();
 //        qDebug()<<"pressed D";
     }
     if(e->key() == Qt::Key_A){
-        playerX -= 5;
+        playerX-=5;
         state = RUN_L;
-        _player->update(playerX,playerY);
         update();
 //        qDebug()<<"pressed D";
     }

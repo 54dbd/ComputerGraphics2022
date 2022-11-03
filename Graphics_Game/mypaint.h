@@ -21,6 +21,7 @@
 #include "TransMatrix.h"
 #include "Brush.h"
 #include "Player.h"
+#include "Stage.h"
 
 using namespace std;
 
@@ -89,9 +90,10 @@ private:
     configWindow *setBrushWindow = new configWindow();//设置窗口
 
     transMatrix trans;
-    Player *_player;
-    int playerX=100;
-    int playerY=300;
+    Stage *_stage;
+
+    int playerX = 100;
+    int playerY = 300;
 
     //顶点列表
     QList<QVector3D> vertexList;

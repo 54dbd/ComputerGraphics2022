@@ -32,7 +32,7 @@ add_executable(GraphicsGame images.qrc
         utils.h
         light.cpp
         light.h
-        Coin.cpp Coin.h)
+        Coin.cpp Coin.h Stage.cpp Stage.h)
 target_link_libraries(GraphicsGame
         Qt::Core
         Qt::Gui

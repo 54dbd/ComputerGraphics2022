@@ -96,7 +96,6 @@ private:
             {0,1,0,0,0,1,0,0,0},
             {0,0,0,0,0,0,0,0,0},
     };
-    QVector<QVector<pointData>> figure;             //人物造型
     QVector<QVector<QVector<int>>> sequence={run1,run2,run3,run4};   //动画序列 存放多个人物造型
     QRect collideBox;
     QPoint pos;
@@ -109,14 +108,18 @@ public:
         pos.setY(y);
         scale = 2;
     }
-    void generate(int num, moveState state){
+    int getNum(long updateCount){
+        return (updateCount/10)%4;
+    }
+    void generate(long updateCount, moveState state){
+        int num = getNum(updateCount);
         QVector<QVector<int>> choice;
         switch (state) {
             case RUN_R:
                 choice = sequence[num];
                 for (int i = 0; i < HEIGHT*scale; i++) {
                     for (int j = 0; j < WIDTH*scale; j++) {
-                        if (choice[i/2][j/2])
+                        if (choice[i/scale][j/scale])
                             painter.drawPoint(pos.x() + j, pos.y() + i);
                     }
                 }
