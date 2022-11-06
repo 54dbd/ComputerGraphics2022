@@ -208,6 +208,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     // 布置场景
 
     pen.setColor(Qt::black);
+    brushNumber = 0;
     for (int j = 0; j < _stage->_stageInfo._rects.size(); ++j) {
         QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
         p.setPen(pen);
@@ -237,6 +238,8 @@ void MyPaint::paintEvent(QPaintEvent *) {
         f.fillShape(_stage->_stageInfo._fills.at(j), pen.color());
     }
     _updateCount++;
+
+
 //    _stage->nextFrame();
 //    qDebug()<<"count: "<<(_updateCount++/20)%4;
 //    qDebug()<<"state:"<<state;
@@ -1585,7 +1588,6 @@ void MyPaint::showMessageBox() {
                 cleanScreen();
                 state = IDLE;
                 stageNumber++;
-                brushNumber++;
             }
             break;
 
