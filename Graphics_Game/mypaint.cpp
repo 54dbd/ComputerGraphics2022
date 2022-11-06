@@ -1179,7 +1179,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
         if (jumpCount < 3)
         {
             jumpCount++;
-            playerY-=40;
+            playerY-=60;
             state = JUMP;
             update();
         }

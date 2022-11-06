@@ -18,13 +18,13 @@ public:
             tempPen.setWidth(5);
             tempPen.setColor(Qt::black);
 
-            _rects.append(QRect(170, 300, 100, 50)); // 右边移动矩形（填充）
+            _rects.append(QRect(170, 200, 100, 50)); // 右边移动矩形（填充）
             _brush.append(tempPen);
-            _rects.append(QRect(330 + (_updateCount % 50), 300, 100, 50)); // 左边移动矩形（填充）
+            _rects.append(QRect(330 + (_updateCount % 50), 100, 100, 50)); // 左边移动矩形（填充）
             _brush.append(tempPen);
             _rects.append(QRect(0, 300, 150, 50)); // 左边矩形
             _brush.append(tempPen);
-            _rects.append(QRect(500, 300, 150, 50)); // 右边矩形
+            _rects.append(QRect(500, 100, 150, 50)); // 右边矩形
             _brush.append(tempPen);
 
             // 平台填充（点）

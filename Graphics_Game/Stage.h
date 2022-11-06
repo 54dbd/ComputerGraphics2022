@@ -25,7 +25,7 @@ public:
         _player = new Player(1,_painter,_pen, playerX, playerY);
         setPos(playerX,playerY);
         _player->generate(_updateCount,_state);
-        _coin = new Coin(W,P,Pen,200,250);
+        _coin = new Coin(W,P,Pen,560,60);
         _coin->generate(_updateCount);
     }
 
