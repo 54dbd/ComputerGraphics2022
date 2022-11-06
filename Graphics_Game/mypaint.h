@@ -105,6 +105,7 @@ private:
     QTimer *updateTimer;
     QVector<int> speed={0,5};
     moveState state = IDLE;
+    int jumpCount = 0; // 限制跳跃次数
 
 public:
     QVector<QVector<QPoint>> _lines;//线条集合(一条线条可包含多个线段)

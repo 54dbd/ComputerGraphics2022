@@ -1134,9 +1134,16 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
 
     if(e->key() == Qt::Key_Space){
-        playerY-=40;
-        state = JUMP;
-        update();
+        if (!canDrop(playerX, playerY))
+            jumpCount = 0;
+        if (jumpCount < 3)
+        {
+            jumpCount++;
+            playerY-=40;
+            state = JUMP;
+            update();
+        }
+
     }
     if(e->key() == Qt::Key_D){
         if(playerX>=595){
