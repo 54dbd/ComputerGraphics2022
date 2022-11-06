@@ -1234,6 +1234,10 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
             _playerStatus = WIN;
         showMessageBox();
     }
+    if (hasCollision(QPoint(playerX,playerY), )) {
+        _playerStatus = DIE;
+        showMessageBox();
+    }
     if(e->key() == Qt::Key_Space){
         if(canJump(playerX,playerY))
             jumpCount = 0;
