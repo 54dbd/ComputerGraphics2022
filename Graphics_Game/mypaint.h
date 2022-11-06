@@ -2,6 +2,7 @@
 #define MYPAINT_H
 
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QPainter>
@@ -32,6 +33,11 @@ enum transform {
     ROTATE
 };
 
+enum playerStatus {
+    ALIVE,
+    DIE,
+    WIN
+};
 
 extern vector<vector<pointData>> MAP;
 
@@ -91,6 +97,7 @@ private:
 
     transMatrix trans;
     Stage *_stage;
+    enum playerStatus _playerStatus;// 玩家当前状态
 
     int playerX = 100;
     int playerY = 250;
@@ -105,6 +112,8 @@ private:
     QTimer *updateTimer;
     QVector<int> speed={0,5};
     moveState state = IDLE;
+    int jumpCount = 0; // 限制跳跃次数
+    void showMessageBox();
 
 public:
     QVector<QVector<QPoint>> _lines;//线条集合(一条线条可包含多个线段)

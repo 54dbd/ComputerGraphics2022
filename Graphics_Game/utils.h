@@ -433,9 +433,21 @@ void MyPaint::cleanScreen(){
     isInEllipse = 0;
     isInPolygon = 0;
     isInFill = 0;
+    playerX = 100;
+    playerY = 250;
+    _playerStatus = ALIVE;
     //初始化MAP
     initMAP();
     update();
+}
+
+bool hasCollision(QPoint p1, QPoint p2) {
+    double distance = sqrt(pow(p1.x() - p2.x(), 2) + pow(p1.y() - p2.y(), 2));
+    if (distance <= 20) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 

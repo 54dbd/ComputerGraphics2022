@@ -171,10 +171,17 @@ MyPaint::MyPaint(QWidget *parent) :
 }
 
 void MyPaint::next_frame(){
+    if (playerY >= 350) {
+        _playerStatus = DIE;
+        showMessageBox();
+    }
     update();
 }
 
 void MyPaint::paintEvent(QPaintEvent *) {
+    if (_playerStatus == DIE){
+        return;
+    }
     if (_openflag == 0)//不是打开图片的，每一次新建一个空白的画布
     {
         _pixmap = QPixmap(size());//新建pixmap
@@ -189,6 +196,8 @@ void MyPaint::paintEvent(QPaintEvent *) {
     QPen pen;
     pen.setColor(Qt::black);
 
+    // 设置玩家初始状态
+    _playerStatus = ALIVE;
     //重力影响
     if(canDrop(playerX,playerY)){
         playerY+=1;
@@ -196,14 +205,15 @@ void MyPaint::paintEvent(QPaintEvent *) {
     //创建关卡
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount);
 
-    if(playerY>300)
-        playerY=300;
+//    if(playerY>300)
+//        playerY=300;
     pen.setColor(Qt::black);
     pen.setWidth(5);
     class Line l(0,300,600,300,1,p,pen);
     l.MidPoint();
+    _updateCount++;
 //    _stage->nextFrame();
-    qDebug()<<"count: "<<(_updateCount++/20)%4;
+//    qDebug()<<"count: "<<(_updateCount++/20)%4;
 //    qDebug()<<"state:"<<state;
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
@@ -1132,19 +1142,26 @@ void MyPaint::keyReleaseEvent(QKeyEvent *e){
 
 void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
-
+    QPoint coinPos = _stage->getCoinPos();
+    if (hasCollision(QPoint(playerX,playerY), coinPos)) {
+        _playerStatus = WIN;
+        showMessageBox();
+        qDebug() << "collision";
+    }
     if(e->key() == Qt::Key_Space){
         if(canJump(playerX,playerY))
+            jumpCount = 0;
+        if (jumpCount < 3)
         {
+            jumpCount++;
             playerY-=40;
             state = JUMP;
             update();
-        }else{
-            return;
         }
+
     }
     if(e->key() == Qt::Key_D){
-        if(playerX>=595){
+        if(playerX>=582){
             return;
         }
         if(canWalkRight(playerX,playerY)){//走平地
@@ -1516,6 +1533,28 @@ void MyPaint::circleTrans(QMouseEvent *e) {
             break;
     }
 
+}
+
+void MyPaint::showMessageBox() {
+    QMessageBox msgBox;
+    if (_playerStatus == WIN) {
+        msgBox.setText("You Win!!!");
+    } else if (_playerStatus == DIE) {
+        msgBox.setText("Game Over!!!");
+    }
+    msgBox.setStandardButtons(QMessageBox::Reset | QMessageBox::Close);
+    int choice = msgBox.exec();
+    switch (choice) {
+        case QMessageBox::Reset:
+            cleanScreen();
+            break;
+        case QMessageBox::Close:
+            close();
+            break;
+        default:
+            // should never be reached
+            break;
+    }
 }
 
 
