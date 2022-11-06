@@ -7,6 +7,8 @@ public:
     QVector<QPen> _brush;
 
     QVector<QRect> _rects;
+    QVector<QRect> _line;
+
     QVector<QPoint> _fills;
 
     StageInfo(int StageNo, long UpdateCount){
@@ -35,6 +37,19 @@ public:
             }
         } else if (_stageNo == 2){
             // 关卡2物体
+            // 平台
+            QPen tempPen;
+            tempPen.setWidth(5);
+            tempPen.setColor(Qt::black);
+
+            _line.append(QRect(170, 200, 100, 50)); // 右边移动矩形（填充）
+            _brush.append(tempPen);
+            _line.append(QRect(330 + sin(_updateCount/17.0)*50, 100, 100, 50)); // 左边移动矩形（填充）
+            _brush.append(tempPen);
+            _line.append(QRect(0, 300, 150, 50)); // 左边矩形
+            _brush.append(tempPen);
+            _line.append(QRect(500, 100, 150, 50)); // 右边矩形
+            _brush.append(tempPen);
         }
     }
 private:
