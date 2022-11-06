@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_PREFIX_PATH "C:/QT/6.3.2/mingw_64")
+set(CMAKE_PREFIX_PATH "C:/QT/6.4.0/mingw_64")
 link_directories(lib)
 find_package(Qt6 COMPONENTS
         Core

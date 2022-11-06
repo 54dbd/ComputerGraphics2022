@@ -20,7 +20,7 @@ public:
 
             _rects.append(QRect(170, 200, 100, 50)); // 右边移动矩形（填充）
             _brush.append(tempPen);
-            _rects.append(QRect(330 + (_updateCount % 50), 100, 100, 50)); // 左边移动矩形（填充）
+            _rects.append(QRect(330 + (_updateCount / 10 % 50), 100, 100, 50)); // 左边移动矩形（填充）
             _brush.append(tempPen);
             _rects.append(QRect(0, 300, 150, 50)); // 左边矩形
             _brush.append(tempPen);
@@ -30,7 +30,7 @@ public:
             // 平台填充（点）
             for (int i = 0; i < 2; ++i) {
                 QRect tempRect = _rects[i];
-                _fills.append(QPoint(tempRect.x() + tempRect.width(), tempRect.y() + tempRect.height()));
+                _fills.append(QPoint(tempRect.left() + tempRect.width() / 2, tempRect.top() + tempRect.height() / 2));
                 _brush.append(tempPen);
             }
         } else if (_stageNo == 2){

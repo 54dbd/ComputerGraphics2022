@@ -231,11 +231,11 @@ void MyPaint::paintEvent(QPaintEvent *) {
         l4.MidPoint();
     }
     for (int j = 0; j < _stage->_stageInfo._fills.size(); ++j) {
-//        QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
-//        p.setPen(pen);
-//        class Fill f(pix, p, pen);
-//        f.getColorMap();
-//        f.fillShape(_stage->_stageInfo._fills.at(j), pen.color());
+        QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
+        p.setPen(pen);
+        class Fill f(pix, p, pen);
+        f.getColorMap();
+        f.fillShape(_stage->_stageInfo._fills.at(j), pen.color());
     }
     _updateCount++;
 //    _stage->nextFrame();
