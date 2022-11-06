@@ -194,7 +194,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
     QPen pen;
-    pen.setColor(Qt::red);
+    pen.setColor(Qt::darkBlue);
 
     // 设置玩家初始状态
     _playerStatus = ALIVE;
@@ -202,9 +202,12 @@ void MyPaint::paintEvent(QPaintEvent *) {
     if(canDrop(playerX,playerY)){
         playerY+=1;
     }
+    if(isDie(playerX,playerY)){
+        _playerStatus = DIE;
+        showMessageBox();
+        return;
+    }
     //创建关卡
-
-
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount, stageNumber);
     // 布置场景
     // 不同的图形/功能必须按顺序绘制 与stageInfo中初始化的顺序一致

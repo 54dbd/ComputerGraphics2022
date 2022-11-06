@@ -355,6 +355,27 @@ bool canDrop(int playerX, int playerY){
     }
     return true;
 }
+bool isDie(int playerX, int playerY){
+    if(MAP[playerX+8][playerY+32].getColor()==Qt::red
+       ||MAP[playerX+8][playerY+33].getColor()==Qt::red
+       ||MAP[playerX+9][playerY+32].getColor()==Qt::red
+       ||MAP[playerX+9][playerY+33].getColor()==Qt::red
+       ||MAP[playerX+10][playerY+32].getColor()==Qt::red
+       ||MAP[playerX+10][playerY+33].getColor()==Qt::red
+       ||MAP[playerX+8][playerY].getColor()==Qt::red
+       ||MAP[playerX+8][playerY-1].getColor()==Qt::red
+       ||MAP[playerX+9][playerY].getColor()==Qt::red
+       ||MAP[playerX+9][playerY-1].getColor()==Qt::red
+       ||MAP[playerX+10][playerY].getColor()==Qt::red
+       ||MAP[playerX+10][playerY-1].getColor()==Qt::red
+            ) {
+        return true;
+    }
+    return false;
+
+}
+
+
 bool  canWalkRight(int playerX, int playerY){
     if(MAP[playerX+10][playerY+30].getColor()==Qt::black
       ||MAP[playerX+11][playerY+30].getColor()==Qt::black

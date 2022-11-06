@@ -64,6 +64,12 @@ public:
             _brush.append(tempPen);
 
             /*********************直线*********************/
+            QPen redPen(tempPen);
+            redPen.setColor(Qt::red);
+            //陷阱
+            _line.append(QRect(150, 350, 50, 1));
+            _brush.append(redPen);
+            //平台
             _line.append(QRect(200, 350, 400, 1));
             _brush.append(tempPen);
             _line.append(QRect(350, 150, 100, 1));
