@@ -420,6 +420,9 @@ void MyPaint::cleanScreen(){
     isInEllipse = 0;
     isInPolygon = 0;
     isInFill = 0;
+    playerX = 100;
+    playerY = 250;
+    _playerStatus = ALIVE;
     //初始化MAP
     initMAP();
     update();
