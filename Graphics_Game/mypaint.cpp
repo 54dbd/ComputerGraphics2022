@@ -1198,9 +1198,11 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
     QPoint coinPos = _stage->getCoinPos();
     if (hasCollision(QPoint(playerX,playerY), coinPos)) {
-        _playerStatus = WIN;
+        if (stageNumber == 2)
+            _playerStatus = BIGWIN;
+        else
+            _playerStatus = WIN;
         showMessageBox();
-        qDebug() << "collision";
     }
     if(e->key() == Qt::Key_Space){
         if(canJump(playerX,playerY))
@@ -1595,11 +1597,15 @@ void MyPaint::circleTrans(QMouseEvent *e) {
 void MyPaint::showMessageBox() {
     QMessageBox msgBox;
     if (_playerStatus == WIN) {
-        msgBox.setText("You Win!!!");
+        msgBox.setText("You passed this stage!!!");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Reset | QMessageBox::Close);
     } else if (_playerStatus == DIE) {
         msgBox.setText("Game Over!!!");
+        msgBox.setStandardButtons(QMessageBox::Reset | QMessageBox::Close);
+    } else if (_playerStatus == BIGWIN) {
+        msgBox.setText("You win!!!");
+        msgBox.setStandardButtons(QMessageBox::Reset | QMessageBox::Close);
     }
-    msgBox.setStandardButtons(QMessageBox::Reset | QMessageBox::Close | QMessageBox::Yes);
     int choice = msgBox.exec();
     switch (choice) {
         case QMessageBox::Yes:
@@ -1609,7 +1615,6 @@ void MyPaint::showMessageBox() {
                 stageNumber++;
             }
             break;
-
         case QMessageBox::Reset:
             cleanScreen();
             state = IDLE;

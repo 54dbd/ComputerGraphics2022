@@ -36,7 +36,8 @@ enum transform {
 enum playerStatus {
     ALIVE,
     DIE,
-    WIN
+    WIN,
+    BIGWIN
 };
 
 extern vector<vector<pointData>> MAP;
