@@ -20,7 +20,7 @@ public:
 
             _rects.append(QRect(170, 200, 100, 50)); // 右边移动矩形（填充）
             _brush.append(tempPen);
-            _rects.append(QRect(330 + (_updateCount / 10 % 50), 100, 100, 50)); // 左边移动矩形（填充）
+            _rects.append(QRect(330 + sin(_updateCount/17.0)*50, 100, 100, 50)); // 左边移动矩形（填充）
             _brush.append(tempPen);
             _rects.append(QRect(0, 300, 150, 50)); // 左边矩形
             _brush.append(tempPen);

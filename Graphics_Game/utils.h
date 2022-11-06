@@ -438,6 +438,7 @@ void MyPaint::cleanScreen(){
     _playerStatus = ALIVE;
     //初始化MAP
     initMAP();
+    state=IDLE;
     update();
 }
 

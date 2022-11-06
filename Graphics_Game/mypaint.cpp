@@ -1186,6 +1186,9 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
             jumpCount = 0;
         if (jumpCount < 3)
         {
+            if(playerY<10){
+                return;
+            }
             jumpCount++;
             playerY-=60;
             state = JUMP;
@@ -1580,6 +1583,7 @@ void MyPaint::showMessageBox() {
     switch (choice) {
         case QMessageBox::Reset:
             cleanScreen();
+            state = IDLE;
             break;
         case QMessageBox::Close:
             close();
