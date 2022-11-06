@@ -325,6 +325,19 @@ void initMAP(){
         }
     }
 }
+bool canJump(int playerX, int playerY){
+    if(MAP[playerX+8][playerY+32].getColor()==Qt::black
+       ||MAP[playerX+8][playerY+33].getColor()==Qt::black
+       ||MAP[playerX+9][playerY+32].getColor()==Qt::black
+       ||MAP[playerX+9][playerY+33].getColor()==Qt::black
+       ||MAP[playerX+10][playerY+32].getColor()==Qt::black
+       ||MAP[playerX+10][playerY+33].getColor()==Qt::black
+            ){
+        return true;
+    }
+    return false;
+}
+
 bool canDrop(int playerX, int playerY){
     //x,y从人物左上角开始算,人物高32（16*2）。脚底为x+9，y+32
 //    qDebug()<<"player at: "<<playerX<<","<<playerY;

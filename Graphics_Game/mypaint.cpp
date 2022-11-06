@@ -1174,7 +1174,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
         qDebug() << "collision";
     }
     if(e->key() == Qt::Key_Space){
-        if (!canDrop(playerX, playerY))
+        if(canJump(playerX,playerY))
             jumpCount = 0;
         if (jumpCount < 3)
         {
