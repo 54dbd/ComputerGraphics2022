@@ -54,6 +54,13 @@ public:
             _rects.append(QRect(500, 100, 150, 50)); // 右边矩形
             _brush.append(tempPen);
 
+            QVector<QPoint> newPolygon;
+            newPolygon.append(QPoint(300, 200));
+            newPolygon.append(QPoint(400, 200));
+            newPolygon.append(QPoint(400, 300));
+            newPolygon.append(QPoint(300, 300));
+            _polygon.append(newPolygon);
+
             // 平台填充（点）
             for (int i = 0; i < 2; ++i) {
                 QRect tempRect = _rects[i];

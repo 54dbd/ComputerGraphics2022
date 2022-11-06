@@ -209,6 +209,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     // 不同的图形/功能必须按顺序绘制 与stageInfo中初始化的顺序一致
     pen.setColor(Qt::black);
     brushNumber = 0;
+    // 长方形的绘制
     for (int j = 0; j < _stage->_stageInfo._rects.size(); ++j) {
         QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
         p.setPen(pen);
@@ -230,6 +231,24 @@ void MyPaint::paintEvent(QPaintEvent *) {
         l3.MidPoint();
         l4.MidPoint();
     }
+
+    // 多边形的绘制
+    for (int i = 0; i < _stage->_stageInfo._polygon.size(); ++i) {
+        const QVector<QPoint> &polygon = _stage->_stageInfo._polygon.at(i);//取出一个多边形
+        class Polygon poly(1, p, this->screen()->size().height(), pen);
+        for (int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
+        {
+            int temp = (j + 1) % int(polygon.size());
+            int x_s = polygon.at(j).x();
+            int x_e = polygon.at(temp).x();
+            int y_s = polygon.at(j).y();
+            int y_e = polygon.at(temp).y();
+            Edge *e = new Edge(x_s, y_s, x_e, y_e);
+            poly.addEdgeToET(e);
+        }
+        poly.drawPolygon();
+    }
+
     for (int j = 0; j < _stage->_stageInfo._fills.size(); ++j) {
         QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
         p.setPen(pen);
