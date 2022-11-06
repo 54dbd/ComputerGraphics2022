@@ -204,6 +204,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     }
     //创建关卡
 
+
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount, stageNumber);
     // 布置场景
     // 不同的图形/功能必须按顺序绘制 与stageInfo中初始化的顺序一致
@@ -331,7 +332,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
         if (_shape.at(c) == 1)//线条
         {
             const QVector<QPoint> &line = _lines.at(i1++);//取出一条线条
-            pen.setWidth(5);
+            pen.setWidth(7);
             for (int j = 0; j < line.size() - 1; ++j)//将线条的所有线段描绘出
             {
 
@@ -1639,9 +1640,9 @@ void MyPaint::showMessageBox() {
     switch (choice) {
         case QMessageBox::Yes:
             if(stageNumber<3){
-                cleanScreen();
                 state = IDLE;
                 stageNumber++;
+                cleanScreen();
             }
             break;
         case QMessageBox::Reset:

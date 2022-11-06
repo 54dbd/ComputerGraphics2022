@@ -32,8 +32,8 @@ public:
             _rects.append(QRect(500, 100, 150, 50));
             _brush.append(tempPen);
             /*********************直线*********************/
-            _line.append(QRect(300, 300, 400, 600));
-            _brush.append(tempPen);
+//            _line.append(QRect(300, 300, 400, 600));
+//            _brush.append(tempPen);
             /*********************多边形*********************/
             /*********************贝塞尔*********************/
             // 性能差 不建议和移动的方块一起使用
@@ -58,25 +58,25 @@ public:
             tempPen.setWidth(5);
             tempPen.setColor(Qt::black);
 
-            _rects.append(QRect(170, 200, 100, 50));
+            _rects.append(QRect(0, 100, 150, 300));
             _brush.append(tempPen);
-            _rects.append(QRect(330 + sin(_updateCount/17.0)*50, 100, 100, 50));
-            _brush.append(tempPen);
-            _rects.append(QRect(0, 300, 150, 50));
-            _brush.append(tempPen);
-            _rects.append(QRect(500, 100, 150, 50));
+            _rects.append(QRect(200, 0, 150, 300));
             _brush.append(tempPen);
 
             /*********************直线*********************/
-            _line.append(QRect(300, 300, 400, 600));
+            _line.append(QRect(200, 350, 400, 1));
+            _brush.append(tempPen);
+            _line.append(QRect(350, 150, 100, 1));
+            _brush.append(tempPen);
+            _line.append(QRect(500, 250, 100, 1));
             _brush.append(tempPen);
             /*********************多边形*********************/
-            QVector<QPoint> newPolygon;
-            newPolygon.append(QPoint(300, 200));
-            newPolygon.append(QPoint(400, 200));
-            newPolygon.append(QPoint(400, 300));
-            newPolygon.append(QPoint(300, 300));
-            _polygon.append(newPolygon);
+//            QVector<QPoint> newPolygon;
+//            newPolygon.append(QPoint(300, 200));
+//            newPolygon.append(QPoint(400, 200));
+//            newPolygon.append(QPoint(400, 300));
+//            newPolygon.append(QPoint(300, 300));
+//            _polygon.append(newPolygon);
             /*********************贝塞尔*********************/
 
             /*********************填充*********************/
