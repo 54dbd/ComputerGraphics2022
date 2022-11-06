@@ -207,9 +207,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount, stageNumber);
     // 布置场景
     // 不同的图形/功能必须按顺序绘制 与stageInfo中初始化的顺序一致
-    pen.setColor(Qt::black);
     brushNumber = 0;
-    // 长方形的绘制
     for (int j = 0; j < _stage->_stageInfo._rects.size(); ++j) {
         QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
         p.setPen(pen);
@@ -230,6 +228,37 @@ void MyPaint::paintEvent(QPaintEvent *) {
         l2.MidPoint();
         l3.MidPoint();
         l4.MidPoint();
+    }
+    for (int j = 0; j < _stage->_stageInfo._line.size(); ++j) {
+        QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
+        p.setPen(pen);
+
+        QPoint start, end;
+        start = _stage->_stageInfo._line.at(j).topLeft();
+        end = _stage->_stageInfo._line.at(j).bottomRight();
+        int x_s = start.x();
+        int x_e = end.x();
+        int y_s = start.y();
+        int y_e = end.y();
+        //创建直线
+        class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
+        l.MidPoint();
+    }
+    for (int j = 0; j < _stage->_stageInfo._bezierCurve.size(); ++j) {
+        const vector<QPoint> &bezierCurve = _stage->_stageInfo._bezierCurve.at(j);
+
+        //使控制点不受笔刷大小影响
+        QPen controlPointPen;
+        controlPointPen.setColor(Qt::darkCyan);
+        controlPointPen.setWidth(3);
+        for (auto i: bezierCurve) {
+            Circle C(i.x(), i.y(), 4, 1, p, controlPointPen);
+            C.DrawCircle();
+        }
+        QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
+        p.setPen(pen);
+        class Bezier b(1, p, bezierCurve, pen);
+        b.drawBezier();
     }
 
     // 多边形的绘制
