@@ -206,7 +206,6 @@ void MyPaint::paintEvent(QPaintEvent *) {
 
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount, stageNumber);
     // 布置场景
-    int brushNumber = 0;
 
     pen.setColor(Qt::black);
     for (int j = 0; j < _stage->_stageInfo._rects.size(); ++j) {
@@ -1586,6 +1585,7 @@ void MyPaint::showMessageBox() {
                 cleanScreen();
                 state = IDLE;
                 stageNumber++;
+                brushNumber++;
             }
             break;
 

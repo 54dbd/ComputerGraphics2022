@@ -115,6 +115,8 @@ private:
     int jumpCount = 0; // 限制跳跃次数
     int counter = 0;
     int stageNumber = 1;
+    int brushNumber = 0;
+
     void showMessageBox();
 
 public:
