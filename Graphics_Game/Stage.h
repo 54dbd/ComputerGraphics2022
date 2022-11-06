@@ -7,6 +7,7 @@
 #include "Brush.h"
 #include "Coin.h"
 #include "Player.h"
+#include "StageInfo.h"
 class Stage :public Brush{
 private:
     QPoint pos;//玩家位置 窗口交互与player传递用
@@ -17,8 +18,10 @@ private:
     QPainter& _painter;
     QPen& _pen;
 public:
-    Stage(int W, QPainter& P, QPen& Pen,int playerX, int playerY, moveState &state,long CT):Brush(W,P,Pen),_updateCount(CT),_state(state),_painter(P),_pen(Pen){
-        _updateCount++;
+    StageInfo _stageInfo;
+    Stage(int W, QPainter& P, QPen& Pen,int playerX, int playerY, moveState &state, long CT, int stageNo):Brush(W,P,Pen),_updateCount(CT),
+                                                                                                          _stageInfo(stageNo, _updateCount), _state(state),_painter(P),_pen(Pen){
+//        _updateCount++;
         _player = new Player(1,_painter,_pen, playerX, playerY);
         setPos(playerX,playerY);
         _player->generate(_updateCount,_state);

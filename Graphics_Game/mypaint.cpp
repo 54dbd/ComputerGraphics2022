@@ -203,14 +203,39 @@ void MyPaint::paintEvent(QPaintEvent *) {
         playerY+=1;
     }
     //创建关卡
-    _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount);
+    int stageNumber = 1;
+    _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount, stageNumber);
+    // 布置场景
+    int brushNumber = 0;
 
-//    if(playerY>300)
-//        playerY=300;
-    pen.setColor(Qt::black);
-    pen.setWidth(5);
-    class Line l(0,300,600,300,1,p,pen);
-    l.MidPoint();
+    for (int j = 0; j < _stage->_stageInfo._rects.size(); ++j) {
+        QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
+        p.setPen(pen);
+
+        QPoint start, end;
+        start = _stage->_stageInfo._rects.at(j).topLeft();
+        end = _stage->_stageInfo._rects.at(j).bottomRight();
+        int x_s = start.x();
+        int x_e = end.x();
+        int y_s = start.y();
+        int y_e = end.y();
+        //创建直线
+        class Line l1(x_s, y_s, x_e, y_s, 1, p, pen);
+        class Line l2(x_s, y_s, x_s, y_e, 1, p, pen);
+        class Line l3(x_e, y_e, x_s, y_e, 1, p, pen);
+        class Line l4(x_e, y_e, x_e, y_s, 1, p, pen);
+        l1.MidPoint();
+        l2.MidPoint();
+        l3.MidPoint();
+        l4.MidPoint();
+    }
+    for (int j = 0; j < _stage->_stageInfo._fills.size(); ++j) {
+//        QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
+//        p.setPen(pen);
+//        class Fill f(pix, p, pen);
+//        f.getColorMap();
+//        f.fillShape(_stage->_stageInfo._fills.at(j), pen.color());
+    }
     _updateCount++;
 //    _stage->nextFrame();
 //    qDebug()<<"count: "<<(_updateCount++/20)%4;
