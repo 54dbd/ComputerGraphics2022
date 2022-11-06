@@ -425,5 +425,14 @@ void MyPaint::cleanScreen(){
     update();
 }
 
+bool hasCollision(QPoint p1, QPoint p2) {
+    double distance = sqrt(pow(p1.x() - p2.x(), 2) + pow(p1.y() - p2.y(), 2));
+    if (distance <= 20) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 #endif //GRAPHICS_UTILS_H

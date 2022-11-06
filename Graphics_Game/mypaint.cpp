@@ -202,8 +202,9 @@ void MyPaint::paintEvent(QPaintEvent *) {
     pen.setWidth(5);
     class Line l(0,300,600,300,1,p,pen);
     l.MidPoint();
+    _updateCount++;
 //    _stage->nextFrame();
-    qDebug()<<"count: "<<(_updateCount++/20)%4;
+//    qDebug()<<"count: "<<(_updateCount++/20)%4;
 //    qDebug()<<"state:"<<state;
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
@@ -1132,7 +1133,10 @@ void MyPaint::keyReleaseEvent(QKeyEvent *e){
 
 void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
-
+    QPoint coinPos = _stage->getCoinPos();
+    if (hasCollision(QPoint(playerX,playerY), coinPos)) {
+        qDebug() << "collision";
+    }
     if(e->key() == Qt::Key_Space){
         if (!canDrop(playerX, playerY))
             jumpCount = 0;
@@ -1146,7 +1150,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 
     }
     if(e->key() == Qt::Key_D){
-        if(playerX>=595){
+        if(playerX>=582){
             return;
         }
         if(canWalkRight(playerX,playerY)){//走平地

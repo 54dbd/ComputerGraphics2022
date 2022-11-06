@@ -126,6 +126,9 @@ public:
             }
         }
     }
+    QPoint getPos() {
+        return pos;
+    }
 };
 
 

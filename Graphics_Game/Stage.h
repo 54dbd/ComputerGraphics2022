@@ -32,6 +32,9 @@ public:
         _player->update(x,y);
     }
 
+    QPoint getCoinPos(){
+        return _coin->getPos();
+    }
 
 };
 
