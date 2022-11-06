@@ -194,7 +194,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
     QPen pen;
-    pen.setColor(Qt::black);
+    pen.setColor(Qt::red);
 
     // 设置玩家初始状态
     _playerStatus = ALIVE;
@@ -208,6 +208,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     // 布置场景
     int brushNumber = 0;
 
+    pen.setColor(Qt::black);
     for (int j = 0; j < _stage->_stageInfo._rects.size(); ++j) {
         QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
         p.setPen(pen);
@@ -550,7 +551,14 @@ void MyPaint::paintEvent(QPaintEvent *) {
         pen = temp;
         p.setPen(pen);
     }
-
+    if (counter++ % 10 == 0) {
+        QImage image = pix.toImage();
+        for(int i = 0;i < 600;i++){
+            for(int j = 0;j < 400;j++){
+                MAP[i][j].setColor(image.pixelColor(i,j));
+            }
+        }
+    }
     p.end();
     p.begin(this);//将当前窗体作为画布
     p.drawPixmap(0, 0, pix);//将pixmap画到窗体

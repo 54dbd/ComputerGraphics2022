@@ -113,6 +113,7 @@ private:
     QVector<int> speed={0,5};
     moveState state = IDLE;
     int jumpCount = 0; // 限制跳跃次数
+    int counter = 0;
     void showMessageBox();
 
 public:
