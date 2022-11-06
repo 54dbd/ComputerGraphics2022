@@ -206,7 +206,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
 
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount, stageNumber);
     // 布置场景
-
+    // 不同的图形/功能必须按顺序绘制 与stageInfo中初始化的顺序一致
     pen.setColor(Qt::black);
     brushNumber = 0;
     for (int j = 0; j < _stage->_stageInfo._rects.size(); ++j) {

@@ -8,6 +8,9 @@ public:
 
     QVector<QRect> _rects;
     QVector<QRect> _line;
+    QVector<QVector<QPoint>> _polygon;
+    vector<vector<QPoint>> _bezierCurve;
+    vector<QPoint> _currentBezierCurve;
 
     QVector<QPoint> _fills;
 
