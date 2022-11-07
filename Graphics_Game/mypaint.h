@@ -102,8 +102,8 @@ private:
 
     int playerX = 100;
     int playerY = 250;
-    int spawnX[5] = {100,100,100,100,100};
-    int spawnY[5] = {250,50,50,50,250};
+    int spawnX[5] = {100,100,100,0,100};
+    int spawnY[5] = {250,50,50,50,50};
 
     //顶点列表
     QList<QVector3D> vertexList;

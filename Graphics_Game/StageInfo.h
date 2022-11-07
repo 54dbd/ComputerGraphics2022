@@ -124,14 +124,7 @@ public:
             QPen redPen(tempPen);
             redPen.setColor(Qt::red);
             //平台
-            _line.append(QRect(0, 100, 500, 1));
-            _brush.append(tempPen);
-            _line.append(QRect(100, 200, 500, 1));
-            _brush.append(tempPen);
-            _line.append(QRect(0, 300, 500, 1));
-            _brush.append(tempPen);
-            _line.append(QRect(0, 375, 600, 1));
-            _brush.append(tempPen);
+
             //陷阱
             _line.append(QRect(150, 180+sin(_updateCount/20.0)*120, 1, 50));
             _brush.append(redPen);
@@ -145,11 +138,147 @@ public:
 //            newPolygon.append(QPoint(300, 300));
 //            _polygon.append(newPolygon);
             /*********************B样条*********************/
+            vector<QPoint> level1;
+            level1.push_back(QPoint(-100,150));
+            level1.push_back(QPoint(0,100));
+            level1.push_back(QPoint(100,150));
+            level1.push_back(QPoint(200,100));
+            level1.push_back(QPoint(300,150));
+            level1.push_back(QPoint(400,100));
+            level1.push_back(QPoint(500,150));
+            level1.push_back(QPoint(600,100));
+            _bspline.push_back(level1);
+            _brush.append(tempPen);
 
+            vector<QPoint> level2;
+            level2.push_back(QPoint(100,250));
+            level2.push_back(QPoint(200,200));
+            level2.push_back(QPoint(300,250));
+            level2.push_back(QPoint(400,200));
+            level2.push_back(QPoint(500,250));
+            level2.push_back(QPoint(600,200));
+            level2.push_back(QPoint(700,250));
+            _bspline.push_back(level2);
+            _brush.append(tempPen);
+
+            vector<QPoint> level3;
+            level3.push_back(QPoint(-100,350));
+            level3.push_back(QPoint(0,300));
+            level3.push_back(QPoint(100,350));
+            level3.push_back(QPoint(200,300));
+            level3.push_back(QPoint(300,350));
+            level3.push_back(QPoint(400,300));
+            level3.push_back(QPoint(500,350));
+            level1.push_back(QPoint(600,300));
+
+            _bspline.push_back(level3);
+            _brush.append(tempPen);
+
+            vector<QPoint> level4;
+            level4.push_back(QPoint(100,450));
+            level4.push_back(QPoint(200,400));
+            level4.push_back(QPoint(300,450));
+            level4.push_back(QPoint(400,400));
+            level4.push_back(QPoint(500,450));
+            level4.push_back(QPoint(600,400));
+            level1.push_back(QPoint(600,100));
+
+            _bspline.push_back(level4);
+            _brush.append(tempPen);
             /*********************填充*********************/
 
         }else if (_stageNo == 4){
             // 关卡4 物体
+            QPen tempPen;
+            /*********************矩形*********************/
+            // 平台
+            tempPen.setWidth(5);
+            tempPen.setColor(Qt::black);
+            //陷阱
+//            QPen redPen(tempPen);
+//            redPen.setColor(Qt::red);
+//            _rects.append(QRect(300+cos(_updateCount/20.0)*150, 200+sin(_updateCount/20.0)*150, sin(_updateCount/20.0)*25+50, cos(_updateCount/20.0)*20+50));
+//            _brush.append(redPen);
+//            _rects.append(QRect(0, 100, 150, 300));
+//            _brush.append(tempPen);
+//            _rects.append(QRect(200, 0, 150, 300));
+//            _brush.append(tempPen);
+
+            /*********************直线*********************/
+
+            //平台
+            _line.append(QRect(0, 100, 50, 1));
+            _brush.append(tempPen);
+            _line.append(QRect(550, 375, 50, 1));
+            _brush.append(tempPen);
+
+            _line.append(QRect(150+cos(_updateCount/20.0)*50, 140+sin(_updateCount/20.0)*10, 50, 1));
+            _brush.append(tempPen);
+
+            _line.append(QRect(250+cos(_updateCount/20.0+2)*50, 240+sin(_updateCount/20.0+2)*10, 50, 1));
+            _brush.append(tempPen);
+
+            _line.append(QRect(350+cos(_updateCount/20.0+1)*50, 300+sin(_updateCount/20.0+1)*10, 50, 1));
+            _brush.append(tempPen);
+
+            _line.append(QRect(450+cos(_updateCount/20.0+4)*50, 240+sin(_updateCount/20.0+4)*10, 50, 1));
+            _brush.append(tempPen);
+
+            _line.append(QRect(450+cos(_updateCount/20.0+2)*50, 240+sin(_updateCount/20.0+2)*10, 50, 1));
+            _brush.append(tempPen);
+
+            _line.append(QRect(150+cos(_updateCount/20.0+1)*50, 300+sin(_updateCount/20.0+1)*10, 50, 1));
+            _brush.append(tempPen);
+//            _brush.append(redPen);
+            /*********************多边形*********************/
+
+            QPen redPen(tempPen);
+            redPen.setColor(Qt::red);
+            int x=300,y=200;
+            int width=10;
+            QVector<QPoint> ground;
+            ground.append(QPoint(0,120));
+            ground.append(QPoint(0,400));
+            ground.append(QPoint(550,400));
+            ground.append(QPoint(50,120));
+            _polygon.append(ground);
+            _brush.append(redPen);
+            QVector<QPoint> newPolygon;
+            newPolygon.append(QPoint(x+cos(_updateCount/20.0+1)*50, y+sin(_updateCount/20.0+1)*10));
+            newPolygon.append(QPoint(x+width+cos(_updateCount/20.0+1)*50, y+sin(_updateCount/20.0+1)*10));
+            newPolygon.append(QPoint(x+width/2+cos(_updateCount/20.0+1)*50, y-width+sin(_updateCount/20.0+1)*10));
+            _polygon.append(newPolygon);
+            _brush.append(redPen);
+            x=400, y=150;
+            QVector<QPoint> newPolygon2;
+            newPolygon2.append(QPoint(x+cos(_updateCount/20.0+2)*50, y+sin(_updateCount/20.0+2)*10));
+            newPolygon2.append(QPoint(x+width+cos(_updateCount/20.0+2)*50, y+sin(_updateCount/20.0+2)*10));
+            newPolygon2.append(QPoint(x+width/2+cos(_updateCount/20.0+2)*50, y-width+sin(_updateCount/20.0+2)*10));
+            _polygon.append(newPolygon2);
+            _brush.append(redPen);
+            x=500, y=300;
+            QVector<QPoint> newPolygon3;
+            newPolygon3.append(QPoint(x+cos(_updateCount/20.0+3)*50, y+sin(_updateCount/20.0+3)*10));
+            newPolygon3.append(QPoint(x+width+cos(_updateCount/20.0+3)*50, y+sin(_updateCount/20.0+3)*10));
+            newPolygon3.append(QPoint(x+width/2+cos(_updateCount/20.0+3)*50, y-width+sin(_updateCount/20.0+3)*10));
+            _polygon.append(newPolygon3);
+            _brush.append(redPen);
+            x=450, y=105;
+            QVector<QPoint> newPolygon4;
+            newPolygon4.append(QPoint(x+cos(_updateCount/20.0+4)*50, y+sin(_updateCount/20.0+4)*10));
+            newPolygon4.append(QPoint(x+width+cos(_updateCount/20.0+4)*50, y+sin(_updateCount/20.0+4)*10));
+            newPolygon4.append(QPoint(x+width/2+cos(_updateCount/20.0+4)*50, y-width+sin(_updateCount/20.0+4)*10));
+            _polygon.append(newPolygon4);
+
+
+            _brush.append(redPen);
+            /*********************B样条*********************/
+
+            /*********************填充*********************/
+
+        }else if (_stageNo == 5){
+            // 关卡5物体
+
             QPen tempPen;
             /*********************矩形*********************/
             // 平台
@@ -180,43 +309,6 @@ public:
 
 
             _brush.append(redPen);
-            /*********************多边形*********************/
-//            QVector<QPoint> newPolygon;
-//            newPolygon.append(QPoint(300, 200));
-//            newPolygon.append(QPoint(400, 200));
-//            newPolygon.append(QPoint(400, 300));
-//            newPolygon.append(QPoint(300, 300));
-//            _polygon.append(newPolygon);
-            /*********************B样条*********************/
-
-            /*********************填充*********************/
-
-        }else if (_stageNo == 5){
-            // 关卡5物体
-            QPen tempPen;
-            /*********************矩形*********************/
-            // 平台
-            tempPen.setWidth(5);
-            tempPen.setColor(Qt::black);
-
-            _rects.append(QRect(0, 100, 150, 300));
-            _brush.append(tempPen);
-            _rects.append(QRect(200, 0, 150, 300));
-            _brush.append(tempPen);
-
-            /*********************直线*********************/
-            QPen redPen(tempPen);
-            redPen.setColor(Qt::red);
-            //陷阱
-            _line.append(QRect(150, 350, 50, 1));
-            _brush.append(redPen);
-            //平台
-            _line.append(QRect(200, 350, 400, 1));
-            _brush.append(tempPen);
-            _line.append(QRect(350, 150, 100, 1));
-            _brush.append(tempPen);
-            _line.append(QRect(500, 250, 100, 1));
-            _brush.append(tempPen);
             /*********************多边形*********************/
 //            QVector<QPoint> newPolygon;
 //            newPolygon.append(QPoint(300, 200));

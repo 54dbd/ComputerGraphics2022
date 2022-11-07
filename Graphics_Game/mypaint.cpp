@@ -1258,11 +1258,13 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
     if(e->key() == Qt::Key_Shift){
         if(state==RUN_R){
             if(playerX>=482){
+                playerX=582;
                 return;
             }
             playerX+=runDistance(playerX, playerY, 1);
         }else if(state==RUN_L){
             if(playerX<=105){
+                playerX=5;
                 return;
             }
             playerX-=runDistance(playerX, playerY, 0);
