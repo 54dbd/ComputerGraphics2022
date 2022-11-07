@@ -1260,12 +1260,12 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
             if(playerX>=482){
                 return;
             }
-            playerX+=100;
+            playerX+=runDistance(playerX, playerY, 1);
         }else if(state==RUN_L){
             if(playerX<=105){
                 return;
             }
-            playerX-=100;
+            playerX-=runDistance(playerX, playerY, 0);
         }
 
     }

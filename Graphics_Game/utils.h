@@ -333,6 +333,24 @@ int jumpHeight(int playerX, int playerY){
     }
     return 60;
 }
+int runDistance(int playerX, int playerY, int direction){
+    if (!direction)
+    {
+        for (int i = 0; i < 100; ++i) {
+            if (MAP[playerX-i][playerY].getColor()==Qt::black || MAP[playerX-i][playerY].getColor()==Qt::black
+                || MAP[playerX-i][playerY+31].getColor()==Qt::black || MAP[playerX-i][playerY+31].getColor()==Qt::black)
+                return i - 15;
+        }
+    }
+    else{
+        for (int i = 0; i < 100; ++i) {
+            if (MAP[playerX+i][playerY].getColor()==Qt::black || MAP[playerX+i][playerY].getColor()==Qt::black
+                || MAP[playerX+i][playerY+31].getColor()==Qt::black || MAP[playerX+i][playerY+31].getColor()==Qt::black)
+                return i - 15;
+        }
+    }
+    return 100;
+}
 
 bool canJump(int playerX, int playerY){
     if(MAP[playerX+8][playerY+32].getColor()==Qt::black

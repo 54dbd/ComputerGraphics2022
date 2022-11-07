@@ -96,6 +96,12 @@ public:
             newPolygon3.append(QPoint(589, 228));
             _polygon.append(newPolygon3);
             _brush.append(redPen);
+            QVector<QPoint> newPolygon4;
+            newPolygon4.append(QPoint(430, 155));
+            newPolygon4.append(QPoint(455, 155));
+            newPolygon4.append(QPoint(442, 178));
+            _polygon.append(newPolygon4);
+            _brush.append(redPen);
 
             /*********************贝塞尔*********************/
 
