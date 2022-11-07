@@ -339,14 +339,14 @@ int runDistance(int playerX, int playerY, int direction){
         for (int i = 0; i < 100; ++i) {
             if (MAP[playerX-i][playerY].getColor()==Qt::black || MAP[playerX-i][playerY].getColor()==Qt::black
                 || MAP[playerX-i][playerY+31].getColor()==Qt::black || MAP[playerX-i][playerY+31].getColor()==Qt::black)
-                return i - 15;
+                return std::max<int>(i - 15, 0);
         }
     }
     else{
         for (int i = 0; i < 100; ++i) {
             if (MAP[playerX+i][playerY].getColor()==Qt::black || MAP[playerX+i][playerY].getColor()==Qt::black
                 || MAP[playerX+i][playerY+31].getColor()==Qt::black || MAP[playerX+i][playerY+31].getColor()==Qt::black)
-                return i - 15;
+                return std::max<int>(i - 15, 0);
         }
     }
     return 100;
