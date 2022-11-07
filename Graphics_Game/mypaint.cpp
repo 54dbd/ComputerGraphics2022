@@ -256,21 +256,21 @@ void MyPaint::paintEvent(QPaintEvent *) {
         class Line l(x_s, y_s, x_e, y_e, 1, p, pen);
         l.MidPoint();
     }
-    for (int j = 0; j < _stage->_stageInfo._bezierCurve.size(); ++j) {
-        const vector<QPoint> &bezierCurve = _stage->_stageInfo._bezierCurve.at(j);
+    for (int j = 0; j < _stage->_stageInfo._bspline.size(); ++j) {
+        const vector<QPoint> &bezierCurve = _stage->_stageInfo._bspline.at(j);
 
         //使控制点不受笔刷大小影响
         QPen controlPointPen;
         controlPointPen.setColor(Qt::darkCyan);
-        controlPointPen.setWidth(3);
+        controlPointPen.setWidth(1);
         for (auto i: bezierCurve) {
             Circle C(i.x(), i.y(), 4, 1, p, controlPointPen);
             C.DrawCircle();
         }
         QPen pen = _stage->_stageInfo._brush.at(brushNumber++);
         p.setPen(pen);
-        class Bezier b(1, p, bezierCurve, pen);
-        b.drawBezier();
+        class Bspline b(1, p, bezierCurve, 3, pen);
+        b.drawBspline();
     }
 
     // 多边形的绘制
