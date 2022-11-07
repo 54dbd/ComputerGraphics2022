@@ -64,11 +64,7 @@ public:
             _brush.append(tempPen);
 
             /*********************直线*********************/
-            QPen redPen(tempPen);
-            redPen.setColor(Qt::red);
-            //陷阱
-            _line.append(QRect(150, 350, 50, 1));
-            _brush.append(redPen);
+
             //平台
             _line.append(QRect(200, 350, 400, 1));
             _brush.append(tempPen);
@@ -76,14 +72,18 @@ public:
             _brush.append(tempPen);
             _line.append(QRect(500, 250, 100, 1));
             _brush.append(tempPen);
+            _line.append(QRect(180, 240, 20, 1));
+            _brush.append(tempPen);
             /*********************多边形*********************/
-//            QVector<QPoint> newPolygon;
-//            newPolygon.append(QPoint(300, 200));
-//            newPolygon.append(QPoint(400, 200));
-//            newPolygon.append(QPoint(400, 300));
-//            newPolygon.append(QPoint(300, 300));
-//            _brush.append(redPen);
-//            _polygon.append(newPolygon);
+            //陷阱
+            QPen redPen(tempPen);
+            redPen.setColor(Qt::red);
+            QVector<QPoint> newPolygon;
+            newPolygon.append(QPoint(150, 350));
+            newPolygon.append(QPoint(200, 350));
+            newPolygon.append(QPoint(175, 300));
+            _polygon.append(newPolygon);
+            _brush.append(redPen);
             /*********************贝塞尔*********************/
 
             /*********************填充*********************/

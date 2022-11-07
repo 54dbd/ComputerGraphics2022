@@ -1240,6 +1240,11 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
 
     //跳关
+    if(e->key() == Qt::Key_2){
+        state = IDLE;
+        stageNumber=2;
+        cleanScreen();
+    }
     if(e->key() == Qt::Key_3){
         state = IDLE;
         stageNumber=3;
