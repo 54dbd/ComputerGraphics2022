@@ -28,7 +28,15 @@ public:
         _player = new Player(1,_painter,_pen, playerX, playerY);
         setPos(playerX,playerY);
         _player->generate(_updateCount,_state);
-        _coin = new Coin(W,P,Pen,560,60);
+        if(stageNo==1||stageNo==2){
+            _coin = new Coin(W,P,Pen,560,60);
+        }else if(stageNo==3){
+            _coin = new Coin(W,P,Pen,50,330);
+        }else if(stageNo==4){
+            _coin = new Coin(W,P,Pen,50,330);
+        }else if(stageNo==5){
+            _coin = new Coin(W,P,Pen,50,330);
+        }
         _coin->generate(_updateCount);
     }
 

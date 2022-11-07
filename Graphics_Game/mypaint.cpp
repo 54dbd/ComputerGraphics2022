@@ -181,7 +181,7 @@ void MyPaint::next_frame(){
     }
     QPoint coinPos = _stage->getCoinPos();
     if (hasCollision(QPoint(playerX,playerY), coinPos)) {
-        if (stageNumber == 2)
+        if (stageNumber == 5)
             _playerStatus = BIGWIN;
         else
             _playerStatus = WIN;
@@ -1238,6 +1238,32 @@ void MyPaint::keyReleaseEvent(QKeyEvent *e){
 void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
 
+    //跳关
+    if(e->key() == Qt::Key_3){
+        state = IDLE;
+        stageNumber=3;
+        cleanScreen();
+    }
+    if(e->key() == Qt::Key_4){
+        state = IDLE;
+        stageNumber=4;
+        cleanScreen();
+    }
+    if(e->key() == Qt::Key_Shift){
+        if(state==RUN_R){
+            if(playerX>=582){
+                return;
+            }
+            playerX+=100;
+        }else if(state==RUN_L){
+            if(playerX<=5){
+                return;
+            }
+            playerX-=100;
+        }
+
+    }
+
     if(e->key() == Qt::Key_Space){
         if(canJump(playerX,playerY))
             jumpCount = 0;
@@ -1643,7 +1669,7 @@ void MyPaint::showMessageBox() {
     int choice = msgBox.exec();
     switch (choice) {
         case QMessageBox::Yes:
-            if(stageNumber<3){
+            if(stageNumber<5){
                 state = IDLE;
                 stageNumber++;
                 cleanScreen();
