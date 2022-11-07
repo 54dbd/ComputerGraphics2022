@@ -82,6 +82,7 @@ public:
 //            newPolygon.append(QPoint(400, 200));
 //            newPolygon.append(QPoint(400, 300));
 //            newPolygon.append(QPoint(300, 300));
+//            _brush.append(redPen);
 //            _polygon.append(newPolygon);
             /*********************贝塞尔*********************/
 

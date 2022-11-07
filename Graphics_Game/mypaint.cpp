@@ -276,7 +276,8 @@ void MyPaint::paintEvent(QPaintEvent *) {
     // 多边形的绘制
     for (int i = 0; i < _stage->_stageInfo._polygon.size(); ++i) {
         const QVector<QPoint> &polygon = _stage->_stageInfo._polygon.at(i);//取出一个多边形
-        class Polygon poly(1, p, this->screen()->size().height(), pen);
+        QPen polygonPen = _stage->_stageInfo._brush.at(brushNumber++);
+        class Polygon poly(1, p, this->screen()->size().height(), polygonPen);
         for (int j = 0; j < polygon.size(); ++j)//将多边形的所有线段描绘出
         {
             int temp = (j + 1) % int(polygon.size());
