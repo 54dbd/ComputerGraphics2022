@@ -84,6 +84,19 @@ public:
             newPolygon.append(QPoint(175, 300));
             _polygon.append(newPolygon);
             _brush.append(redPen);
+            QVector<QPoint> newPolygon2;
+            newPolygon2.append(QPoint(500, 250));
+            newPolygon2.append(QPoint(525, 250));
+            newPolygon2.append(QPoint(512, 228));
+            _polygon.append(newPolygon2);
+            _brush.append(redPen);
+            QVector<QPoint> newPolygon3;
+            newPolygon3.append(QPoint(575, 250));
+            newPolygon3.append(QPoint(600, 250));
+            newPolygon3.append(QPoint(589, 228));
+            _polygon.append(newPolygon3);
+            _brush.append(redPen);
+
             /*********************贝塞尔*********************/
 
             /*********************填充*********************/
