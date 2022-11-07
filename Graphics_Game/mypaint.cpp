@@ -1279,7 +1279,7 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
                 return;
             }
             jumpCount++;
-            playerY-=60;
+            playerY-= jumpHeight(playerX,playerY);
             state = JUMP;
             update();
         }
