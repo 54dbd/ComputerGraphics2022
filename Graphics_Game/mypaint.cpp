@@ -40,36 +40,36 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->setIconSize(QSize(16, 16));//设置动作图标的尺寸
     tbar->setStyleSheet("background-color:white");//背景色
 
-    _Rmenu = new QMenu(this);//创建右键菜单
-    _Rmenu->addAction(tr("保存  \tCtrl+S"), this, SLOT(SavePic()));//添加菜单动作
-    _Rmenu->addAction(tr("退出  \tALT+F4"), this, SLOT(close()));//添加菜单动作
-    _Rmenu->setStyleSheet("background-color:white");//设置背景色
+//    _Rmenu = new QMenu(this);//创建右键菜单
+//    _Rmenu->addAction(tr("保存  \tCtrl+S"), this, SLOT(SavePic()));//添加菜单动作
+//    _Rmenu->addAction(tr("退出  \tALT+F4"), this, SLOT(close()));//添加菜单动作
+//    _Rmenu->setStyleSheet("background-color:white");//设置背景色
 
     //笔刷颜色
-    QAction *setBrush = new QAction(tr("&笔刷"), this);
-    tbar->addAction(setBrush);
+//    QAction *setBrush = new QAction(tr("&笔刷"), this);
+//    tbar->addAction(setBrush);
+//
+//    QAction *clean = new QAction(tr("&清除"), this);
+//    tbar->addAction(clean);
 
-    QAction *clean = new QAction(tr("&清除"), this);
-    tbar->addAction(clean);
+//    QAction *openAction = new QAction(tr("&打开"), this);//打开动作
+//    openAction->setIcon(QIcon(":/png/images/open.png"));//图标
+//    openAction->setShortcut(QKeySequence(tr("Ctrl+O")));//热键
+//    tbar->addAction(openAction);//添加到工具栏
+//
+//    QAction *saveAction = new QAction(tr("&保存"), this);//保存动作
+//    saveAction->setIcon(QIcon(":/png/images/save.png"));//图标
+//    saveAction->setShortcut(QKeySequence(tr("Ctrl+S")));//热键
+//    tbar->addAction(saveAction);//添加到工具栏
+//
+//    QAction *saveasAction = new QAction(tr("&另存为"), this);//保存动作
+//    saveasAction->setIcon(QIcon(":/png/images/saveas.png"));//图标
+//    saveasAction->setShortcut(QKeySequence(tr("Ctrl+ALT+S")));//热键
+//    tbar->addAction(saveasAction);//添加到工具栏
 
-    QAction *openAction = new QAction(tr("&打开"), this);//打开动作
-    openAction->setIcon(QIcon(":/png/images/open.png"));//图标
-    openAction->setShortcut(QKeySequence(tr("Ctrl+O")));//热键
-    tbar->addAction(openAction);//添加到工具栏
-
-    QAction *saveAction = new QAction(tr("&保存"), this);//保存动作
-    saveAction->setIcon(QIcon(":/png/images/save.png"));//图标
-    saveAction->setShortcut(QKeySequence(tr("Ctrl+S")));//热键
-    tbar->addAction(saveAction);//添加到工具栏
-
-    QAction *saveasAction = new QAction(tr("&另存为"), this);//保存动作
-    saveasAction->setIcon(QIcon(":/png/images/saveas.png"));//图标
-    saveasAction->setShortcut(QKeySequence(tr("Ctrl+ALT+S")));//热键
-    tbar->addAction(saveasAction);//添加到工具栏
-
-    QAction *transAction = new QAction(tr("&图形变换"), this); /**变换动作**/
-    transAction->setIcon(QIcon(":/png/images/trans.png"));//图标
-    tbar->addAction(transAction);//添加到工具栏
+//    QAction *transAction = new QAction(tr("&图形变换"), this); /**变换动作**/
+//    transAction->setIcon(QIcon(":/png/images/trans.png"));//图标
+//    tbar->addAction(transAction);//添加到工具栏
 
     QAction *fillAction = new QAction(tr("&填充"), this);//填充
     fillAction->setIcon(QIcon(":/png/images/fill.png"));//图标
@@ -146,8 +146,8 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(rectAction, SIGNAL(triggered()), this, SLOT(Rects()));
     connect(ellipseAction, SIGNAL(triggered()), this, SLOT(Ellipses()));
     connect(lineAction, SIGNAL(triggered()), this, SLOT(Line()));
-    connect(saveAction, SIGNAL(triggered()), this, SLOT(SavePic()));
-    connect(openAction, SIGNAL(triggered()), this, SLOT(OpenPic()));
+//    connect(saveAction, SIGNAL(triggered()), this, SLOT(SavePic()));
+//    connect(openAction, SIGNAL(triggered()), this, SLOT(OpenPic()));
     connect(arcAction, SIGNAL(triggered()), this, SLOT(Arc()));
     connect(arcCenterAction, SIGNAL(triggered()), this, SLOT(ArcCenter()));
     connect(polygonAction, SIGNAL(triggered()), this, SLOT(Polygon()));
@@ -155,13 +155,13 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(bsplineAction, SIGNAL(triggered()), this, SLOT(Bspline()));
     connect(clipAction, SIGNAL(triggered()), this, SLOT(Clip()));
     connect(clipPolygon, SIGNAL(triggered()), this, SLOT(ClipPolygon()));
-    connect(clean, SIGNAL(triggered()), this, SLOT(cleanScreen()));
+//    connect(clean, SIGNAL(triggered()), this, SLOT(cleanScreen()));
 
 
-    connect(transAction, SIGNAL(triggered()), this, SLOT(startTrans()));
+//    connect(transAction, SIGNAL(triggered()), this, SLOT(startTrans()));
     connect(fillAction, SIGNAL(triggered()), this, SLOT(startFill()));
     //新建界面
-    connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
+//    connect(setBrush, SIGNAL(triggered()), this, SLOT(createBrushWindow()));
 
     //设置界面传参
     connect(this, SIGNAL(sendPen(QPen * )), setBrushWindow, SLOT(getPen(QPen * )));
