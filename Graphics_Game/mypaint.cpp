@@ -1257,12 +1257,12 @@ void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
     }
     if(e->key() == Qt::Key_Shift){
         if(state==RUN_R){
-            if(playerX>=582){
+            if(playerX>=482){
                 return;
             }
             playerX+=100;
         }else if(state==RUN_L){
-            if(playerX<=5){
+            if(playerX<=105){
                 return;
             }
             playerX-=100;
