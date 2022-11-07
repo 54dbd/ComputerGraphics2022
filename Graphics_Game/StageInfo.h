@@ -9,7 +9,7 @@ public:
     QVector<QRect> _rects;
     QVector<QRect> _line;
     QVector<QVector<QPoint>> _polygon;
-    vector<vector<QPoint>> _bezierCurve;
+    vector<vector<QPoint>> _bspline;
 
     QVector<QPoint> _fills;
 
@@ -35,14 +35,14 @@ public:
 //            _line.append(QRect(300, 300, 400, 600));
 //            _brush.append(tempPen);
             /*********************多边形*********************/
-            /*********************贝塞尔*********************/
+            /*********************B样条*********************/
             // 性能差 不建议和移动的方块一起使用
 //            vector<QPoint> tempCurve;
 //            tempCurve.emplace_back(200, 325);
 //            tempCurve.emplace_back(250, 350);
 //            tempCurve.emplace_back(225, 325);
 //            tempCurve.emplace_back(275, 350);
-//            _bezierCurve.push_back(tempCurve);
+//            _bspline.push_back(tempCurve);
 //            _brush.append(tempPen);
             /*********************填充*********************/
             for (int i = 0; i < 2; ++i) {
@@ -97,7 +97,7 @@ public:
             _polygon.append(newPolygon3);
             _brush.append(redPen);
 
-            /*********************贝塞尔*********************/
+            /*********************B样条*********************/
 
             /*********************填充*********************/
 
@@ -138,7 +138,7 @@ public:
 //            newPolygon.append(QPoint(400, 300));
 //            newPolygon.append(QPoint(300, 300));
 //            _polygon.append(newPolygon);
-            /*********************贝塞尔*********************/
+            /*********************B样条*********************/
 
             /*********************填充*********************/
 
@@ -181,7 +181,7 @@ public:
 //            newPolygon.append(QPoint(400, 300));
 //            newPolygon.append(QPoint(300, 300));
 //            _polygon.append(newPolygon);
-            /*********************贝塞尔*********************/
+            /*********************B样条*********************/
 
             /*********************填充*********************/
 
@@ -218,7 +218,7 @@ public:
 //            newPolygon.append(QPoint(400, 300));
 //            newPolygon.append(QPoint(300, 300));
 //            _polygon.append(newPolygon);
-            /*********************贝塞尔*********************/
+            /*********************B样条*********************/
 
             /*********************填充*********************/
 
