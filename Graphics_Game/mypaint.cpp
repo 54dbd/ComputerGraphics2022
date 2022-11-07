@@ -175,6 +175,18 @@ void MyPaint::next_frame(){
         _playerStatus = DIE;
         showMessageBox();
     }
+    if(isDie(playerX,playerY)){
+        _playerStatus = DIE;
+        showMessageBox();
+    }
+    QPoint coinPos = _stage->getCoinPos();
+    if (hasCollision(QPoint(playerX,playerY), coinPos)) {
+        if (stageNumber == 2)
+            _playerStatus = BIGWIN;
+        else
+            _playerStatus = WIN;
+        showMessageBox();
+    }
     update();
 }
 
@@ -202,11 +214,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     if(canDrop(playerX,playerY)){
         playerY+=1;
     }
-    if(isDie(playerX,playerY)){
-        _playerStatus = DIE;
-        showMessageBox();
-        return;
-    }
+
     //创建关卡
     _stage = new Stage(1,p,pen,playerX,playerY,state,_updateCount, stageNumber);
     // 布置场景
@@ -616,6 +624,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     p.end();
     p.begin(this);//将当前窗体作为画布
     p.drawPixmap(0, 0, pix);//将pixmap画到窗体
+
 }
 
 void MyPaint::mousePressEvent(QMouseEvent *e) {
@@ -1218,8 +1227,7 @@ void MyPaint::createBrushWindow() {
     setBrushWindow->show();
 }
 
-void MyPaint::contextMenuEvent(QContextMenuEvent *)  //右键菜单事件
-{
+void MyPaint::contextMenuEvent(QContextMenuEvent *){  //右键菜单事件
     _Rmenu->exec(cursor().pos());//在光标位置弹出菜单
 }
 
@@ -1229,14 +1237,7 @@ void MyPaint::keyReleaseEvent(QKeyEvent *e){
 
 void MyPaint::keyPressEvent(QKeyEvent *e) //按键事件
 {
-    QPoint coinPos = _stage->getCoinPos();
-    if (hasCollision(QPoint(playerX,playerY), coinPos)) {
-        if (stageNumber == 2)
-            _playerStatus = BIGWIN;
-        else
-            _playerStatus = WIN;
-        showMessageBox();
-    }
+
     if(e->key() == Qt::Key_Space){
         if(canJump(playerX,playerY))
             jumpCount = 0;
@@ -1654,6 +1655,8 @@ void MyPaint::showMessageBox() {
             break;
         case QMessageBox::Close:
             close();
+            //without this line may cause bug in exiting the game
+            cleanScreen();
             break;
         default:
             // should never be reached
