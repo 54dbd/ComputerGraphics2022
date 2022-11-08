@@ -75,7 +75,7 @@ private:
     int _newPolygon;//新建多边形标志
     int _drawType;//描绘类型
     QMenu *_Rmenu;//右键菜单
-    int _openflag;//打开图片
+    int _openflag = 1;//打开图片
     QPixmap _pixmap;//画布图片
     QPen _pen;
     long _updateCount=0;

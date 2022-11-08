@@ -456,6 +456,14 @@ bool noLeftWall(int playerX, int playerY){
     }
     return true;
 }
+
+bool PlatFormup(int playerX, int playerY){
+    if(MAP[playerX+8][playerY+31].getColor()==Qt::black){
+        return true;
+    }
+    return false;
+}
+
 void MyPaint::cleanScreen(){
     _lpress = false;//初始鼠标左键未按下
     _newPolygon = true;//代表多边形可以新建

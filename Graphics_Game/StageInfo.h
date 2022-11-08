@@ -1,4 +1,7 @@
 #pragma once
+#include "TransMatrix.h"
+
+
 class StageInfo{
 public:
     int _stageNo;
@@ -10,8 +13,9 @@ public:
     QVector<QRect> _line;
     QVector<QVector<QPoint>> _polygon;
     vector<vector<QPoint>> _bspline;
-
     QVector<QPoint> _fills;
+
+    transMatrix trm;
 
     StageInfo(int StageNo, long UpdateCount){
         _stageNo = StageNo;
@@ -25,7 +29,12 @@ public:
 
             _rects.append(QRect(170, 200, 100, 50));
             _brush.append(tempPen);
-            _rects.append(QRect(330 + sin(_updateCount/17.0)*50, 100, 100, 50));
+
+            QRect q = QRect(330, 100, 100, 50);
+            trm.setMoveTrans(sin(_updateCount/17.0)*50,0);
+            q.setTopLeft(trm*q.topLeft());
+            q.setBottomRight(trm*q.bottomRight());
+            _rects.append(q);
             _brush.append(tempPen);
             _rects.append(QRect(0, 300, 150, 50));
             _brush.append(tempPen);
@@ -57,12 +66,25 @@ public:
             // 平台
             tempPen.setWidth(5);
             tempPen.setColor(Qt::black);
-
+            QPen redPen(tempPen);
+            redPen.setColor(Qt::red);
             _rects.append(QRect(0, 100, 150, 300));
             _brush.append(tempPen);
             _rects.append(QRect(200, 0, 150, 300));
             _brush.append(tempPen);
 
+            QRect q = QRect(148, 160, 54, 5);
+            trm.setMoveTrans(sin(_updateCount/50.0)*27 + 27,0);
+            q.setBottomLeft(trm*q.bottomLeft());
+            _rects.append(q);
+            _brush.append(redPen);
+
+            q = QRect(430, 340, 30, 10);
+            trm.setMoveTrans(0,sin(_updateCount/150.0)*75 - 75);
+            q.setBottomRight(trm*q.bottomRight());
+            q.setTopLeft(trm*q.topLeft());
+            _rects.append(q);
+            _brush.append(tempPen);
             /*********************直线*********************/
 
             //平台
@@ -74,10 +96,21 @@ public:
             _brush.append(tempPen);
             _line.append(QRect(180, 240, 20, 1));
             _brush.append(tempPen);
+
+            if(_updateCount%500<250){
+                q = QRect(250, 300, 1, 50);
+                trm.setMoveTrans(sin(_updateCount/50.0)*27,0);
+                q.setBottomRight(trm*q.bottomRight());
+            }
+            else{
+                q = QRect(250, 300, 0, 0);
+            }
+
+            _line.append(q);
+            _brush.append(redPen);
             /*********************多边形*********************/
             //陷阱
-            QPen redPen(tempPen);
-            redPen.setColor(Qt::red);
+
             QVector<QPoint> newPolygon;
             newPolygon.append(QPoint(150, 350));
             newPolygon.append(QPoint(200, 350));
@@ -106,7 +139,12 @@ public:
             /*********************B样条*********************/
 
             /*********************填充*********************/
-
+            QRect tempRect = _rects[2];
+            _fills.append(QPoint(tempRect.left() + tempRect.width() / 2, tempRect.top() + tempRect.height() / 2));
+            _brush.append(redPen);
+            tempRect = _rects[3];
+            _fills.append(QPoint(tempRect.left() + tempRect.width() / 2, tempRect.top() + tempRect.height() / 2));
+            _brush.append(tempPen);
         }else if (_stageNo == 3){
             // 关卡3物体
             QPen tempPen;
@@ -126,7 +164,7 @@ public:
             //平台
 
             //陷阱
-            _line.append(QRect(150, 180+sin(_updateCount/20.0)*120, 1, 50));
+            _line.append(QRect(150, 180+sin(_updateCount/40.0)*120, 1, 50));
             _brush.append(redPen);
             _line.append(QRect(450, 180+cos(_updateCount/20.0)*120, 1, 50));
             _brush.append(redPen);
@@ -229,6 +267,9 @@ public:
 
             _line.append(QRect(150+cos(_updateCount/20.0+1)*50, 300+sin(_updateCount/20.0+1)*10, 50, 1));
             _brush.append(tempPen);
+
+
+
 //            _brush.append(redPen);
             /*********************多边形*********************/
 
@@ -275,7 +316,6 @@ public:
             /*********************B样条*********************/
 
             /*********************填充*********************/
-
         }else if (_stageNo == 5){
             // 关卡5物体
 
@@ -289,6 +329,7 @@ public:
             redPen.setColor(Qt::red);
             _rects.append(QRect(300+cos(_updateCount/20.0)*150, 200+sin(_updateCount/20.0)*150, sin(_updateCount/20.0)*25+50, cos(_updateCount/20.0)*20+50));
             _brush.append(redPen);
+
 //            _rects.append(QRect(0, 100, 150, 300));
 //            _brush.append(tempPen);
 //            _rects.append(QRect(200, 0, 150, 300));

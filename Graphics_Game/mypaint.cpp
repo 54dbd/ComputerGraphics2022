@@ -30,7 +30,10 @@ MyPaint::MyPaint(QWidget *parent) :
     this->setGeometry(350, 200, 600, 400);//设置窗体大小、位置
     this->setFixedSize(600, 400);
 //    setMouseTracking(true);//开启鼠标实时追踪，监听鼠标移动事件，默认只有按下时才监听
-    this->setStyleSheet("background-color:white;");
+    //this->setStyleSheet("background-color:white;");
+
+
+
     //初始化MAP
     initMAP();
 
@@ -39,6 +42,7 @@ MyPaint::MyPaint(QWidget *parent) :
     tbar->setMovable(false);//工具栏不可移动
     tbar->setIconSize(QSize(16, 16));//设置动作图标的尺寸
     tbar->setStyleSheet("background-color:white");//背景色
+
 
 //    _Rmenu = new QMenu(this);//创建右键菜单
 //    _Rmenu->addAction(tr("保存  \tCtrl+S"), this, SLOT(SavePic()));//添加菜单动作
@@ -191,16 +195,16 @@ void MyPaint::next_frame(){
 }
 
 void MyPaint::paintEvent(QPaintEvent *) {
+
+
     if (_playerStatus == DIE){
         return;
     }
-    if (_openflag == 0)//不是打开图片的，每一次新建一个空白的画布
-    {
-        _pixmap = QPixmap(size());//新建pixmap
-        _pixmap.fill(Qt::white);//背景色填充为白色
-    }
+    _pixmap = QPixmap(size());//新建pixmap
+     _pixmap.fill(Qt::white);//背景色填充为白色
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
+    p.drawPixmap(0,0,600,400,QPixmap(":/png/images/t1.png"));
     //QPainter p=_pen;//将_pixmap作为画布
 
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
@@ -213,6 +217,9 @@ void MyPaint::paintEvent(QPaintEvent *) {
     //重力影响
     if(canDrop(playerX,playerY)){
         playerY+=1;
+    }
+    if(PlatFormup(playerX,playerY)){
+        playerY-=1;
     }
 
     //创建关卡
@@ -298,6 +305,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
         f.getColorMap();
         f.fillShape(_stage->_stageInfo._fills.at(j), pen.color());
     }
+
     _updateCount++;
 
 

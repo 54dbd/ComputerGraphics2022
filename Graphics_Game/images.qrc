@@ -17,6 +17,6 @@
         <file>images/move.png</file>
         <file>images/trans.png</file>
         <file>images/title.png</file>
-
+        <file>images/t1.png</file>
     </qresource>
 </RCC>
