@@ -208,12 +208,14 @@ void MyPaint::paintEvent(QPaintEvent *) {
     _backmap = QPixmap(size());//新建pixmap
     _backmap.fill(Qt::white);//背景色填充为白色
     QPixmap bpix = _backmap;//以_pixmap作为画布
-    QPainter bp(&bpix);//将_pixmap作为画布
-    bp.drawPixmap(0,0,600,400,QPixmap(":/png/images/t1.png"));
-    //QPainter p=_pen;//将_pixmap作为画布
-    bp.end();
-    bp.begin(this);//将当前窗体作为画布
-    bp.drawPixmap(0, 0, bpix);//将pixmap画到窗体
+    if(stageNumber == 2) {
+        QPainter bp(&bpix);//将_pixmap作为画布
+        bp.drawPixmap(0, 0, 600, 400, QPixmap(":/png/images/stage1.png"));
+        //QPainter p=_pen;//将_pixmap作为画布
+        bp.end();
+        bp.begin(this);//将当前窗体作为画布
+        bp.drawPixmap(0, 0, bpix);//将pixmap画到窗体
+    }
 
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
