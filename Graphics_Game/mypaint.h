@@ -77,6 +77,7 @@ private:
     QMenu *_Rmenu;//右键菜单
     int _openflag = 1;//打开图片
     QPixmap _pixmap;//画布图片
+    QPixmap _backmap;
     QPen _pen;
     long _updateCount=0;
     QLabel *statusBarLabel;
