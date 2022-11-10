@@ -80,7 +80,6 @@ private:
     QPixmap _backmap;
     QPen _pen;
     long _updateCount=0;
-    QLabel *statusBarLabel;
     QToolBar *tbar;
     QToolBar * subTbar;
     QPoint referancePoint;          //变换时由用户设置的参照点

@@ -129,13 +129,13 @@ MyPaint::MyPaint(QWidget *parent) :
     QAction *clipPolygon = new QAction(tr("&裁切多边形"), this);//裁切多边形
     tbar->addAction(clipPolygon);
 
-    //创建底部状态栏
-    statusBarLabel = new QLabel("当前坐标：", this);
-    statusBarLabel->setMinimumWidth(250);
-    QStatusBar *statusBar = new QStatusBar(this);
-    statusBar->addWidget(statusBarLabel);
-    statusBar->setGeometry(0, 380, 600, 20);
-    statusBar->setStyleSheet("border: solid black 2px;");
+//    //创建底部状态栏
+//    statusBarLabel = new QLabel("当前坐标：", this);
+//    statusBarLabel->setMinimumWidth(250);
+//    QStatusBar *statusBar = new QStatusBar(this);
+//    statusBar->addWidget(statusBarLabel);
+//    statusBar->setGeometry(0, 380, 600, 20);
+//    statusBar->setStyleSheet("border: solid black 2px;");
 
 
 
@@ -208,14 +208,28 @@ void MyPaint::paintEvent(QPaintEvent *) {
     _backmap = QPixmap(size());//新建pixmap
     _backmap.fill(Qt::white);//背景色填充为白色
     QPixmap bpix = _backmap;//以_pixmap作为画布
-    if(stageNumber == 2) {
-        QPainter bp(&bpix);//将_pixmap作为画布
-        bp.drawPixmap(0, 0, 600, 400, QPixmap(":/png/images/stage1.png"));
-        //QPainter p=_pen;//将_pixmap作为画布
-        bp.end();
-        bp.begin(this);//将当前窗体作为画布
-        bp.drawPixmap(0, 0, bpix);//将pixmap画到窗体
+    QPainter bp(&bpix);//将_pixmap作为画布
+    switch (stageNumber) {
+        case 1:
+            bp.drawPixmap(0, 0, 600, 400, QPixmap(":/png/images/grass.png"));
+            break;
+        case 2:
+            bp.drawPixmap(0, 0, 600, 400, QPixmap(":/png/images/stage1.png"));
+            break;
+        case 3:
+            bp.drawPixmap(0, 0, 600, 400, QPixmap(":/png/images/sea.png"));
+            break;
+        case 4:
+            bp.drawPixmap(0, 0, 600, 400, QPixmap(":/png/images/volcano.png"));
+            break;
+        case 5:
+            bp.drawPixmap(0, 0, 600, 400, QPixmap(":/png/images/universe.png"));
+            break;
+
     }
+    bp.end();
+    bp.begin(this);//将当前窗体作为画布
+    bp.drawPixmap(0, 0, bpix);//将pixmap画到窗体
 
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
 
@@ -857,7 +871,7 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
     isInTagRect = false;
     int isArrow = 1;
     //定位鼠标指到的图形
-    updateCoordiante(e->pos().x(), e->pos().y());
+//    updateCoordiante(e->pos().x(), e->pos().y());
     if (_rects.length() > 0) {
         for (int i = 0; i < _rects.length(); i++) {
             if (_rects.at(i).contains(e->pos())) {

@@ -19,5 +19,11 @@
         <file>images/title.png</file>
         <file>images/t1.png</file>
         <file>images/stage1.png</file>
+        <file>images/sea.png</file>
+        <file>images/volcano.png</file>
+        <file>images/universe.png</file>
+        <file>images/grass.png</file>
+
+
     </qresource>
 </RCC>

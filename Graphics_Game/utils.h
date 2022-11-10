@@ -221,11 +221,11 @@ void MyPaint::setDashLine(Qt::PenStyle style) {//设置虚线变量
     }
 }
 
-void MyPaint::updateCoordiante(int x, int y) {
-//    qDebug()<<MAP[x][y].getColor();
-    QString output = "当前坐标(" + QString::number(x, 10) + ", " + QString::number(y, 10) + ")";
-    statusBarLabel->setText(output);
-}
+//void MyPaint::updateCoordiante(int x, int y) {
+////    qDebug()<<MAP[x][y].getColor();
+//    QString output = "当前坐标(" + QString::number(x, 10) + ", " + QString::number(y, 10) + ")";
+//    statusBarLabel->setText(output);
+//}
 
 bool polyContains(QVector<QPoint> polygon, QPoint P) {
     bool flag = false; //相当于计数
