@@ -187,14 +187,6 @@ QPoint getPolyCenter(QVector<QPoint> Poly) {
     qDebug() << Center_Y;
     return QPoint(Center_X, Center_Y);
 
-    /*double Cx = 0,Cy = 0;
-    for(QPoint q :Poly){
-        Cx += q.x();
-        Cy += q.y();
-    }
-    Cx /= Poly.size();
-    Cy /= Poly.size();
-    return QPoint((int)Cx,(int)Cy);*/
 }
 
 double getAngle(QPoint origin, QPoint p1, QPoint p2) {
@@ -221,11 +213,6 @@ void MyPaint::setDashLine(Qt::PenStyle style) {//设置虚线变量
     }
 }
 
-//void MyPaint::updateCoordiante(int x, int y) {
-////    qDebug()<<MAP[x][y].getColor();
-//    QString output = "当前坐标(" + QString::number(x, 10) + ", " + QString::number(y, 10) + ")";
-//    statusBarLabel->setText(output);
-//}
 
 bool polyContains(QVector<QPoint> polygon, QPoint P) {
     bool flag = false; //相当于计数
@@ -235,14 +222,10 @@ bool polyContains(QVector<QPoint> polygon, QPoint P) {
         P1 = polygon[i];
         P2 = polygon[j];
         if (OnSegment(P1, P2, P)) return true; //点在多边形一条边上
-        //前一个判断min(P1.y,P2.y)<P.y<=max(P1.y,P2.y)
-        //这个判断代码我觉得写的很精妙 我网上看的 应该是大神模版
-        //后一个判断被测点 在 射线与边交点 的左边
         if (((P1.y() - P.y()) > 0 != (P2.y() - P.y()) > 0) &&
             (P.x() - (P.y() - P1.y()) * (P1.x() - P2.x()) / (P1.y() - P2.y()) - P1.x()) < 0)
             flag = !flag;
     }
-//    qDebug()<<"is in poly?"<<flag;
     return flag;
 }
 

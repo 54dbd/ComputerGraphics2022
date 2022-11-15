@@ -130,7 +130,6 @@ public:
     QVector<QRect> _arc;//圆弧集合
     QVector<TransRect> _transRect;  //旋转矩形集合
     QVector<arcCenter> _arcCenter;
-    //QVector<QRect> _secondaryCircle;//椭圆集合
     QVector<QVector<QPoint>> _polygon;//多边形集合
     QVector<QPoint> _fill;
     QRect _crop;// 裁剪的矩形

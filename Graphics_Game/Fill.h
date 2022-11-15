@@ -55,12 +55,6 @@ public:
          endtime=(double)(end-start)/CLOCKS_PER_SEC;
          qDebug()<<"MAP Total time:"<<endtime<<" s";		//s为单位
     }
-    /*
-     * point:填充起始点
-     *
-     * function: 填充任意封闭图形
-     *
-    */
     void fillShape(QPoint point, QColor newColor){
         //将点击位置的颜色设置为需要替换的颜色
         QColor oldColor = MAP[point.x()][point.y()].getColor();
@@ -79,13 +73,10 @@ public:
             y = pt.y();
             x = pt.x();
             while(MAP[x][y].getColor()==oldColor && x<599){
-//                qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
-//                qDebug()<<"[fillShape]old color is:"<<oldColor;
+
                 drawPixel(x,y);
                 x++;
             }
-//            qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
-//            qDebug()<<"[fillShape]old color is:"<<oldColor;
             xr = x -1;
             x = pt.x() - 1;
             while(MAP[x][y].getColor()==oldColor && x>0){

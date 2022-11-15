@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_PREFIX_PATH "D:/soft/qt1/6.3.2/mingw_64")
+set(CMAKE_PREFIX_PATH "C:/QT/6.3.2/mingw_64")
 link_directories(lib)
 find_package(Qt6 COMPONENTS
         Core
@@ -30,9 +30,7 @@ add_executable(GraphicsGame images.qrc
         point.h
         Fill.h
         utils.h
-        light.cpp
-        light.h
-        Coin.cpp Coin.h Stage.cpp Stage.h
+        Coin.h Stage.h
         startmenu.cpp startmenu.h startmenu.ui)
 target_link_libraries(GraphicsGame
         Qt::Core

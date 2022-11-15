@@ -131,17 +131,8 @@ public:
         }
         return temp;
     }
-   // friend ostream& operator << (ostream & out,transMatrix &m);
 };
-/*ostream& operator << (ostream & out,transMatrix &m){
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            out<<m.tr[i][j]<<" ";
-        }
-        out<<endl;
-    }
-    return out;
-}*/
+
 
 
 #endif //UNTITLED1_TRANSMATRIX_H

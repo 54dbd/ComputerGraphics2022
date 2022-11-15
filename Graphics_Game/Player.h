@@ -163,7 +163,6 @@ public:
     void update(int x, int y){
         pos.setX(x);
         pos.setY(y);
-//        qDebug()<<"pos:("<<pos.x()<<", "<<pos.y()<<")";
     }
 
 
