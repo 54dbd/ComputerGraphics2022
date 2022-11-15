@@ -30,8 +30,6 @@ add_executable(Graphics images.qrc
         point.h
         Fill.h
         utils.h
-        light.cpp
-        light.h
         )
 target_link_libraries(Graphics
         Qt::Core

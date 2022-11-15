@@ -113,11 +113,7 @@ public:
         return 1;
     };
     void drawPixel(int x, int y) {
-//        for (int i = 0; i < (*brush).size(); i++) {
-//            for (int j = 0; j < (*brush).size(); j++) {
-//                if ((*brush)[i][j]) painter.drawPoint(x + i, y + j);
-//            }
-//        }
+
         //不使用笔刷
         if(checkLegalPos(x,y,599,399)){
             painter.setPen(_pen);

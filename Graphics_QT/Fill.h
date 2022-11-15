@@ -79,13 +79,9 @@ public:
             y = pt.y();
             x = pt.x();
             while(MAP[x][y].getColor()==oldColor && x<599){
-//                qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
-//                qDebug()<<"[fillShape]old color is:"<<oldColor;
                 drawPixel(x,y);
                 x++;
             }
-//            qDebug()<<"[fillShape]color at("<<x<<", "<<y<<")is "<<getPixelColor(x,y);
-//            qDebug()<<"[fillShape]old color is:"<<oldColor;
             xr = x -1;
             x = pt.x() - 1;
             while(MAP[x][y].getColor()==oldColor && x>0){

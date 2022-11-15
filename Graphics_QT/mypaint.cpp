@@ -52,21 +52,6 @@ MyPaint::MyPaint(QWidget *parent) :
     clean->setIcon(QIcon(":/png/images/erase.png"));//图标
     tbar->addAction(clean);
 
-//    QAction *openAction = new QAction(tr("&打开"), this);//打开动作
-//    openAction->setIcon(QIcon(":/png/images/open.png"));//图标
-//    openAction->setShortcut(QKeySequence(tr("Ctrl+O")));//热键
-//    tbar->addAction(openAction);//添加到工具栏
-//
-//    QAction *saveAction = new QAction(tr("&保存"), this);//保存动作
-//    saveAction->setIcon(QIcon(":/png/images/save.png"));//图标
-//    saveAction->setShortcut(QKeySequence(tr("Ctrl+S")));//热键
-//    tbar->addAction(saveAction);//添加到工具栏
-//
-//    QAction *saveasAction = new QAction(tr("&另存为"), this);//保存动作
-//    saveasAction->setIcon(QIcon(":/png/images/saveas.png"));//图标
-//    saveasAction->setShortcut(QKeySequence(tr("Ctrl+ALT+S")));//热键
-//    tbar->addAction(saveasAction);//添加到工具栏
-
     QAction *transAction = new QAction(tr("&图形变换"), this); /**变换动作**/
     transAction->setIcon(QIcon(":/png/images/trans.png"));//图标
     tbar->addAction(transAction);//添加到工具栏
@@ -140,8 +125,6 @@ MyPaint::MyPaint(QWidget *parent) :
     connect(rectAction, SIGNAL(triggered()), this, SLOT(Rects()));
     connect(ellipseAction, SIGNAL(triggered()), this, SLOT(Ellipses()));
     connect(lineAction, SIGNAL(triggered()), this, SLOT(Line()));
-//    connect(saveAction, SIGNAL(triggered()), this, SLOT(SavePic()));
-//    connect(openAction, SIGNAL(triggered()), this, SLOT(OpenPic()));
     connect(arcAction, SIGNAL(triggered()), this, SLOT(Arc()));
     connect(arcCenterAction, SIGNAL(triggered()), this, SLOT(ArcCenter()));
     connect(polygonAction, SIGNAL(triggered()), this, SLOT(Polygon()));
@@ -170,12 +153,7 @@ void MyPaint::paintEvent(QPaintEvent *) {
     }
     QPixmap pix = _pixmap;//以_pixmap作为画布
     QPainter p(&pix);//将_pixmap作为画布
-    //QPainter p=_pen;//将_pixmap作为画布
-
     int i1 = 0, i2 = 0, i3 = 0, i4 = 0, i5 = 0, i6 = 0, i7 = 0, i8 = 0, i9 = 0, i11 = 0, i13 = 0;//各种图形的索引
-//    qDebug()<<"[paintEvent]kValue:"<<_kValue;
-
-
     if (_drawType == 10) {  //绘制标志矩形与自定义参考点
 
         QPoint start, end;
@@ -449,24 +427,10 @@ void MyPaint::paintEvent(QPaintEvent *) {
             p.setPen(pen);
         } else if (_shape.at(c) == 11) {//fill
             class Fill f(pix, p, pen);
-//            f.fillColor(Qt::blue);
-            //f.fillRect(*nowRect);
-            //DEBUG: test rect for all the shape
-            //
-//            QPoint p;
             qDebug() << "[paintEvent]filling i11[ " << i11 << " ]";
             f.getColorMap();
             f.fillShape(_fill.at(i11), pen.color());
             i11++;
-//            f.restoreColor();
-//            if(isInRect){
-//                //f.fillRect(*nowRect);
-//                //f.restoreColor();
-//            }else if (isInEllipse){
-
-//            }else if(isInPolygon){
-
-//            }
 
         } else if (_shape.at(c) == 12)//显示裁切矩形
         {
@@ -742,7 +706,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
                         isInFill = 1;
                     }
                 }
-//                qDebug()<<"now in rect["<<i<<"]";
             }
         }
     }
@@ -760,7 +723,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
                         isInFill = 1;
                     }
                 }
-//                qDebug()<<"now in ellipse["<<i<<"]";
             }
         }
     }
@@ -778,7 +740,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
                         isInFill = 1;
                     }
                 }
-//                qDebug()<<"now in polygon["<<i<<"]";
             }
         }
     }
@@ -786,7 +747,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
         for (int i = 0; i < _bezierCurve.size(); ++i) {
             for (int j = 0; j < _bezierCurve[i].size(); ++j) {
                 // 判断当前点是否在控制点的圆内
-                // if (e->pos().x() == _bezierCurve[i][j].x() && e->pos().y() == _bezierCurve[i][j].y())
                 if (e->pos().x() <= _bezierCurve[i][j].x() + 4 && e->pos().x() >= _bezierCurve[i][j].x() - 4 &&
                     e->pos().y() <= _bezierCurve[i][j].y() + 4 && e->pos().y() >= _bezierCurve[i][j].y() - 4) {
                     isOnPoint1 = 1;
@@ -803,7 +763,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
         for (int i = 0; i < _bsplineCurve.size(); ++i) {
             for (int j = 0; j < _bsplineCurve[i].size(); ++j) {
                 // 判断当前点是否在控制点的圆内
-                // if (e->pos().x() == _bezierCurve[i][j].x() && e->pos().y() == _bezierCurve[i][j].y())
                 if (e->pos().x() <= _bsplineCurve[i][j].x() + 4 && e->pos().x() >= _bsplineCurve[i][j].x() - 4 &&
                     e->pos().y() <= _bsplineCurve[i][j].y() + 4 && e->pos().y() >= _bsplineCurve[i][j].y() - 4) {
                     isOnPoint1 = 0;
@@ -849,9 +808,7 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
             Transform(e);
     } else {
         setCursor(Qt::ArrowCursor);//恢复原始光标形状
-        //_drag = 0;
     }
-//    qDebug()<<"pressed:"<<_lpress;
 
     if (_lpress) {
         qDebug() << "isInEllipse" << isInEllipse;
@@ -865,7 +822,6 @@ void MyPaint::mouseMoveEvent(QMouseEvent *e) {
             lastLine.append(e->pos());//记录鼠标的坐标(线条的轨迹)
             update();//触发窗体重绘
         } else if (_drawType == 2) {
-//            qDebug()<<"drag:"<<_drag;
             QRect & lastRect = _rects.last();//拿到新矩形
             lastRect.setBottomRight(e->pos());
 
@@ -950,7 +906,6 @@ void MyPaint::mouseReleaseEvent(QMouseEvent *e) {
             _lpress = false;
         } else if (_drawType == 7) {
             //多边形创建过程中会多次松开
-//            _lpress = false;//标志左键释放
             update();
         } else if (_drawType == 8) {
             // 多边形窗口的裁切
@@ -1254,14 +1209,6 @@ void MyPaint::rectTrans(QMouseEvent *e) {   //对矩形做变换
         trM.setReference(referancePoint);   //没有则设为矩形中心
     }
     switch (_transFlag) {
-        /*case MOVE:
-            int dx = e->pos().x()-_begin.x();//横向移动x
-            int dy = e->pos().y()-_begin.y();//纵向移动y
-            qDebug()<<"x "<<_begin.x()<<" ,"<<"y "<<_begin.y();
-            *nowRect = (*nowRect).adjusted(dx,dy,dx,dy);
-            _begin = e->pos();//刷新拖拽点起始坐标
-            update();
-            break;*/
         case MOVE:
             qDebug() << "isinMove";
             moveVector = e->pos() - _begin;    //计算移动向量，终点减起点
@@ -1358,8 +1305,6 @@ void MyPaint::polygonTrans(QMouseEvent *e) {
             break;
         case ZOOM:
             if (isInTagRect) {
-                //zoomPropor_X = abs(e->pos().x() - referancePoint.x())*1.0/abs(_begin.x() - referancePoint.x());
-                //zoomPropor_Y = abs(e->pos().y() - referancePoint.y())*1.0/abs(_begin.y() - referancePoint.y());
                 zoomPropor_X =
                         abs(e->pos().x() - referancePoint.x()) * 1.0 / abs(tempTransPoly[0].x() - referancePoint.x());
                 zoomPropor_Y =

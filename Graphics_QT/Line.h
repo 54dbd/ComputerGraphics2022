@@ -60,7 +60,6 @@ public:
                 err += dx;
                 y += sy;
             }
-            //cout << "(" << x << " , " << y << "),k= " << k << " ,b= " << b << " color= " << color << endl;
 
         }
     }
@@ -221,39 +220,4 @@ public:
 
 
 };
-
-
-
-
-//void Lines(int brushType) {
-//    int X1, Y1;
-//    int x=mapFromGlobal(QCursor().pos()).x();
-//    int y=tmapFromGlobal(QCursor().pos()).y();
-//    while (true) {
-//        m = getmessage(EM_MOUSE | EM_KEY);
-//        switch (m.message)
-//        {
-//        case WM_LBUTTONDOWN:	//按下鼠标左键
-//            // 记住起点
-//            X1 = m.x;
-//            Y1 = m.y;
-//            cout << "start:(" << m.x << " , " << m.y << ")" << endl;
-//            break;
-
-//        case WM_LBUTTONUP:		//抬起鼠标左键
-//            if ((m.x - X1) * (m.x - X1) + (m.y - Y1) * (m.y - Y1) < 10)
-//            {
-//                cout << "Too short!" << endl;
-//                break;
-//            }
-//            cout << "end:(" << m.x << " , " << m.y << ")" << endl;
-//            Line l(X1, Y1, m.x, m.y, brushType, colorType);
-//            //l.drawPixel(m.x, m.y);
-//            l.Bresenham();
-//            // 鼠标左键弹起,记住终点并画线
-//            break;
-//        }
-//        if (m.vkcode == VK_NUMPAD0) return;
-//    }
-//}
 #endif // LINE_H
